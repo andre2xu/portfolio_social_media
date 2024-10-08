@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 // static
 import Logo from '../static/Logo.svg';
 
@@ -28,7 +30,7 @@ function LoginPage() {
                         <button type='submit'>Log in</button>
 
                         <h2>Don't have an account?</h2>
-                        <button>Sign up</button>
+                        <Link to={'/signup'}>Sign up</Link>
                     </form>
                 </div>
             </main>
