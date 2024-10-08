@@ -1,11 +1,212 @@
 @mixin LoginPage() {
     #login-page {
         min-height: 100vh;
+        display: flex;
+        font-family: Arial, Helvetica, sans-serif;
 
-        #logo-container {
-            img {
-                width: 100px;
-                height: 100px;
+        main {
+            #logo-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            #login-form-container {
+                #login-form {
+                    display: flex;
+                    flex-direction: column;
+
+                    &.error {
+                        .field input {
+                            border-color: red;
+                        }
+
+                        #error {
+                            display: inline;
+                            color: red;
+                        }
+                    }
+
+                    .field {
+                        display: flex;
+                        flex-direction: column;
+
+                        input {
+                            border: thin solid #b3b3b3;
+
+                            &:focus {
+                                outline: none;
+                            }
+                        }
+                    }
+
+                    #error {
+                        display: none;
+                    }
+
+                    button[type="submit"] {
+                        border: none;
+                        background-color: #52b5ea;
+                        color: #fff;
+                        cursor: pointer;
+
+                        &:active {
+                            background-color: #4bade2;
+                        }
+                    }
+
+                    h2 {
+                        font-weight: normal;
+                    }
+
+                    a {
+                        text-decoration: none;
+                        border: thin solid #6FDAB2;
+                        color: #6FDAB2;
+                        text-align: center;
+                    }
+                }
+            }
+        }
+
+        footer {
+            ul {
+                list-style: none;
+                display: flex;
+
+                li {
+                    color: gray;
+                    cursor: pointer;
+
+                    &:hover:not(:last-child) {
+                        text-decoration: underline;
+                    }
+                }
+            }
+        }
+
+        // RESPONSIVENESS
+        @media screen and (min-width: 250px) {
+            flex-direction: column;
+            justify-content: center;
+            padding-bottom: 30px;
+            max-width: 400px;
+            margin: 0 auto;
+
+            main {
+                display: flex;
+                flex-direction: column;
+
+                #logo-container {
+                    padding-top: 20px;
+
+                    img {
+                        width: 100px;
+                        height: 100px;
+                    }
+                }
+
+                #login-form-container {
+                    h1 {
+                        font-size: 30px;
+                        text-align: center;
+                        margin-bottom: 30px;
+                    }
+
+                    #login-form {
+                        padding: 0 15px;
+
+                        .field {
+                            margin-bottom: 20px;
+
+                            label {
+                                font-size: 16px;
+                                margin-bottom: 5px;
+                            }
+
+                            input {
+                                padding: 5px;
+                                font-size: 13px;
+                            }
+                        }
+
+                        #error {
+                            font-size: 14px;
+                        }
+
+                        button[type="submit"] {
+                            margin: 20px 0 40px;
+                            padding: 12px;
+                            font-size: 16px;
+                        }
+
+                        h2 {
+                            margin-bottom: 15px;
+                            font-size: 16px;
+                        }
+
+                        a {
+                            padding: 10px;
+                            font-size: 16px;
+                        }
+                    }
+                }
+            }
+
+            footer {
+                margin-top: 40px;
+
+                ul {
+                    padding: 0;
+                    flex-direction: column;
+                    align-items: center;
+
+                    li {
+                        margin-bottom: 10px;
+                    }
+                }
+            }
+        }
+
+        @media screen and (min-width: 1000px) {
+            max-width: none;
+            padding-bottom: 0;
+
+            main {
+                width: 100%;
+                flex-direction: row;
+                justify-content: center;
+
+                #logo-container {
+                    margin-right: 100px;
+
+                    img {
+                        width: 300px;
+                        height: 300px;
+                    }
+                }
+
+                #login-form-container {
+                    max-width: 400px;
+
+                    h1 {
+                        font-size: 32px;
+                    }
+                }
+            }
+
+            footer {
+                display: flex;
+                margin-top: 100px;
+
+                ul {
+                    flex-direction: row;
+                    margin: 0 auto;
+
+                    li {
+                        margin-right: 60px;
+                    }
+                }
             }
         }
     }
