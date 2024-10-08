@@ -8,4 +8,8 @@ body {
     #root {
         @include LoginPage();
     }
+
+    @media screen and (max-width: 249px) {
+        display: none;
+    }
 }
