@@ -27,6 +27,8 @@ function LoginPage() {
                             <input type='text' id='password' name='password' />
                         </div>
 
+                        <span id='error'>Invalid credentials</span>
+
                         <button type='submit'>Log in</button>
 
                         <h2>Don't have an account?</h2>
