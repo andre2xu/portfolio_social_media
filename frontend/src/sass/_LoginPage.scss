@@ -179,6 +179,7 @@
                 justify-content: center;
 
                 #logo-container {
+                    padding: 0;
                     margin-right: 100px;
 
                     img {
@@ -206,6 +207,78 @@
 
                     li {
                         margin-right: 60px;
+                    }
+                }
+            }
+        }
+
+        @media screen and (min-width: 2000px) {
+            main {
+                #logo-container {
+                    margin-right: 5vw;
+
+                    img {
+                        width: 15vw;
+                        height: 15vw;
+                    }
+                }
+
+                #login-form-container {
+                    max-width: 20vw;
+
+                    h1 {
+                        font-size: 1.6vw;
+                        margin-bottom: 1.5vw;
+                    }
+
+                    #login-form {
+                        padding: 0 0.75vw;
+
+                        .field {
+                            margin-bottom: 1vw;
+
+                            label {
+                                font-size: 0.8vw;
+                                margin-bottom: 0.25vw;
+                            }
+
+                            input {
+                                padding: 0.25vw;
+                                font-size: 0.65vw;
+                            }
+                        }
+
+                        #error {
+                            font-size: 0.7vw;
+                        }
+
+                        button[type="submit"] {
+                            margin: 1vw 0 2vw;
+                            padding: 0.6vw;
+                            font-size: 0.8vw;
+                        }
+
+                        h2 {
+                            margin-bottom: 0.75vw;
+                            font-size: 0.8vw;
+                        }
+
+                        a {
+                            padding: 0.5vw;
+                            font-size: 0.8vw;
+                        }
+                    }
+                }
+            }
+
+            footer {
+                margin-top: 5vw;
+
+                ul {
+                    li {
+                        margin-bottom: 0;
+                        margin-right: 3vw;
+                        font-size: 0.8vw;
                     }
                 }
             }
