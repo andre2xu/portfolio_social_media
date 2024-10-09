@@ -24,7 +24,7 @@ function LoginPage() {
 
                         <div className='field'>
                             <label htmlFor='password'>Password</label>
-                            <input type='text' id='password' name='password' />
+                            <input type='password' id='password' name='password' />
                         </div>
 
                         <span id='error'>Invalid credentials</span>
