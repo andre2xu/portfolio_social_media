@@ -1,0 +1,288 @@
+@mixin SignUpPage() {
+    #signup-page {
+        min-height: 100vh;
+        display: flex;
+        font-family: Arial, Helvetica, sans-serif;
+
+        main {
+            #logo-container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            #signup-form-container {
+                #signup-form {
+                    display: flex;
+                    flex-direction: column;
+
+                    &.error {
+                        .field input {
+                            border-color: red;
+                        }
+
+                        #error {
+                            display: inline;
+                            color: red;
+                        }
+                    }
+
+                    .field {
+                        display: flex;
+                        flex-direction: column;
+
+                        input {
+                            border: thin solid #b3b3b3;
+
+                            &:focus {
+                                outline: none;
+                            }
+                        }
+                    }
+
+                    #error {
+                        display: none;
+                    }
+
+                    button[type="submit"] {
+                        border: none;
+                        background-color: #52b5ea;
+                        color: #fff;
+                        cursor: pointer;
+
+                        &:active {
+                            background-color: #4bade2;
+                        }
+                    }
+
+                    h2 {
+                        font-weight: normal;
+                    }
+
+                    a {
+                        text-decoration: none;
+                        border: thin solid #6FDAB2;
+                        color: #6FDAB2;
+                        text-align: center;
+                    }
+                }
+            }
+        }
+
+        footer {
+            ul {
+                list-style: none;
+                display: flex;
+
+                li {
+                    color: gray;
+                    cursor: pointer;
+
+                    &:hover:not(:last-child) {
+                        text-decoration: underline;
+                    }
+                }
+            }
+        }
+
+        // RESPONSIVENESS
+        @media screen and (min-width: 250px) {
+            flex-direction: column;
+            justify-content: center;
+            padding-bottom: 30px;
+            max-width: 400px;
+            margin: 0 auto;
+
+            main {
+                display: flex;
+                flex-direction: column;
+
+                #logo-container {
+                    padding-top: 20px;
+
+                    img {
+                        width: 100px;
+                        height: 100px;
+                    }
+                }
+
+                #signup-form-container {
+                    h1 {
+                        font-size: 30px;
+                        text-align: center;
+                        margin-bottom: 30px;
+                    }
+
+                    #signup-form {
+                        padding: 0 15px;
+
+                        .field {
+                            margin-bottom: 20px;
+
+                            label {
+                                font-size: 16px;
+                                margin-bottom: 5px;
+                            }
+
+                            input {
+                                padding: 5px;
+                                font-size: 13px;
+                            }
+                        }
+
+                        #error {
+                            font-size: 14px;
+                        }
+
+                        button[type="submit"] {
+                            margin: 20px 0 40px;
+                            padding: 12px;
+                            font-size: 16px;
+                        }
+
+                        h2 {
+                            margin-bottom: 15px;
+                            font-size: 16px;
+                        }
+
+                        a {
+                            padding: 10px;
+                            font-size: 16px;
+                        }
+                    }
+                }
+            }
+
+            footer {
+                margin-top: 40px;
+
+                ul {
+                    padding: 0;
+                    flex-direction: column;
+                    align-items: center;
+
+                    li {
+                        margin-bottom: 10px;
+                        font-size: 16px;
+                    }
+                }
+            }
+        }
+
+        @media screen and (min-width: 1000px) {
+            max-width: none;
+            padding-bottom: 0;
+
+            main {
+                width: 100%;
+                flex-direction: row;
+                justify-content: center;
+
+                #logo-container {
+                    order: 1;
+                    padding: 0;
+                    margin-left: 100px;
+
+                    img {
+                        width: 300px;
+                        height: 300px;
+                    }
+                }
+
+                #signup-form-container {
+                    max-width: 400px;
+
+                    h1 {
+                        font-size: 32px;
+                    }
+                }
+            }
+
+            footer {
+                display: flex;
+                margin-top: 100px;
+
+                ul {
+                    flex-direction: row;
+                    margin: 0 auto;
+
+                    li {
+                        margin-right: 60px;
+                    }
+                }
+            }
+        }
+
+        @media screen and (min-width: 2000px) {
+            main {
+                #logo-container {
+                    margin-left: 5vw;
+
+                    img {
+                        width: 15vw;
+                        height: 15vw;
+                    }
+                }
+
+                #signup-form-container {
+                    max-width: 20vw;
+
+                    h1 {
+                        font-size: 1.6vw;
+                        margin-bottom: 1.5vw;
+                    }
+
+                    #signup-form {
+                        padding: 0 0.75vw;
+
+                        .field {
+                            margin-bottom: 1vw;
+
+                            label {
+                                font-size: 0.8vw;
+                                margin-bottom: 0.25vw;
+                            }
+
+                            input {
+                                padding: 0.25vw;
+                                font-size: 0.65vw;
+                            }
+                        }
+
+                        #error {
+                            font-size: 0.7vw;
+                        }
+
+                        button[type="submit"] {
+                            margin: 1vw 0 2vw;
+                            padding: 0.6vw;
+                            font-size: 0.8vw;
+                        }
+
+                        h2 {
+                            margin-bottom: 0.75vw;
+                            font-size: 0.8vw;
+                        }
+
+                        a {
+                            padding: 0.5vw;
+                            font-size: 0.8vw;
+                        }
+                    }
+                }
+            }
+
+            footer {
+                margin-top: 5vw;
+
+                ul {
+                    li {
+                        margin-bottom: 0;
+                        margin-right: 3vw;
+                        font-size: 0.8vw;
+                    }
+                }
+            }
+        }
+    }
+}

@@ -7,6 +7,7 @@ import './index.css';
 
 // views
 import LoginPage from './views/LoginPage';
+import SignUpPage from './views/SignUpPage';
 
 
 
@@ -18,6 +19,10 @@ const ROUTER = createBrowserRouter([
   {
     path: '/login',
     element: <LoginPage />
+  },
+  {
+    path: '/signup',
+    element: <SignUpPage />
   }
 ]);
 
