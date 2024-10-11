@@ -101,7 +101,7 @@ backend.post('/auth', async (req, res) => {
     return res.json(RESPONSE);
 });
 
-backend.listen(8010, async function () {
+backend.listen(8010, async () => {
     // connect to database & store the connection in a shared variable
     const MONGO_CLIENT = new MongoClient(process.env.MONGO_CLUSTER_URI);
 
