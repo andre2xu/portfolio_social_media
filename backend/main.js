@@ -2,6 +2,7 @@ const { MongoClient } = require('mongodb');
 const { createHash } = require('crypto');
 const jwt = require('jsonwebtoken');
 const body_parser = require('body-parser');
+const cookie_parser = require('cookie-parser');
 const cors = require('cors');
 const express = require('express');
 const backend = express();
@@ -15,6 +16,7 @@ catch {}
 // CONFIG
 backend.use(body_parser.json()); // for JSON request data
 backend.use(body_parser.urlencoded({extended: true})); // for URL-encoded request data
+backend.use(cookie_parser());
 backend.use(cors({
     origin: ['http://localhost:3000'],
     optionsSuccessStatus: 200 // for legacy browsers
@@ -79,6 +81,22 @@ backend.post('/signup', async (req, res) => {
     else {
         RESPONSE.errorMessage = "Fields cannot be empty";
     }
+
+    return res.json(RESPONSE);
+});
+
+backend.post('/auth', async (req, res) => {
+    const RESPONSE = {isAuthenticated: false};
+    const LOGIN_TOKEN = req.cookies.LT;
+
+    try {
+        if (LOGIN_TOKEN !== undefined) {
+            jwt.verify(LOGIN_TOKEN, process.env.LTS);
+
+            RESPONSE.isAuthenticated = true;
+        }
+    }
+    catch {}
 
     return res.json(RESPONSE);
 });
