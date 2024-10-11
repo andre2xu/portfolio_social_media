@@ -1,4 +1,6 @@
-import { Link } from 'react-router-dom';
+import React from 'react';
+import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
 
 // static
 import Logo from '../static/Logo.svg';
@@ -6,6 +8,18 @@ import Logo from '../static/Logo.svg';
 
 
 function LoginPage() {
+    const redirectTo = useNavigate();
+
+    React.useEffect(() => {
+        // attempt to auto login the user if there's a token
+        axios.post('http://localhost:8010/auth', {}, {withCredentials: true})
+        .then((response) => {
+            if (response.status === 200 && typeof response.data === 'object' && response.data.isAuthenticated) {
+                redirectTo('/account', {replace: true});
+            }
+        });
+    });
+
     return (
         <div id='login-page'>
             <main>
