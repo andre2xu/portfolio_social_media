@@ -8,6 +8,7 @@ import './index.css';
 // views
 import LoginPage from './views/LoginPage';
 import SignUpPage from './views/SignUpPage';
+import ProtectedRoutes from './components/ProtectedRoutes';
 
 
 
@@ -23,6 +24,15 @@ const ROUTER = createBrowserRouter([
   {
     path: '/signup',
     element: <SignUpPage />
+  },
+  {
+    element: <ProtectedRoutes />,
+    children: [
+      {
+        path: '/account',
+        element: <h1>My account</h1>
+      }
+    ]
   }
 ]);
 
