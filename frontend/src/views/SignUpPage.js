@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 // static
 import Logo from '../static/Logo.svg';
@@ -22,8 +22,8 @@ function SignUpPage() {
         }
 
         axios.post(`http://localhost:8010${new URL(FORM.action).pathname}`, REQUEST_BODY, {withCredentials: true})
-        .then(function (response) {
-            if (response.status === 200) {
+        .then((response) => {
+            if (response.status === 200 && typeof response.data === 'object') {
                 if (response.data.errorMessage !== undefined) {
                     // sign-up failed
 
