@@ -85,6 +85,50 @@ backend.post('/signup', async (req, res) => {
     return res.json(RESPONSE);
 });
 
+backend.post('/login', async (req, res) => {
+    const RESPONSE = {};
+    const FORM_DATA = req.body;
+
+    if (FORM_DATA.username.length > 0 && FORM_DATA.password.length > 0) {
+        const USERS_COLLECTION = req.app.locals.db.collection('Users');
+        const ACCOUNT = await USERS_COLLECTION.findOne({username: FORM_DATA.username});
+
+        if (ACCOUNT !== null) {
+            const HASHED_PASSWORD = createHash('sha256').update(FORM_DATA.password).digest('hex');
+
+            if (HASHED_PASSWORD === ACCOUNT.password) {
+                const TOKEN_EXPIRATION = 60 * 60 * 2;
+
+                const LOGIN_TOKEN = jwt.sign(
+                    {uid: FORM_DATA.username},
+                    process.env.LTS,
+                    {expiresIn: TOKEN_EXPIRATION}
+                );
+
+                res.cookie(
+                    'LT',
+                    LOGIN_TOKEN,
+                    {
+                        maxAge: TOKEN_EXPIRATION * 1000,
+                        httpOnly: true,
+                        sameSite: true,
+                        secure: true
+                    }
+                );
+
+                return res.json(RESPONSE);
+            }
+        }
+
+        RESPONSE.errorMessage = "Invalid credentials";
+    }
+    else {
+        RESPONSE.errorMessage = "Fields cannot be empty";
+    }
+
+    return res.json(RESPONSE);
+});
+
 backend.post('/auth', async (req, res) => {
     const RESPONSE = {isAuthenticated: false};
     const LOGIN_TOKEN = req.cookies.LT;
