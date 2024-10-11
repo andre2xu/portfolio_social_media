@@ -10,6 +10,41 @@ import Logo from '../static/Logo.svg';
 function LoginPage() {
     const redirectTo = useNavigate();
 
+    function login(event) {
+        event.preventDefault();
+
+        const FORM = document.getElementById('login-form');
+        const INPUTS = FORM.getElementsByTagName('input');
+
+        const REQUEST_BODY = {};
+
+        for (let i=0; i < INPUTS.length; i++) {
+            const INPUT = INPUTS[i];
+
+            REQUEST_BODY[INPUT.name] = INPUT.value;
+        }
+
+        axios.post(`http://localhost:8010${new URL(FORM.action).pathname}`, REQUEST_BODY, {withCredentials: true})
+        .then((response) => {
+            if (response.status === 200 && typeof response.data === 'object') {
+                if (response.data.errorMessage !== undefined) {
+                    // login failed
+
+                    document.getElementById('error').innerText = response.data.errorMessage;
+
+                    FORM.classList.add('error');
+                }
+                else {
+                    // login successful
+
+                    FORM.classList.remove('error');
+
+                    redirectTo('/account', {replace: true});
+                }
+            }
+        });
+    };
+
     React.useEffect(() => {
         // attempt to auto login the user if there's a token
         axios.post('http://localhost:8010/auth', {}, {withCredentials: true})
@@ -30,7 +65,7 @@ function LoginPage() {
                 <div id='login-form-container'>
                     <h1>Join now for a chance to go viral</h1>
 
-                    <form id='login-form' action='/login' method='post'>
+                    <form id='login-form' action='/login' method='post' onSubmit={login}>
                         <div className='field'>
                             <label htmlFor='username'>Username</label>
                             <input type='text' id='username' name='username' />
