@@ -21,7 +21,7 @@ function SignUpPage() {
             REQUEST_BODY[INPUT.name] = INPUT.value;
         }
 
-        axios.post(`http://localhost:8010${new URL(FORM.action).pathname}`, REQUEST_BODY)
+        axios.post(`http://localhost:8010${new URL(FORM.action).pathname}`, REQUEST_BODY, {withCredentials: true})
         .then(function (response) {
             if (response.status === 200) {
                 if (response.data.errorMessage !== undefined) {
