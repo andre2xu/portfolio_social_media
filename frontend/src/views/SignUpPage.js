@@ -31,12 +31,12 @@ function SignUpPage() {
 
                     document.getElementById('error').innerText = response.data.errorMessage;
 
-                    document.getElementById('signup-form').classList.add('error');
+                    FORM.classList.add('error');
                 }
                 else {
                     // sign-up successful
 
-                    document.getElementById('signup-form').classList.remove('error');
+                    FORM.classList.remove('error');
 
                     redirectTo('/account', {replace: true});
                 }
