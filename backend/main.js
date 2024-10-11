@@ -1,5 +1,6 @@
 const { MongoClient } = require('mongodb');
 const { createHash } = require('crypto');
+const jwt = require('jsonwebtoken');
 const body_parser = require('body-parser');
 const cors = require('cors');
 const express = require('express');
@@ -49,6 +50,25 @@ backend.post('/signup', async (req, res) => {
                 username: FORM_DATA.username,
                 password: HASHED_PASSWORD
             });
+
+            const TOKEN_EXPIRATION = 60 * 60 * 2;
+
+            const LOGIN_TOKEN = jwt.sign(
+                {uid: FORM_DATA.username},
+                process.env.LTS,
+                {expiresIn: TOKEN_EXPIRATION}
+            );
+
+            res.cookie(
+                'LT',
+                LOGIN_TOKEN,
+                {
+                    maxAge: TOKEN_EXPIRATION * 1000,
+                    httpOnly: true,
+                    sameSite: true,
+                    secure: true
+                }
+            );
         }
         else {
             RESPONSE.errorMessage = "That username is already taken";
