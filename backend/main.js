@@ -20,7 +20,31 @@ backend.use(cors({
 
 // ROUTES
 backend.post('/signup', (req, res) => {
-    return res.json({});
+    const RESPONSE = {};
+    const FORM_DATA = req.body;
+
+    if (FORM_DATA.username.length > 0 && FORM_DATA.password.length > 0 && FORM_DATA.confirmPassword.length > 0) {
+        // validate username
+        if (FORM_DATA.username.length > 20) {
+            RESPONSE.errorMessage = "Username cannot exceed 20 characters";
+        }
+
+        // validate password
+        if (FORM_DATA.password.length < 8 || FORM_DATA.password > 30 || /[a-f]/.test(FORM_DATA.password) === false || /[A-F]/.test(FORM_DATA.password) === false || /[0-9]/.test(FORM_DATA.password) === false || /[\$\&\+\,\:\;\=\?\@\#\|\'\<\>\.\^\*\(\)\%!\[\]\\\/]/.test(FORM_DATA.password) === false) {
+            RESPONSE.errorMessage = "Password must be 8-30 characters long and have a lowercase and uppercase letter, a digit, and a special character";
+        }
+
+        if (FORM_DATA.password !== FORM_DATA.confirmPassword) {
+            RESPONSE.errorMessage = "Both passwords must match";
+        }
+
+        return res.json(RESPONSE);
+    }
+    else {
+        RESPONSE.errorMessage = "Fields cannot be empty";
+    }
+
+    return res.json(RESPONSE);
 });
 
 backend.listen(8010, async function () {
