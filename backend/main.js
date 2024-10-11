@@ -1,4 +1,5 @@
 const { MongoClient } = require('mongodb');
+const { createHash } = require('crypto');
 const body_parser = require('body-parser');
 const cors = require('cors');
 const express = require('express');
@@ -19,7 +20,7 @@ backend.use(cors({
 }));
 
 // ROUTES
-backend.post('/signup', (req, res) => {
+backend.post('/signup', async (req, res) => {
     const RESPONSE = {};
     const FORM_DATA = req.body;
 
@@ -38,6 +39,21 @@ backend.post('/signup', (req, res) => {
             RESPONSE.errorMessage = "Both passwords must match";
         }
 
+        // create account
+        const USERS_COLLECTION = req.app.locals.db.collection('Users');
+
+        if (await USERS_COLLECTION.findOne({username: FORM_DATA.username}) === null) {
+            const HASHED_PASSWORD = createHash('sha256').update(FORM_DATA.password).digest('hex');
+
+            await USERS_COLLECTION.insertOne({
+                username: FORM_DATA.username,
+                password: HASHED_PASSWORD
+            });
+        }
+        else {
+            RESPONSE.errorMessage = "That username is already taken";
+        }
+
         return res.json(RESPONSE);
     }
     else {
@@ -53,5 +69,5 @@ backend.listen(8010, async function () {
 
     await MONGO_CLIENT.connect();
 
-    backend.locals.db = MONGO_CLIENT.db('Portfolio'); // accessible in routes via `req.app.locals.db`
+    backend.locals.db = MONGO_CLIENT.db('socialmedia'); // accessible in routes via `req.app.locals.db`
 });
