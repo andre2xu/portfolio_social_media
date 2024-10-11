@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 // static
 import Logo from '../static/Logo.svg';
@@ -7,6 +7,8 @@ import Logo from '../static/Logo.svg';
 
 
 function SignUpPage() {
+    const redirectTo = useNavigate();
+
     function signup(event) {
         event.preventDefault();
 
@@ -35,6 +37,8 @@ function SignUpPage() {
                     // sign-up successful
 
                     document.getElementById('signup-form').classList.remove('error');
+
+                    redirectTo('/account', {replace: true});
                 }
             }
         });
