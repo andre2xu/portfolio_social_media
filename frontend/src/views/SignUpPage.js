@@ -24,7 +24,18 @@ function SignUpPage() {
         axios.post(`http://localhost:8010${new URL(FORM.action).pathname}`, REQUEST_BODY)
         .then(function (response) {
             if (response.status === 200) {
-                console.log(response.data);
+                if (response.data.errorMessage !== undefined) {
+                    // sign-up failed
+
+                    document.getElementById('error').innerText = response.data.errorMessage;
+
+                    document.getElementById('signup-form').classList.add('error');
+                }
+                else {
+                    // sign-up successful
+
+                    document.getElementById('signup-form').classList.remove('error');
+                }
             }
         });
     };
