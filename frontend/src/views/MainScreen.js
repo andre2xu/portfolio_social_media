@@ -10,6 +10,7 @@ import NoFill_Icon_MagnifyingGlass from '../static/icons/Icon_MagnifyingGlass_No
 import Fill_Icon_MagnifyingGlass from '../static/icons/Icon_MagnifyingGlass_Fill.svg';
 import NoFill_Icon_Message from '../static/icons/Icon_Message_NoFill.svg';
 import Fill_Icon_Message from '../static/icons/Icon_Message_Fill.svg';
+import Icon_Exit from '../static/icons/Icon_Exit.svg';
 
 
 
@@ -34,6 +35,8 @@ function MainScreen() {
 
                 <Link to={'/'} className='no-fill messages-page'><img src={NoFill_Icon_Message} alt='Message Icon'></img> <span>Messages</span></Link>
                 <Link to={'/'} className='fill messages-page hide'><img src={Fill_Icon_Message} alt='Message Icon'></img> <span>Messages</span></Link>
+
+                <Link to={'/'} className='logout-button'><img src={Icon_Exit} alt='Logout Icon'></img> <span>Log out</span></Link>
             </nav>
 
             <main>
