@@ -1,5 +1,6 @@
 @import './LoginPage';
 @import './SignUpPage';
+@import './MainScreen';
 
 body {
     margin: 0;
@@ -9,6 +10,7 @@ body {
     #root {
         @include LoginPage();
         @include SignUpPage();
+        @include MainScreen();
     }
 
     @media screen and (max-width: 249px) {
