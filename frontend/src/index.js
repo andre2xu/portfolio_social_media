@@ -9,13 +9,14 @@ import './index.css';
 import LoginPage from './views/LoginPage';
 import SignUpPage from './views/SignUpPage';
 import ProtectedRoutes from './components/ProtectedRoutes';
+import MainScreen from './views/MainScreen';
 
 
 
 const ROUTER = createBrowserRouter([
   {
     path: '/',
-    element: <h1>Home Page</h1>
+    element: <MainScreen />
   },
   {
     path: '/login',
