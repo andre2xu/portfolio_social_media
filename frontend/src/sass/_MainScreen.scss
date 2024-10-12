@@ -27,22 +27,19 @@
             border-top: thin solid #dfdfdf;
             margin-top: auto;
             padding: 15px 20px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
 
-            div {
-                display: flex;
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-
+            a {
                 &.hide {
                     display: none;
                 }
 
-                a {
-                    img {
-                        width: 25px;
-                        height: 25px;
-                    }
+                img {
+                    width: 25px;
+                    height: 25px;
                 }
             }
         }

@@ -24,19 +24,17 @@ function MainScreen() {
             </main>
 
             <div id='mobile-navbar'>
-                <div className='no-fill-icons'>
-                    <Link to={'/'}><img src={NoFill_Icon_Account} alt='Account Icon'></img></Link>
-                    <Link to={'/'}><img src={NoFill_Icon_MagnifyingGlass} alt='Explore Icon'></img></Link>
-                    <Link to={'/'}><img src={NoFill_Icon_Bell} alt='Notifications Icon'></img></Link>
-                    <Link to={'/'}><img src={NoFill_Icon_Message} alt='Message Icon'></img></Link>
-                </div>
+                <Link to={'/'}><img src={NoFill_Icon_Account} alt='Account Icon'></img></Link>
+                <Link to={'/'} className='hide'><img src={Fill_Icon_Account} alt='Account Icon'></img></Link>
 
-                <div className='fill-icons hide'>
-                    <Link to={'/'}><img src={Fill_Icon_Account} alt='Account Icon'></img></Link>
-                    <Link to={'/'}><img src={Fill_Icon_MagnifyingGlass} alt='Explore Icon'></img></Link>
-                    <Link to={'/'}><img src={Fill_Icon_Bell} alt='Notifications Icon'></img></Link>
-                    <Link to={'/'}><img src={Fill_Icon_Message} alt='Message Icon'></img></Link>
-                </div>
+                <Link to={'/'}><img src={NoFill_Icon_MagnifyingGlass} alt='Explore Icon'></img></Link>
+                <Link to={'/'} className='hide'><img src={Fill_Icon_MagnifyingGlass} alt='Explore Icon'></img></Link>
+
+                <Link to={'/'}><img src={NoFill_Icon_Bell} alt='Notifications Icon'></img></Link>
+                <Link to={'/'} className='hide'><img src={Fill_Icon_Bell} alt='Notifications Icon'></img></Link>
+
+                <Link to={'/'}><img src={NoFill_Icon_Message} alt='Message Icon'></img></Link>
+                <Link to={'/'} className='hide'><img src={Fill_Icon_Message} alt='Message Icon'></img></Link>
             </div>
         </div>
     );
