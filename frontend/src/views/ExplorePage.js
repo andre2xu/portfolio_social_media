@@ -93,7 +93,7 @@ function ExplorePage() {
                             This is a video.
                         </p>
 
-                        <video src='https://www.pexels.com/download/video/5896379/?fps=23.97599983215332&h=1920&w=1080' loop controls controlslist='nodownload' disablePictureInPicture></video>
+                        <video src='https://www.pexels.com/download/video/5896379/?fps=23.97599983215332&h=1920&w=1080' loop controls controlsList='nodownload' disablePictureInPicture></video>
 
                         <ul>
                             <li>#vids</li>
