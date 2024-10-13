@@ -1,0 +1,130 @@
+@mixin ExplorePage() {
+    #explore-page {
+        #explore-page-login-prompt {
+            padding: 20px;
+
+            p {
+                margin: 0;
+                margin-bottom: 15px;
+                font-size: 16px;
+            }
+
+            button {
+                background-color: #6FDAB2;
+                color: #fff;
+                border: none;
+                padding: 10px 25px;
+                border-radius: 50px;
+                font-size: 16px;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: #6cd3ad;
+                }
+            }
+        }
+
+        #explore-page-posts {
+            border-top: thin solid #dfdfdf;
+
+            .post {
+                &:not(:first-child) {
+                    border-top: thin solid #dfdfdf;
+                }
+
+                padding: 20px 30px 30px;
+
+                .user-info {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+
+                    img {
+                        border-radius: 50%;
+                        width: 40px;
+                        height: 40px;
+                        margin-right: 15px;
+                    }
+
+                    span {
+                        font-size: 16px;
+                    }
+                }
+
+                .post-content {
+                    display: flex;
+                    flex-direction: column;
+                    margin-bottom: 30px;
+
+                    p {
+                        font-size: 20px;
+                        margin-bottom: 20px;
+                    }
+
+                    img {
+                        width: 50%;
+                    }
+
+                    video {
+                        width: 50%;
+                    }
+
+                    ul {
+                        margin-top: 30px;
+                        padding: 0;
+                        list-style: none;
+                        display: flex;
+                        flex-direction: row;
+
+                        li {
+                            margin-right: 10px;
+                            font-size: 16px;
+                            color: #6FDAB2;
+                            font-weight: bold;
+                            cursor: pointer;
+
+                            &:hover {
+                                text-decoration: underline;
+                            }
+                        }
+                    }
+                }
+
+                .post-info {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+
+                    img {
+                        width: 20px;
+                        height: 20px;
+                    }
+
+                    span {
+                        font-size: 14px;
+                    }
+
+                    .likes, .comments {
+                        display: flex;
+                        flex-direction: row;
+                        align-items: center;
+                        margin-left: 30px;
+
+                        img {
+                            margin-right: 10px;
+                            cursor: pointer;
+                        }
+                    }
+
+                    .likes img {
+                        transform: translateY(-2px);
+
+                        &.hide {
+                            display: none;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
