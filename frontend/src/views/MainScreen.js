@@ -12,6 +12,9 @@ import NoFill_Icon_Message from '../static/icons/Icon_Message_NoFill.svg';
 import Fill_Icon_Message from '../static/icons/Icon_Message_Fill.svg';
 import Icon_Exit from '../static/icons/Icon_Exit.svg';
 
+// views
+import ExplorePage from './ExplorePage';
+
 
 
 function MainScreen() {
@@ -40,7 +43,7 @@ function MainScreen() {
             </nav>
 
             <main>
-                .
+                <ExplorePage />
             </main>
 
             <div id='mobile-navbar'>
