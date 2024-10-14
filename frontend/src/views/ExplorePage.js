@@ -2,12 +2,35 @@
 import NoFill_Icon_ThumbsUp from '../static/icons/Icon_ThumbsUp_NoFill.svg';
 import Fill_Icon_ThumbsUp from '../static/icons/Icon_ThumbsUp_Fill.svg';
 import NoFill_Icon_Message from '../static/icons/Icon_Message_NoFill.svg';
+import Fill_Icon_MagnifyingGlass from '../static/icons/Icon_MagnifyingGlass_Fill.svg';
 
 
 
 function ExplorePage() {
+    function search(event) {
+        event.preventDefault();
+
+        console.log(1);
+    }
+
     return (
         <div id='explore-page'>
+            <form id='explore-page-searchbar' onSubmit={search}>
+                <div>
+                    <input type='text' placeholder='#topic, @username, any' />
+
+                    <button type='submit'>
+                        <img src={Fill_Icon_MagnifyingGlass} alt='Search'></img>
+                    </button>
+
+                    <ul id='explore-page-searchbar-results' className='hide'>
+                        <li>Search result 1</li>
+                        <li>Search result 2</li>
+                        <li>Search result 3</li>
+                    </ul>
+                </div>
+            </form>
+
             <div id='explore-page-login-prompt'>
                 <p>You need to sign in to make a post</p>
                 <button>Login</button>
