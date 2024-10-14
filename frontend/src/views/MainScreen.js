@@ -46,6 +46,36 @@ function MainScreen() {
                 <ExplorePage />
             </main>
 
+            <aside>
+                <h1>Who's viral? &#x1f525;</h1>
+
+                <div id='viral-users-list'>
+                    <div className='viral-user'>
+                        <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
+
+                        <span>@Username</span>
+
+                        <button>Follow</button>
+                    </div>
+
+                    <div className='viral-user'>
+                        <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
+
+                        <span>@Username</span>
+
+                        <button>Following</button>
+                    </div>
+
+                    <div className='viral-user'>
+                        <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
+
+                        <span>@Username</span>
+
+                        <button>Follow</button>
+                    </div>
+                </div>
+            </aside>
+
             <div id='mobile-navbar'>
                 <Link to={'/'}><img src={NoFill_Icon_Account} alt='Account Icon'></img></Link>
                 <Link to={'/'} className='hide'><img src={Fill_Icon_Account} alt='Account Icon'></img></Link>
