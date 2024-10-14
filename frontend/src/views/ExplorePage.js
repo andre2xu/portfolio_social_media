@@ -9,8 +9,6 @@ import Fill_Icon_MagnifyingGlass from '../static/icons/Icon_MagnifyingGlass_Fill
 function ExplorePage() {
     function search(event) {
         event.preventDefault();
-
-        console.log(1);
     }
 
     return (
