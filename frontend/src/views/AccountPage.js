@@ -1,6 +1,6 @@
 function AccountPage() {
     return (
-        <div id='account-page'>
+        <div id='account-page' className=''>
             <div id='account-page-tabs'>
                 <button>Profile</button>
                 <button>Settings</button>
