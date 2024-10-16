@@ -251,6 +251,18 @@
                                 display: none;
                             }
                         }
+
+                        & > button {
+                            color: #bb4747;
+                            background-color: transparent;
+                            border: none;
+                            cursor: pointer;
+                            margin-left: 30px;
+
+                            &:focus {
+                                outline: none;
+                            }
+                        }
                     }
                 }
             }

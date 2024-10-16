@@ -138,6 +138,8 @@ function AccountPage() {
                                 <img src={NoFill_Icon_Message} alt='Comment Icon'></img>
                                 <span>0</span>
                             </div>
+
+                            <button>Delete</button>
                         </div>
                     </article>
 
@@ -173,6 +175,8 @@ function AccountPage() {
                                 <img src={NoFill_Icon_Message} alt='Comment Icon'></img>
                                 <span>0</span>
                             </div>
+
+                            <button>Delete</button>
                         </div>
                     </article>
 
@@ -208,6 +212,8 @@ function AccountPage() {
                                 <img src={NoFill_Icon_Message} alt='Comment Icon'></img>
                                 <span>0</span>
                             </div>
+
+                            <button>Delete</button>
                         </div>
                     </article>
                 </div>
