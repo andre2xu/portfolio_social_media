@@ -66,7 +66,7 @@ function MainScreen() {
 
                         <span>@Username</span>
 
-                        <button>Following</button>
+                        <button>Unfollow</button>
                     </div>
 
                     <div className='viral-user'>
