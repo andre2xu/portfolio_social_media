@@ -40,182 +40,182 @@ function AccountPage() {
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div id='account-page-profile-lists'>
-                <section id='account-page-following-list' className='hide'>
-                    <h1>Following</h1>
+                <div id='account-page-profile-lists'>
+                    <section id='account-page-following-list' className='hide'>
+                        <h1>Following</h1>
 
-                    <div className='users-list'>
-                        <div className='user'>
-                            <img src='/pfp/Default_Profile_Picture.png' alt='User' />
+                        <div className='users-list'>
+                            <div className='user'>
+                                <img src='/pfp/Default_Profile_Picture.png' alt='User' />
 
-                            <span>@Username</span>
+                                <span>@Username</span>
 
-                            <button>Unfollow</button>
+                                <button>Unfollow</button>
+                            </div>
+
+                            <div className='user'>
+                                <img src='/pfp/Default_Profile_Picture.png' alt='User' />
+
+                                <span>@Username</span>
+
+                                <button>Unfollow</button>
+                            </div>
+
+                            <div className='user'>
+                                <img src='/pfp/Default_Profile_Picture.png' alt='User' />
+
+                                <span>@Username</span>
+
+                                <button>Unfollow</button>
+                            </div>
                         </div>
 
-                        <div className='user'>
-                            <img src='/pfp/Default_Profile_Picture.png' alt='User' />
+                        <button className='account-page-lists-show-more'>Show more</button>
+                    </section>
 
-                            <span>@Username</span>
+                    <section id='account-page-followers-list' className='hide'>
+                        <h1>Followers</h1>
 
-                            <button>Unfollow</button>
+                        <div className='users-list'>
+                            <div className='user'>
+                                <img src='/pfp/Default_Profile_Picture.png' alt='User' />
+
+                                <span>@Username</span>
+
+                                <button>Follow</button>
+                            </div>
+
+                            <div className='user'>
+                                <img src='/pfp/Default_Profile_Picture.png' alt='User' />
+
+                                <span>@Username</span>
+
+                                <button>Unfollow</button>
+                            </div>
+
+                            <div className='user'>
+                                <img src='/pfp/Default_Profile_Picture.png' alt='User' />
+
+                                <span>@Username</span>
+
+                                <button>Follow</button>
+                            </div>
                         </div>
 
-                        <div className='user'>
-                            <img src='/pfp/Default_Profile_Picture.png' alt='User' />
+                        <button className='account-page-lists-show-more'>Show more</button>
+                    </section>
 
-                            <span>@Username</span>
+                    <div id='account-page-posts-list' className=''>
+                        <article className='post'>
+                            <div className='user-info'>
+                                <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
+                                <span>Username</span>
+                            </div>
 
-                            <button>Unfollow</button>
-                        </div>
+                            <div className='post-content'>
+                                <p>
+                                    This is a regular post.
+                                </p>
+
+                                <ul>
+                                    <li>#vanilla</li>
+                                    <li>#explore</li>
+                                </ul>
+                            </div>
+
+                            <div className='post-info'>
+                                <span className='publish-date'>DD/MM/YYYY</span>
+
+                                <div className='likes'>
+                                    <img src={NoFill_Icon_ThumbsUp} alt='Like Icon'></img>
+                                    <img className='hide' src={Fill_Icon_ThumbsUp} alt='Like Icon'></img>
+                                    <span>100</span>
+                                </div>
+
+                                <div className='comments'>
+                                    <img src={NoFill_Icon_Message} alt='Comment Icon'></img>
+                                    <span>0</span>
+                                </div>
+
+                                <button>Delete</button>
+                            </div>
+                        </article>
+
+                        <article className='post'>
+                            <div className='user-info'>
+                                <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
+                                <span>Username</span>
+                            </div>
+
+                            <div className='post-content'>
+                                <p>
+                                    This is a picture.
+                                </p>
+
+                                <img src='/pfp/Default_Profile_Picture.png' alt='Post'></img>
+
+                                <ul>
+                                    <li>#pics</li>
+                                    <li>#explore</li>
+                                </ul>
+                            </div>
+
+                            <div className='post-info'>
+                                <span className='publish-date'>DD/MM/YYYY</span>
+
+                                <div className='likes'>
+                                    <img src={NoFill_Icon_ThumbsUp} alt='Like Icon'></img>
+                                    <img className='hide' src={Fill_Icon_ThumbsUp} alt='Like Icon'></img>
+                                    <span>100</span>
+                                </div>
+
+                                <div className='comments'>
+                                    <img src={NoFill_Icon_Message} alt='Comment Icon'></img>
+                                    <span>0</span>
+                                </div>
+
+                                <button>Delete</button>
+                            </div>
+                        </article>
+
+                        <article className='post'>
+                            <div className='user-info'>
+                                <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
+                                <span>Username</span>
+                            </div>
+
+                            <div className='post-content'>
+                                <p>
+                                    This is a video.
+                                </p>
+
+                                <video src='https://www.pexels.com/download/video/5896379/?fps=23.97599983215332&h=1920&w=1080' loop controls controlsList='nodownload' disablePictureInPicture></video>
+
+                                <ul>
+                                    <li>#vids</li>
+                                    <li>#explore</li>
+                                </ul>
+                            </div>
+
+                            <div className='post-info'>
+                                <span className='publish-date'>DD/MM/YYYY</span>
+
+                                <div className='likes'>
+                                    <img src={NoFill_Icon_ThumbsUp} alt='Like Icon'></img>
+                                    <img className='hide' src={Fill_Icon_ThumbsUp} alt='Like Icon'></img>
+                                    <span>100</span>
+                                </div>
+
+                                <div className='comments'>
+                                    <img src={NoFill_Icon_Message} alt='Comment Icon'></img>
+                                    <span>0</span>
+                                </div>
+
+                                <button>Delete</button>
+                            </div>
+                        </article>
                     </div>
-
-                    <button className='account-page-lists-show-more'>Show more</button>
-                </section>
-
-                <section id='account-page-followers-list' className='hide'>
-                    <h1>Followers</h1>
-
-                    <div className='users-list'>
-                        <div className='user'>
-                            <img src='/pfp/Default_Profile_Picture.png' alt='User' />
-
-                            <span>@Username</span>
-
-                            <button>Follow</button>
-                        </div>
-
-                        <div className='user'>
-                            <img src='/pfp/Default_Profile_Picture.png' alt='User' />
-
-                            <span>@Username</span>
-
-                            <button>Unfollow</button>
-                        </div>
-
-                        <div className='user'>
-                            <img src='/pfp/Default_Profile_Picture.png' alt='User' />
-
-                            <span>@Username</span>
-
-                            <button>Follow</button>
-                        </div>
-                    </div>
-
-                    <button className='account-page-lists-show-more'>Show more</button>
-                </section>
-
-                <div id='account-page-posts-list' className=''>
-                    <article className='post'>
-                        <div className='user-info'>
-                            <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
-                            <span>Username</span>
-                        </div>
-
-                        <div className='post-content'>
-                            <p>
-                                This is a regular post.
-                            </p>
-
-                            <ul>
-                                <li>#vanilla</li>
-                                <li>#explore</li>
-                            </ul>
-                        </div>
-
-                        <div className='post-info'>
-                            <span className='publish-date'>DD/MM/YYYY</span>
-
-                            <div className='likes'>
-                                <img src={NoFill_Icon_ThumbsUp} alt='Like Icon'></img>
-                                <img className='hide' src={Fill_Icon_ThumbsUp} alt='Like Icon'></img>
-                                <span>100</span>
-                            </div>
-
-                            <div className='comments'>
-                                <img src={NoFill_Icon_Message} alt='Comment Icon'></img>
-                                <span>0</span>
-                            </div>
-
-                            <button>Delete</button>
-                        </div>
-                    </article>
-
-                    <article className='post'>
-                        <div className='user-info'>
-                            <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
-                            <span>Username</span>
-                        </div>
-
-                        <div className='post-content'>
-                            <p>
-                                This is a picture.
-                            </p>
-
-                            <img src='/pfp/Default_Profile_Picture.png' alt='Post'></img>
-
-                            <ul>
-                                <li>#pics</li>
-                                <li>#explore</li>
-                            </ul>
-                        </div>
-
-                        <div className='post-info'>
-                            <span className='publish-date'>DD/MM/YYYY</span>
-
-                            <div className='likes'>
-                                <img src={NoFill_Icon_ThumbsUp} alt='Like Icon'></img>
-                                <img className='hide' src={Fill_Icon_ThumbsUp} alt='Like Icon'></img>
-                                <span>100</span>
-                            </div>
-
-                            <div className='comments'>
-                                <img src={NoFill_Icon_Message} alt='Comment Icon'></img>
-                                <span>0</span>
-                            </div>
-
-                            <button>Delete</button>
-                        </div>
-                    </article>
-
-                    <article className='post'>
-                        <div className='user-info'>
-                            <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
-                            <span>Username</span>
-                        </div>
-
-                        <div className='post-content'>
-                            <p>
-                                This is a video.
-                            </p>
-
-                            <video src='https://www.pexels.com/download/video/5896379/?fps=23.97599983215332&h=1920&w=1080' loop controls controlsList='nodownload' disablePictureInPicture></video>
-
-                            <ul>
-                                <li>#vids</li>
-                                <li>#explore</li>
-                            </ul>
-                        </div>
-
-                        <div className='post-info'>
-                            <span className='publish-date'>DD/MM/YYYY</span>
-
-                            <div className='likes'>
-                                <img src={NoFill_Icon_ThumbsUp} alt='Like Icon'></img>
-                                <img className='hide' src={Fill_Icon_ThumbsUp} alt='Like Icon'></img>
-                                <span>100</span>
-                            </div>
-
-                            <div className='comments'>
-                                <img src={NoFill_Icon_Message} alt='Comment Icon'></img>
-                                <span>0</span>
-                            </div>
-
-                            <button>Delete</button>
-                        </div>
-                    </article>
                 </div>
             </div>
         </div>
