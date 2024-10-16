@@ -2,6 +2,10 @@
     #explore-page {
         width: 500px;
 
+        &.hide {
+            display: none;
+        }
+
         #explore-page-searchbar {
             display: flex;
             border-bottom: thin solid #dfdfdf;
