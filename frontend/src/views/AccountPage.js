@@ -42,7 +42,7 @@ function AccountPage() {
                 </div>
             </div>
 
-            <div id='account-page-lists'>
+            <div id='account-page-profile-lists'>
                 <section id='account-page-following-list' className='hide'>
                     <h1>Following</h1>
 
