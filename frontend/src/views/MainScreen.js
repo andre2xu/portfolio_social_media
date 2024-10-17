@@ -16,7 +16,6 @@ import Icon_Exit from '../static/icons/Icon_Exit.svg';
 import ExplorePage from './ExplorePage';
 import AccountPage from './AccountPage';
 import MessagesPage from './MessagesPage';
-import ChatScreen from './ChatScreen'; // temp
 
 
 
@@ -51,8 +50,6 @@ function MainScreen() {
                 <AccountPage />
 
                 <MessagesPage />
-
-                <ChatScreen />
             </main>
 
             <aside>
