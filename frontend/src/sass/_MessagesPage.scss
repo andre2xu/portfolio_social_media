@@ -1,5 +1,104 @@
 @mixin MessagesPage() {
     #messages-page {
-        
+        &.hide {
+            display: none;
+        }
+
+        #messages-page-chat-start-form {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            border-bottom: thin solid $main_screen_division_line_color;
+
+            input {
+                border: thin solid #000;
+                margin-bottom: 20px;
+                padding: 5px;
+                font-size: 14px;
+
+                &:focus {
+                    outline: none;
+                }
+            }
+
+            span {
+                color: $error_color;
+                font-size: 14px;
+            }
+
+            button {
+                background-color: $theme_color;
+                color: #fff;
+                border: none;
+                cursor: pointer;
+                padding: 10px;
+                margin-top: 20px;
+                font-size: 15px;
+
+                &:hover {
+                    background-color: $theme_color_darkened;
+                }
+            }
+        }
+
+        #messages-page-chats {
+            .chat {
+                display: flex;
+                flex-direction: row;
+                position: relative;
+                padding: 20px;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: #f1f1f1;
+                }
+
+                img {
+                    width: 70px;
+                    height: 70px;
+                    border-radius: 50%;
+                    margin-right: 10px;
+                }
+
+                div {
+                    width: 100%;
+                    display: flex;
+                    flex-direction: column;
+
+                    .chat-info-username {
+                        font-size: 13px;
+                        margin-bottom: 5px;
+                        color: gray;
+                    }
+
+                    .chat-info-chat-name {
+                        font-size: 16px;
+                        font-weight: bold;
+                        color: $theme_color;
+                    }
+
+                    p {
+                        width: 80%;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+                }
+
+                button {
+                    position: absolute;
+                    right: 10px;
+                    font-size: 16px;
+                    background-color: transparent;
+                    cursor: pointer;
+                    border: none;
+                    color: #d2d2d2;
+                    padding: 0 10px;
+
+                    &:hover {
+                        color: $error_color;
+                    }
+                }
+            }
+        }
     }
 }
