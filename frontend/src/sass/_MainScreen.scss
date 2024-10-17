@@ -1,6 +1,7 @@
 @import './ExplorePage';
 @import './AccountPage';
 @import './MessagesPage';
+@import './ChatScreen';
 
 @mixin MainScreen() {
     #main-screen {
@@ -78,6 +79,7 @@
             @include ExplorePage();
             @include AccountPage();
             @include MessagesPage();
+            @include ChatScreen();
         }
 
         aside {

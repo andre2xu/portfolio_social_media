@@ -1,0 +1,7 @@
+@mixin ChatScreen() {
+    #chat-screen {
+        &.hide {
+            display: none;
+        }
+    }
+}
