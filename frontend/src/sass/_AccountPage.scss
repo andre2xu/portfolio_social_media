@@ -281,7 +281,7 @@
                 }
 
                 &:not(:last-child) {
-                    border: thin solid $main_screen_division_line_color;
+                    border-bottom: thin solid $main_screen_division_line_color;
                 }
             }
 
