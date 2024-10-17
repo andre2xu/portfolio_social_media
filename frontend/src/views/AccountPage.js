@@ -220,7 +220,7 @@ function AccountPage() {
             </div>
 
             <div id='account-page-settings' className=''>
-                <div className='settings-group'>
+                <div id='account-page-settings-general' className='settings-group'>
                     <h1>General</h1>
 
                     <div id='account-page-settings-cover' className='file-upload-container'>
@@ -252,6 +252,16 @@ function AccountPage() {
 
                         <button type='submit'>Save</button>
                     </form>
+                </div>
+
+                <div id='account-page-settings-account-deletion' className='settings-group'>
+                    <h1>Delete Account</h1>
+
+                    <p>
+                        This action will erase all your data including any posts you've made and any media you've uploaded. It cannot be undone. Clicking the button below means that you understand and acknowledge this.
+                    </p>
+
+                    <button>Delete</button>
                 </div>
             </div>
         </div>

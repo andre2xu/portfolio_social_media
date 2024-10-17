@@ -273,13 +273,21 @@
 
         #account-page-settings {
             .settings-group {
-                border: thin solid $main_screen_division_line_color;
                 padding: 20px;
 
                 h1 {
                     margin: 0;
-                    margin-bottom: 30px;
                     font-size: 24px;
+                }
+
+                &:not(:last-child) {
+                    border: thin solid $main_screen_division_line_color;
+                }
+            }
+
+            #account-page-settings-general {
+                h1 {
+                    margin-bottom: 30px;
                 }
 
                 .file-upload-container {
@@ -356,6 +364,30 @@
                         &:hover {
                             background-color: #6cd3ad;
                         }
+                    }
+                }
+            }
+
+            #account-page-settings-account-deletion {
+                h1 {
+                    margin-bottom: 10px;
+                }
+
+                p {
+                    line-height: 150%;
+                }
+
+                button {
+                    background-color: #bb4747;
+                    color: #fff;
+                    border: none;
+                    font-size: 16px;
+                    margin-top: 20px;
+                    padding: 10px 20px;
+                    cursor: pointer;
+
+                    &:hover {
+                        background-color: #a93e3e;
                     }
                 }
             }
