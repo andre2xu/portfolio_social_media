@@ -13,7 +13,7 @@ function AccountPage() {
                 <button>Settings</button>
             </div>
 
-            <div id='account-page-profile' className=''>
+            <div id='account-page-profile' className='hide'>
                 <div id='account-page-profile-cover'></div>
 
                 <div id='account-page-profile-info-container'>
@@ -216,6 +216,42 @@ function AccountPage() {
                             </div>
                         </article>
                     </div>
+                </div>
+            </div>
+
+            <div id='account-page-settings' className=''>
+                <div className='settings-group'>
+                    <h1>General</h1>
+
+                    <div id='account-page-settings-cover' className='file-upload-container'>
+                        <span>File name</span>
+
+                        <div>
+                            <button>Upload cover</button>
+                            <button>Remove cover</button>
+                        </div>
+                    </div>
+
+                    <div id='account-page-settings-pfp' className='file-upload-container'>
+                        <span>File name</span>
+
+                        <div>
+                            <button>Upload photo</button>
+                            <button>Remove photo</button>
+                        </div>
+                    </div>
+
+                    <form id='account-page-settings-form' action='/' method='post' enctype='multipart/form-data'>
+                        <input type='file' name='cover' hidden aria-hidden />
+                        <input type='file' name='pfp' hidden aria-hidden />
+
+                        <input type='text' name='newUsername' placeholder='New Username' />
+                        <input type='password' name='newPassword' placeholder='New Password' />
+
+                        <span id='account-page-settings-form-message' className='success'>Update successful</span>
+
+                        <button type='submit'>Save</button>
+                    </form>
                 </div>
             </div>
         </div>

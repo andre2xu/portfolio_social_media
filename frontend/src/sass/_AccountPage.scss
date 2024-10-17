@@ -270,5 +270,95 @@
                 }
             }
         }
+
+        #account-page-settings {
+            .settings-group {
+                border: thin solid $main_screen_division_line_color;
+                padding: 20px;
+
+                h1 {
+                    margin: 0;
+                    margin-bottom: 30px;
+                    font-size: 24px;
+                }
+
+                .file-upload-container {
+                    display: flex;
+                    flex-direction: column;
+                    margin-bottom: 50px;
+
+                    span {
+                        margin-bottom: 10px;
+                        font-size: 16px;
+                    }
+
+                    div {
+                        display: flex;
+                        flex-direction: row;
+
+                        button {
+                            font-size: 14px;
+                            padding: 10px;
+                            border-radius: 5px;
+                            cursor: pointer;
+
+                            &:first-child {
+                                margin-right: 15px;
+                                border: none;
+                                color: #fff;
+                                background-color: #000;
+                            }
+
+                            &:last-child {
+                                color: #bb4747;
+                                border: thin solid #bb4747;
+                                background-color: transparent;
+                            }
+                        }
+                    }
+                }
+
+                form {
+                    display: flex;
+                    flex-direction: column;
+
+                    input {
+                        border: thin solid gray;
+                        margin-bottom: 30px;
+                        font-size: 14px;
+                        padding: 10px;
+
+                        &:focus {
+                            outline: none;
+                        }
+                    }
+
+                    span {
+                        color: #bb4747;
+                        font-size: 15px;
+                        margin-bottom: 30px;
+
+                        &.success {
+                            color: #4677e1;
+                        }
+                    }
+
+                    button {
+                        color: #fff;
+                        background-color: $theme_color;
+                        width: fit-content;
+                        border: none;
+                        cursor: pointer;
+                        padding: 10px 20px;
+                        margin-top: 20px;
+                        font-size: 16px;
+
+                        &:hover {
+                            background-color: #6cd3ad;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
