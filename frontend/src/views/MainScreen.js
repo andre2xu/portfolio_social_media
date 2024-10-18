@@ -18,6 +18,8 @@ import AccountPage from './AccountPage';
 import MessagesPage from './MessagesPage';
 import NotificationsPage from './NotificationsPage';
 
+import NotificationScreen from './NotificationScreen'; // temp
+
 
 
 function MainScreen() {
@@ -53,6 +55,8 @@ function MainScreen() {
                 <MessagesPage />
 
                 <NotificationsPage />
+
+                <NotificationScreen />
             </main>
 
             <aside>

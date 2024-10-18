@@ -3,6 +3,7 @@
 @import './MessagesPage';
 @import './ChatScreen';
 @import './NotificationsPage';
+@import './NotificationScreen';
 
 @mixin MainScreen() {
     #main-screen {
@@ -82,6 +83,7 @@
             @include MessagesPage();
             @include ChatScreen();
             @include NotificationsPage();
+            @include NotificationScreen();
         }
 
         aside {
