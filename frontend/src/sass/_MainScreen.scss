@@ -17,12 +17,12 @@
             justify-content: center;
             align-items: center;
             padding: 5px 0;
-            border-bottom: thin solid #dfdfdf;
+            border-bottom: thin solid $main_screen_division_line_color;
 
             h1 {
                 margin: 0;
                 font-size: 18px;
-                color: #6FDAB2;
+                color: $theme_color;
             }
         }
 
@@ -31,7 +31,7 @@
             flex-direction: column;
             align-items: left;
             padding: 0 5px;
-            border-right: thin solid #dfdfdf;
+            border-right: thin solid $main_screen_division_line_color;
             position: sticky;
             top: 0;
             max-height: 100vh;
@@ -94,7 +94,7 @@
         }
 
         aside {
-            border-left: thin solid #dfdfdf;
+            border-left: thin solid $main_screen_division_line_color;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -134,7 +134,7 @@
                         border: none;
 
                         &:hover {
-                            color: #6FDAB2;
+                            color: $theme_color;
                         }
                     }
                 }
@@ -142,7 +142,7 @@
         }
 
         #mobile-navbar {
-            border-top: thin solid #dfdfdf;
+            border-top: thin solid $main_screen_division_line_color;
             margin-top: auto;
             padding: 15px 20px;
             display: flex;

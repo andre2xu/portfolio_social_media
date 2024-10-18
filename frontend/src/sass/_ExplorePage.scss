@@ -2,7 +2,7 @@
     #explore-page {
         #explore-page-searchbar {
             display: flex;
-            border-bottom: thin solid #dfdfdf;
+            border-bottom: thin solid $main_screen_division_line_color;
             width: 100%;
             padding: 10px 0;
 
@@ -79,7 +79,7 @@
             }
 
             button {
-                background-color: #6FDAB2;
+                background-color: $theme_color;
                 color: #fff;
                 border: none;
                 padding: 10px 25px;
@@ -88,17 +88,17 @@
                 cursor: pointer;
 
                 &:hover {
-                    background-color: #6cd3ad;
+                    background-color: $theme_color_darkened;
                 }
             }
         }
 
         #explore-page-posts {
-            border-top: thin solid #dfdfdf;
+            border-top: thin solid $main_screen_division_line_color;
 
             .post {
                 &:not(:first-child) {
-                    border-top: thin solid #dfdfdf;
+                    border-top: thin solid $main_screen_division_line_color;
                 }
 
                 padding: 20px 30px 30px;
@@ -146,7 +146,7 @@
                         li {
                             margin-right: 10px;
                             font-size: 16px;
-                            color: #6FDAB2;
+                            color: $theme_color;
                             font-weight: bold;
                             cursor: pointer;
 

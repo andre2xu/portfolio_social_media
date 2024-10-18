@@ -155,7 +155,7 @@
 
                     .post {
                         &:not(:last-child) {
-                            border-bottom: thin solid #dfdfdf;
+                            border-bottom: thin solid $main_screen_division_line_color;
                         }
 
                         padding: 20px 30px 30px;
@@ -203,7 +203,7 @@
                                 li {
                                     margin-right: 10px;
                                     font-size: 16px;
-                                    color: #6FDAB2;
+                                    color: $theme_color;
                                     font-weight: bold;
                                     cursor: pointer;
 
@@ -249,7 +249,7 @@
                             }
 
                             & > button {
-                                color: #bb4747;
+                                color: $error_color;
                                 background-color: transparent;
                                 border: none;
                                 cursor: pointer;
@@ -312,8 +312,8 @@
                             }
 
                             &:last-child {
-                                color: #bb4747;
-                                border: thin solid #bb4747;
+                                color: $error_color;
+                                border: thin solid $error_color;
                                 background-color: transparent;
                             }
                         }
@@ -336,7 +336,7 @@
                     }
 
                     span {
-                        color: #bb4747;
+                        color: $error_color;
                         font-size: 15px;
                         margin-bottom: 30px;
 
@@ -356,7 +356,7 @@
                         font-size: 16px;
 
                         &:hover {
-                            background-color: #6cd3ad;
+                            background-color: $theme_color_darkened;
                         }
                     }
                 }
@@ -372,7 +372,7 @@
                 }
 
                 button {
-                    background-color: #bb4747;
+                    background-color: $error_color;
                     color: #fff;
                     border: none;
                     font-size: 16px;
