@@ -1,4 +1,4 @@
-function Notifications() {
+function NotificationsPage() {
     return (
         <div id='notifications-page'>
             <div id='notifications-page-tabs'>
@@ -85,4 +85,4 @@ function Notifications() {
     );
 }
 
-export default Notifications;
+export default NotificationsPage;
