@@ -16,6 +16,7 @@ import Icon_Exit from '../static/icons/Icon_Exit.svg';
 import ExplorePage from './ExplorePage';
 import AccountPage from './AccountPage';
 import MessagesPage from './MessagesPage';
+import NotificationsPage from './NotificationsPage';
 
 
 
@@ -50,6 +51,8 @@ function MainScreen() {
                 <AccountPage />
 
                 <MessagesPage />
+
+                <NotificationsPage />
             </main>
 
             <aside>

@@ -1,0 +1,7 @@
+@mixin NotificationsPage() {
+    #notifications-page {
+        &.hide {
+            display: none;
+        }
+    }
+}
