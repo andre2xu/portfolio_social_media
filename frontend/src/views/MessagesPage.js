@@ -1,7 +1,7 @@
 function MessagesPage() {
     return (
         <div id='messages-page' className='hide'>
-            <form id='messages-page-chat-start-form' action='' method='post' enctype='multipart/form-data'>
+            <form id='messages-page-chat-start-form' action='' method='post' encType='multipart/form-data'>
                 <input type='text' name='chatName' placeholder='Chat Name' />
                 <input type='text' name='username' placeholder='@Username' />
                 <input type='text' name='message' placeholder='Enter message' />

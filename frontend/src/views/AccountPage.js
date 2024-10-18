@@ -241,7 +241,7 @@ function AccountPage() {
                         </div>
                     </div>
 
-                    <form id='account-page-settings-form' action='/' method='post' enctype='multipart/form-data'>
+                    <form id='account-page-settings-form' action='/' method='post' encType='multipart/form-data'>
                         <input type='file' name='cover' hidden aria-hidden />
                         <input type='file' name='pfp' hidden aria-hidden />
 
