@@ -6,12 +6,19 @@
             display: none;
         }
 
+        & > div {
+            &.hide {
+                display: none;
+            }
+        }
+
         #notifications-page-tabs {
             display: flex;
             flex-direction: row;
             justify-content: center;
             align-items: center;
             border-bottom: thin solid $main_screen_division_line_color;
+            margin-bottom: 20px;
 
             button {
                 background-color: transparent;
@@ -53,6 +60,70 @@
                     overflow: hidden;
                     text-overflow: ellipsis;
                     line-height: 150%;
+                }
+            }
+        }
+
+        #notifications-page-settings {
+            .settings-group {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 10px;
+                padding: 10px 20px;
+                padding-bottom: 30px;
+
+                &:not(:last-child) {
+                    border-bottom: thin solid $main_screen_division_line_color;
+                }
+
+                h1 {
+                    margin: 0;
+                    font-size: 22px;
+                }
+
+                .setting {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+
+                    p {
+                        font-size: 16px;
+                    }
+
+                    .toggle-button {
+                        $tb_height: 20px;
+                        $tb_border_radius: 50px;
+
+                        display: flex;
+                        flex-direction: row;
+                        margin-left: auto;
+                        position: relative;
+                        width: 45px;
+                        height: $tb_height;
+                        border-radius: $tb_border_radius;
+                        background-color: #d9d9d9;
+                        cursor: pointer;
+
+                        .bar {
+                            background-color: #4fdd4f;
+                            width: 50%;
+                            height: 100%;
+                            border-top-left-radius: $tb_border_radius;
+                            border-bottom-left-radius: $tb_border_radius;
+                        }
+
+                        .thumb {
+                            height: $tb_height;
+                            width: $tb_height;
+                            border-radius: 50%;
+                            position: absolute;
+                            top: 0;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            background-color: #fbfbfb;
+                            outline: thin solid #dadada;
+                        }
+                    }
                 }
             }
         }
