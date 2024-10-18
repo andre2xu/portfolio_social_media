@@ -77,6 +77,13 @@
 
         main {
             flex: 1;
+            min-width: 500px;
+
+            & > div {
+                &.hide {
+                    display: none !important
+                }
+            }
 
             @include ExplorePage();
             @include AccountPage();

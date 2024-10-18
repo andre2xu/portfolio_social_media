@@ -3,11 +3,6 @@
         display: flex;
         flex-direction: column;
         padding: 10px 30px 30px;
-        width: 500px;
-
-        &.hide {
-            display: none;
-        }
 
         button {
             background-color: transparent;

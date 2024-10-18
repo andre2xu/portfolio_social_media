@@ -1,11 +1,5 @@
 @mixin AccountPage() {
     #account-page {
-        width: 500px;
-
-        &.hide {
-            display: none;
-        }
-
         #account-page-tabs {
             display: flex;
             flex-direction: row;

@@ -1,9 +1,5 @@
 @mixin MessagesPage() {
     #messages-page {
-        &.hide {
-            display: none;
-        }
-
         #messages-page-chat-start-form {
             display: flex;
             flex-direction: column;
