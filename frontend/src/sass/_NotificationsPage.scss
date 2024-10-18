@@ -1,7 +1,60 @@
 @mixin NotificationsPage() {
     #notifications-page {
+        width: 500px;
+
         &.hide {
             display: none;
+        }
+
+        #notifications-page-tabs {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            border-bottom: thin solid $main_screen_division_line_color;
+
+            button {
+                background-color: transparent;
+                border: none;
+                font-size: 18px;
+                padding: 10px 5px;
+                width: 100%;
+                text-align: center;
+                color: $theme_color;
+                cursor: pointer;
+
+                &:first-child {
+                    border-right: thin solid $main_screen_division_line_color;
+                }
+            }
+        }
+
+        #notifications-page-messages {
+            .notification {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 10px;
+                padding: 15px;
+                cursor: pointer;
+
+                &:not(:last-child) {
+                    border-bottom: thin solid $main_screen_division_line_color;
+                }
+
+                h1 {
+                    margin: 0;
+                    margin-bottom: 5px;
+                    font-size: 20px;
+                }
+
+                p {
+                    font-size: 16px;
+                    margin: 0;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    line-height: 150%;
+                }
+            }
         }
     }
 }
