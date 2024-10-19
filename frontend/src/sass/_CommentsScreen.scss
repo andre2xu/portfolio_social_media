@@ -1,5 +1,193 @@
 @mixin CommentsScreen() {
     #comments-screen {
-        
+        #comments-screen-post {
+            border-bottom: thin solid $main_screen_division_line_color;
+
+            padding: 20px 30px 30px;
+
+            & > button {
+                background-color: transparent;
+                border: none;
+                cursor: pointer;
+                font-size: 30px;
+                margin-bottom: 30px;
+                color: #b1b1b1;
+                transform: translateX(-10px);
+            }
+
+            .user-info {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+
+                img {
+                    border-radius: 50%;
+                    width: 40px;
+                    height: 40px;
+                    margin-right: 15px;
+                    cursor: pointer;
+                }
+
+                span {
+                    font-size: 16px;
+                }
+            }
+
+            .post-content {
+                display: flex;
+                flex-direction: column;
+                margin-bottom: 30px;
+
+                p {
+                    font-size: 20px;
+                    margin-bottom: 20px;
+                }
+
+                img, video {
+                    width: 50%;
+                    max-width: 300px;
+                }
+
+                ul {
+                    margin-top: 30px;
+                    padding: 0;
+                    list-style: none;
+                    display: flex;
+                    flex-direction: row;
+
+                    li {
+                        margin-right: 10px;
+                        font-size: 16px;
+                        color: $theme_color;
+                        font-weight: bold;
+                        cursor: pointer;
+
+                        &:hover {
+                            text-decoration: underline;
+                        }
+                    }
+                }
+            }
+
+            .post-info {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+
+                img {
+                    width: 20px;
+                    height: 20px;
+                }
+
+                span {
+                    font-size: 14px;
+                }
+
+                .likes, .comments {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    margin-left: 30px;
+
+                    img {
+                        margin-right: 10px;
+                        cursor: pointer;
+                    }
+                }
+
+                .likes img {
+                    transform: translateY(-2px);
+
+                    &.hide {
+                        display: none;
+                    }
+                }
+            }
+        }
+
+        #comments-screen-comments {
+            display: flex;
+            flex-direction: column;
+
+            h1 {
+                margin: 20px 20px 10px;
+                font-size: 24px;
+            }
+
+            .comment {
+                display: flex;
+                flex-direction: row;
+                padding: 30px 20px;
+
+                &:not(:last-child) {
+                    border-bottom: thin solid $main_screen_division_line_color;
+                }
+
+                & > img {
+                    width: 50px;
+                    height: 50px;
+                    border-radius: 50%;
+                }
+
+                & > div {
+                    display: flex;
+                    flex-direction: column;
+                    padding: 0 20px;
+                    width: 100%;
+
+                    .comment-info {
+                        margin-bottom: 10px;
+
+                        span {
+                            font-size: 16px;
+
+                            &:last-child {
+                                margin-left: 15px;
+                                color: #ababab;
+                            }
+                        }
+                    }
+
+                    p {
+                        font-size: 16px;
+                        margin-bottom: 40px;
+
+                        .reply-username {
+                            color: $theme_color;
+                        }
+                    }
+
+                    .comment-likes-dislikes {
+                        display: flex;
+                        flex-direction: row;
+
+                        div {
+                            display: flex;
+                            flex-direction: row;
+                            align-items: center;
+
+                            img {
+                                width: 20px;
+                                height: 20px;
+                                margin-right: 10px;
+                                cursor: pointer;
+
+                                &.hide {
+                                    display: none;
+                                }
+                            }
+
+                            &.dislikes {
+                                margin-left: 40px;
+
+                                img {
+                                    transform: rotateX(180deg);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
