@@ -141,6 +141,10 @@
                         span {
                             font-size: 16px;
 
+                            &:first-child {
+                                cursor: pointer;
+                            }
+
                             &:last-child {
                                 margin-left: 15px;
                                 color: #ababab;
