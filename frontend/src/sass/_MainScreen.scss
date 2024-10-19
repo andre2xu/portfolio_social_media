@@ -1,4 +1,5 @@
 @import './ExplorePage';
+@import './CommentsScreen';
 @import './AccountPage';
 @import './MessagesPage';
 @import './ChatScreen';
@@ -86,6 +87,7 @@
             }
 
             @include ExplorePage();
+            @include CommentsScreen();
             @include AccountPage();
             @include MessagesPage();
             @include ChatScreen();

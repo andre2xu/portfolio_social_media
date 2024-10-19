@@ -20,6 +20,7 @@ import NotificationsPage from './NotificationsPage';
 
 import ChatScreen from './ChatScreen';
 import NotificationScreen from './NotificationScreen';
+import CommentsScreen from './CommentsScreen';
 
 
 
@@ -50,6 +51,8 @@ function MainScreen() {
 
             <main>
                 <ExplorePage />
+
+                <CommentsScreen />
 
                 <AccountPage />
 
