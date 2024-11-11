@@ -269,6 +269,8 @@
 
             aside {
                 display: flex;
+                border-left: thin solid $main_screen_division_line_color;
+                padding-left: 30px;
             }
         }
 
@@ -314,6 +316,8 @@
             }
 
             aside {
+                padding-left: 1.5vw;
+
                 h1 {
                     font-size: 1.2vw;
                     margin-bottom: 1.5vw;

@@ -12,7 +12,7 @@ function ExplorePage() {
     };
 
     return (
-        <div id='explore-page' className='hide'>
+        <div id='explore-page' className=''>
             <form id='explore-page-searchbar' onSubmit={search}>
                 <div>
                     <input type='text' placeholder='#topic, @username, any' />
