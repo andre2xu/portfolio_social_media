@@ -829,6 +829,78 @@
                     }
                 }
             }
+
+            #account-page-settings {
+                .settings-group {
+                    padding: 1vw;
+
+                    h1 {
+                        font-size: 1.1vw;
+                    }
+                }
+
+                #account-page-settings-general {
+                    h1 {
+                        margin-bottom: 1.5vw;
+                    }
+
+                    .file-upload-container {
+                        margin-bottom: 2.5vw;
+
+                        span {
+                            margin-bottom: 0.5vw;
+                            font-size: 0.7vw;
+                        }
+
+                        div {
+                            button {
+                                font-size: 0.6vw;
+                                padding: 0.5vw;
+                                border-radius: 0.25vw;
+
+                                &:first-child {
+                                    margin-right: 0.75vw;
+                                }
+                            }
+                        }
+                    }
+
+                    form {
+                        input {
+                            margin-bottom: 1.5vw;
+                            font-size: 0.6vw;
+                            padding: 0.4vw;
+                        }
+
+                        span {
+                            font-size: 0.7vw;
+                            margin-bottom: 1.5vw;
+                        }
+
+                        button {
+                            padding: 0.5vw 1vw;
+                            margin-top: 1vw;
+                            font-size: 0.75vw;
+                        }
+                    }
+                }
+
+                #account-page-settings-account-deletion {
+                    h1 {
+                        margin-bottom: 0.5vw;
+                    }
+
+                    p {
+                        font-size: 0.7vw;
+                    }
+
+                    button {
+                        font-size: 0.75vw;
+                        margin-top: 1vw;
+                        padding: 0.5vw 1vw;
+                    }
+                }
+            }
         }
     }
 }
