@@ -133,13 +133,11 @@
 
                 div {
                     flex: 1;
-                    width: 80%;
-                    height: 100%;
                     padding: 5px;
                     margin: 0 15px;
 
                     input {
-                        font-size: 16px;
+                        font-size: 15px;
                         width: 100%;
                     }
 
@@ -159,6 +157,7 @@
 
                         li {
                             padding: 15px 10px;
+                            font-size: 15px;
                         }
                     }
                 }
@@ -181,6 +180,8 @@
             }
 
             #explore-page-posts {
+                display: none;
+
                 .post {
                     padding: 20px 30px 30px;
 
@@ -243,6 +244,68 @@
                             transform: translateY(-2px);
                         }
                     }
+                }
+            }
+        }
+
+        @media screen and (min-width: 400px) {
+            #explore-page-searchbar {
+                div {
+                    input {
+                        font-size: 16px;
+                    }
+
+                    #explore-page-searchbar-results {
+                        li {
+                            font-size: 16px;
+                        }
+                    }
+                }
+            }
+        }
+
+        @media screen and (min-width: 2000px) {
+            #explore-page-searchbar {
+                padding: 0.75vw 0;
+
+                div {
+                    padding: 0.25vw;
+                    margin: 0 0.75vw;
+
+                    input {
+                        font-size: 0.8vw;
+                    }
+
+                    button {
+                        img {
+                            width: 1vw;
+                            height: 1vw;
+                        }
+                    }
+
+                    #explore-page-searchbar-results {
+                        transform: translateY(-0.75vw);
+
+                        li {
+                            padding: 0.75vw 0.5vw;
+                            font-size: 0.8vw;
+                        }
+                    }
+                }
+            }
+
+            #explore-page-login-prompt {
+                padding: 1vw;
+
+                p {
+                    margin-bottom: 0.75vw;
+                    font-size: 0.8vw;
+                }
+
+                button {
+                    padding: 0.5vw 1.25vw;
+                    border-radius: 2.5vw;
+                    font-size: 0.8vw;
                 }
             }
         }
