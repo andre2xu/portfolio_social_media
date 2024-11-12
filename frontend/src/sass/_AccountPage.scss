@@ -721,37 +721,37 @@
 
                 #account-page-profile-lists {
                     #account-page-following-list, #account-page-followers-list {
-                        padding: 0 20px;
+                        padding: 0.5vw 1.5vw 1.5vw;
 
                         h1 {
-                            font-size: 20px;
-                            margin-bottom: 30px;
+                            font-size: 1vw;
+                            margin-bottom: 1.5vw;
                         }
 
                         .users-list {
                             .user {
-                                margin-bottom: 30px;
+                                margin-bottom: 1.5vw;
 
                                 img {
-                                    width: 70px;
-                                    height: 70px;
+                                    width: 2.75vw;
+                                    height: 2.75vw;
                                 }
 
                                 span {
-                                    font-size: 16px;
-                                    margin-left: 15px;
+                                    font-size: 0.7vw;
+                                    margin-left: 0.75vw;
                                 }
 
                                 button {
-                                    font-size: 14px;
-                                    padding: 10px 20px;
+                                    font-size: 0.65vw;
+                                    padding: 0.5vw 1vw;
                                 }
                             }
                         }
 
                         .account-page-lists-show-more {
-                            font-size: 16px;
-                            margin-top: 20px;
+                            font-size: 0.7vw;
+                            margin-top: 0.75vw;
                         }
                     }
 
