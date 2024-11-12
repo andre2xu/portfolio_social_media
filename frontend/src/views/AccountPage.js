@@ -13,7 +13,7 @@ function AccountPage() {
                 <button>Settings</button>
             </div>
 
-            <div id='account-page-profile' className=''>
+            <div id='account-page-profile' className='hide'>
                 <div id='account-page-profile-cover'></div>
 
                 <div id='account-page-profile-info-container'>
@@ -42,7 +42,7 @@ function AccountPage() {
                 </div>
 
                 <div id='account-page-profile-lists'>
-                    <section id='account-page-following-list' className=''>
+                    <section id='account-page-following-list' className='hide'>
                         <h1>Following</h1>
 
                         <div className='users-list'>
@@ -106,7 +106,7 @@ function AccountPage() {
                         <button className='account-page-lists-show-more'>Show more</button>
                     </section>
 
-                    <div id='account-page-posts-list' className='hide'>
+                    <div id='account-page-posts-list' className=''>
                         <article className='post'>
                             <div className='user-info'>
                                 <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
@@ -219,7 +219,7 @@ function AccountPage() {
                 </div>
             </div>
 
-            <div id='account-page-settings' className='hide'>
+            <div id='account-page-settings' className=''>
                 <div id='account-page-settings-general' className='settings-group'>
                     <h1>General</h1>
 
