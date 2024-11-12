@@ -551,6 +551,7 @@
 
                                 & > button {
                                     margin-top: 20px;
+                                    font-size: 13px;
                                 }
                             }
                         }
@@ -617,7 +618,6 @@
                         .post {
                             .post-content {
                                 img, video {
-                                    width: 100%;
                                     max-width: 250px;
                                 }
                             }
@@ -625,6 +625,161 @@
                             .post-info {
                                 & > *:not(:last-child) {
                                     margin-right: 40px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        @media screen and (min-width: 2000px) {
+            #account-page-tabs {
+                button {
+                    font-size: 0.8vw;
+                    padding: 0.5vw 0.25vw;
+                }
+            }
+
+            #account-page-profile {
+                #account-page-profile-cover {
+                    height: 10vw;
+                }
+
+                #account-page-profile-info-container {
+                    padding: 1.25vw;
+
+                    #account-page-profile-picture {
+                        width: 4vw;
+                        height: 4vw;
+                    }
+
+                    #account-page-profile-info {
+                        margin-left: 1.5vw;
+
+                        span {
+                            font-size: 0.75vw;
+                            margin-bottom: 0.5vw;
+                        }
+
+                        div {
+                            .profile-counts {
+                                &:not(:last-child) {
+                                    margin-right: 1vw;
+                                }
+
+                                span {
+                                    font-size: 0.75vw;
+
+                                    &:first-child {
+                                        margin-right: 0.25vw;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                #account-page-profile-lists {
+                    #account-page-following-list, #account-page-followers-list {
+                        padding: 0 20px;
+
+                        h1 {
+                            font-size: 20px;
+                            margin-bottom: 30px;
+                        }
+
+                        .users-list {
+                            .user {
+                                margin-bottom: 30px;
+
+                                img {
+                                    width: 70px;
+                                    height: 70px;
+                                }
+
+                                span {
+                                    font-size: 16px;
+                                    margin-left: 15px;
+                                }
+
+                                button {
+                                    font-size: 14px;
+                                    padding: 10px 20px;
+                                }
+                            }
+                        }
+
+                        .account-page-lists-show-more {
+                            font-size: 16px;
+                            margin-top: 20px;
+                        }
+                    }
+
+                    #account-page-posts-list {
+                        .post {
+                            padding: 1vw 1.5vw 1.5vw;
+
+                            .user-info {
+                                img {
+                                    width: 2vw;
+                                    height: 2vw;
+                                    margin-right: 0.75vw;
+                                }
+
+                                span {
+                                    font-size: 0.75vw;
+                                }
+                            }
+
+                            .post-content {
+                                margin-bottom: 1.5vw;
+
+                                p {
+                                    font-size: 0.9vw;
+                                    margin-bottom: 1vw;
+                                }
+
+                                img, video {
+                                    max-width: 12.5vw;
+                                }
+
+                                ul {
+                                    margin-top: 1.5vw;
+
+                                    li {
+                                        margin-right: 0.5vw;
+                                        font-size: 0.75vw;
+                                    }
+                                }
+                            }
+
+                            .post-info {
+                                & > *:not(:last-child) {
+                                    margin-right: 2vw;
+                                }
+
+                                img {
+                                    width: 1vw;
+                                    height: 1vw;
+                                }
+
+                                span {
+                                    font-size: 0.7vw;
+                                }
+
+                                .likes, .comments {
+                                    img {
+                                        margin-right: 0.5vw;
+                                    }
+                                }
+
+                                .likes img {
+                                    transform: translateY(-0.1vw);
+                                }
+
+                                & > button {
+                                    font-size: 0.65vw;
                                 }
                             }
                         }
