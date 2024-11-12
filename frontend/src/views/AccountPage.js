@@ -74,7 +74,7 @@ function AccountPage() {
                         <button className='account-page-lists-show-more'>Show more</button>
                     </section>
 
-                    <section id='account-page-followers-list' className='hide'>
+                    <section id='account-page-followers-list' className=''>
                         <h1>Followers</h1>
 
                         <div className='users-list'>
@@ -106,7 +106,7 @@ function AccountPage() {
                         <button className='account-page-lists-show-more'>Show more</button>
                     </section>
 
-                    <div id='account-page-posts-list' className=''>
+                    <div id='account-page-posts-list' className='hide'>
                         <article className='post'>
                             <div className='user-info'>
                                 <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>

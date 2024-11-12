@@ -447,7 +447,7 @@
 
                 #account-page-profile-lists {
                     #account-page-following-list, #account-page-followers-list {
-                        padding: 0 20px;
+                        padding: 0 15px 30px;
 
                         h1 {
                             font-size: 20px;
@@ -459,26 +459,30 @@
                                 margin-bottom: 30px;
 
                                 img {
-                                    width: 70px;
-                                    height: 70px;
+                                    width: 40px;
+                                    height: 40px;
                                     border-radius: 50%;
                                 }
 
                                 span {
-                                    font-size: 16px;
-                                    margin-left: 15px;
+                                    font-size: 12px;
+                                    margin-left: 10px;
+                                    margin-right: 20px;
+                                    max-width: 21ch;
+                                    overflow: hidden;
+                                    text-overflow: ellipsis;
                                 }
 
                                 button {
-                                    font-size: 14px;
+                                    font-size: 11px;
                                     padding: 10px 20px;
                                 }
                             }
                         }
 
                         .account-page-lists-show-more {
-                            font-size: 16px;
-                            margin-top: 20px;
+                            font-size: 12px;
+                            margin-top: 15px;
                         }
                     }
 
@@ -574,6 +578,37 @@
                 }
 
                 #account-page-profile-lists {
+                    #account-page-following-list, #account-page-followers-list {
+                        padding: 10px 20px 30px;
+
+                        h1 {
+                            font-size: 20px;
+                        }
+
+                        .users-list {
+                            .user {
+                                img {
+                                    width: 55px;
+                                    height: 55px;
+                                }
+
+                                span {
+                                    font-size: 14px;
+                                    margin-left: 15px;
+                                    margin-right: 0px;
+                                }
+
+                                button {
+                                    font-size: 13px;
+                                }
+                            }
+                        }
+
+                        .account-page-lists-show-more {
+                            font-size: 14px;
+                        }
+                    }
+
                     #account-page-posts-list {
                         .post {
                             .post-info {
@@ -614,6 +649,10 @@
                 }
 
                 #account-page-profile-lists {
+                    #account-page-following-list, #account-page-followers-list {
+                        padding: 10px 30px 30px;
+                    }
+
                     #account-page-posts-list {
                         .post {
                             .post-content {
