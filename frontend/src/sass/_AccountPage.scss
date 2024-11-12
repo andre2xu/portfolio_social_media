@@ -16,9 +16,6 @@
             button {
                 background-color: transparent;
                 border: none;
-                font-size: 18px;
-                padding: 10px 5px;
-                width: 100%;
                 text-align: center;
                 color: $theme_color;
                 cursor: pointer;
@@ -32,67 +29,67 @@
         #account-page-profile {
             #account-page-profile-cover {
                 background-color: #f5f5f5;
-                width: 100%;
-                height: 250px;
+                // width: 100%;
+                // height: 250px;
             }
 
             #account-page-profile-info-container {
-                padding: 20px;
+                // padding: 20px;
                 display: flex;
                 flex-direction: row;
                 border-bottom: thin solid $main_screen_division_line_color;
 
-                #account-page-profile-picture {
-                    width: 100px;
-                    height: 100px;
-                    border-radius: 50%;
-                }
+                // #account-page-profile-picture {
+                //     width: 100px;
+                //     height: 100px;
+                //     border-radius: 50%;
+                // }
 
                 #account-page-profile-info {
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
-                    width: 100%;
-                    margin-left: 20px;
+                    // width: 100%;
+                    // margin-left: 20px;
 
-                    span {
-                        font-size: 16px;
-                        margin-bottom: 15px;
-                    }
+                    // span {
+                    //     font-size: 16px;
+                    //     margin-bottom: 15px;
+                    // }
 
                     div {
                         display: flex;
                         flex-direction: row;
 
-                        .profile-counts {
-                            &:not(:last-child) {
-                                margin-right: 20px;
-                            }
+                        // .profile-counts {
+                        //     &:not(:last-child) {
+                        //         margin-right: 20px;
+                        //     }
 
-                            span {
-                                font-size: 16px;
+                        //     span {
+                        //         font-size: 16px;
 
-                                &:first-child {
-                                    margin-right: 5px;
-                                }
-                            }
-                        }
+                        //         &:first-child {
+                        //             margin-right: 5px;
+                        //         }
+                        //     }
+                        // }
                     }
                 }
             }
 
             #account-page-profile-lists {
                 #account-page-following-list, #account-page-followers-list {
-                    padding: 0 20px;
+                    // padding: 0 20px;
 
                     &.hide {
                         display: none;
                     }
 
-                    h1 {
-                        font-size: 20px;
-                        margin-bottom: 30px;
-                    }
+                    // h1 {
+                    //     font-size: 20px;
+                    //     margin-bottom: 30px;
+                    // }
 
                     .users-list {
                         display: flex;
@@ -102,17 +99,17 @@
                             display: flex;
                             flex-direction: row;
                             align-items: center;
-                            margin-bottom: 30px;
+                            // margin-bottom: 30px;
 
-                            img {
-                                width: 70px;
-                                height: 70px;
-                                border-radius: 50%;
-                            }
+                            // img {
+                            //     width: 70px;
+                            //     height: 70px;
+                            //     border-radius: 50%;
+                            // }
 
                             span {
-                                font-size: 16px;
-                                margin-left: 15px;
+                                // font-size: 16px;
+                                // margin-left: 15px;
                                 cursor: pointer;
                             }
 
@@ -121,8 +118,8 @@
                                 border: none;
                                 color: #fff;
                                 background-color: #000;
-                                font-size: 14px;
-                                padding: 10px 20px;
+                                // font-size: 14px;
+                                // padding: 10px 20px;
                                 cursor: pointer;
 
                                 &:hover {
@@ -136,8 +133,8 @@
                         background-color: transparent;
                         border: none;
                         color: $theme_color;
-                        font-size: 16px;
-                        margin-top: 20px;
+                        // font-size: 16px;
+                        // margin-top: 20px;
                         cursor: pointer;
 
                         &.hide {
@@ -160,7 +157,7 @@
                             border-bottom: thin solid $main_screen_division_line_color;
                         }
 
-                        padding: 20px 30px 30px;
+                        // padding: 20px 30px 30px;
 
                         .user-info {
                             display: flex;
@@ -168,43 +165,43 @@
                             align-items: center;
 
                             img {
-                                border-radius: 50%;
-                                width: 40px;
-                                height: 40px;
-                                margin-right: 15px;
+                                // border-radius: 50%;
+                                // width: 40px;
+                                // height: 40px;
+                                // margin-right: 15px;
                                 cursor: pointer;
                             }
 
-                            span {
-                                font-size: 16px;
-                            }
+                            // span {
+                            //     font-size: 16px;
+                            // }
                         }
 
                         .post-content {
                             display: flex;
                             flex-direction: column;
-                            margin-bottom: 30px;
+                            // margin-bottom: 30px;
 
-                            p {
-                                font-size: 20px;
-                                margin-bottom: 20px;
-                            }
+                            // p {
+                            //     font-size: 20px;
+                            //     margin-bottom: 20px;
+                            // }
 
-                            img, video {
-                                width: 50%;
-                                max-width: 300px;
-                            }
+                            // img, video {
+                            //     width: 50%;
+                            //     max-width: 300px;
+                            // }
 
                             ul {
-                                margin-top: 30px;
-                                padding: 0;
+                                // margin-top: 30px;
+                                // padding: 0;
                                 list-style: none;
                                 display: flex;
                                 flex-direction: row;
 
                                 li {
-                                    margin-right: 10px;
-                                    font-size: 16px;
+                                    // margin-right: 10px;
+                                    // font-size: 16px;
                                     color: $theme_color;
                                     font-weight: bold;
                                     cursor: pointer;
@@ -219,31 +216,31 @@
                         .post-info {
                             display: flex;
                             flex-direction: row;
-                            align-items: center;
+                            // align-items: center;
 
-                            img {
-                                width: 20px;
-                                height: 20px;
-                            }
+                            // img {
+                            //     width: 20px;
+                            //     height: 20px;
+                            // }
 
-                            span {
-                                font-size: 14px;
-                            }
+                            // span {
+                            //     font-size: 14px;
+                            // }
 
                             .likes, .comments {
                                 display: flex;
                                 flex-direction: row;
                                 align-items: center;
-                                margin-left: 30px;
+                                // margin-left: 30px;
 
                                 img {
-                                    margin-right: 10px;
+                                    // margin-right: 10px;
                                     cursor: pointer;
                                 }
                             }
 
                             .likes img {
-                                transform: translateY(-2px);
+                                // transform: translateY(-2px);
 
                                 &.hide {
                                     display: none;
@@ -255,7 +252,7 @@
                                 background-color: transparent;
                                 border: none;
                                 cursor: pointer;
-                                margin-left: 30px;
+                                // margin-left: 30px;
 
                                 &:focus {
                                     outline: none;
@@ -384,6 +381,253 @@
 
                     &:hover {
                         background-color: #a93e3e;
+                    }
+                }
+            }
+        }
+
+        // RESPONSIVENESS
+        @media screen and (min-width: 250px) {
+            #account-page-tabs {
+                button {
+                    font-size: 16px;
+                    padding: 10px 5px;
+                    width: 100%;
+                }
+            }
+
+            #account-page-profile {
+                #account-page-profile-cover {
+                    width: 100%;
+                    height: 200px;
+                }
+
+                #account-page-profile-info-container {
+                    padding: 25px;
+                    align-items: center;
+                    justify-content: center;
+
+                    #account-page-profile-picture {
+                        width: 80px;
+                        height: 80px;
+                        border-radius: 50%;
+                    }
+
+                    #account-page-profile-info {
+                        width: fit-content;
+                        margin-left: 20px;
+
+                        span {
+                            font-size: 15px;
+                            margin-bottom: 10px;
+                        }
+
+                        div {
+                            flex-direction: column;
+
+                            .profile-counts {
+                                display: flex;
+                                flex-direction: row;
+
+                                &:not(:last-child) {
+                                    margin-right: 20px;
+                                }
+
+                                span {
+                                    font-size: 15px;
+
+                                    &:first-child {
+                                        margin-right: 5px;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                #account-page-profile-lists {
+                    #account-page-following-list, #account-page-followers-list {
+                        padding: 0 20px;
+
+                        h1 {
+                            font-size: 20px;
+                            margin-bottom: 30px;
+                        }
+
+                        .users-list {
+                            .user {
+                                margin-bottom: 30px;
+
+                                img {
+                                    width: 70px;
+                                    height: 70px;
+                                    border-radius: 50%;
+                                }
+
+                                span {
+                                    font-size: 16px;
+                                    margin-left: 15px;
+                                }
+
+                                button {
+                                    font-size: 14px;
+                                    padding: 10px 20px;
+                                }
+                            }
+                        }
+
+                        .account-page-lists-show-more {
+                            font-size: 16px;
+                            margin-top: 20px;
+                        }
+                    }
+
+                    #account-page-posts-list {
+                        .post {
+                            padding: 20px 30px 30px;
+
+                            .user-info {
+                                img {
+                                    border-radius: 50%;
+                                    width: 40px;
+                                    height: 40px;
+                                    margin-right: 15px;
+                                }
+
+                                span {
+                                    font-size: 15px;
+                                }
+                            }
+
+                            .post-content {
+                                margin-bottom: 30px;
+
+                                p {
+                                    font-size: 18px;
+                                    margin-bottom: 20px;
+                                }
+
+                                img, video {
+                                    width: 100%;
+                                    max-width: 200px;
+                                }
+
+                                ul {
+                                    margin-top: 30px;
+                                    padding: 0;
+
+                                    li {
+                                        margin-right: 10px;
+                                        font-size: 15px;
+                                    }
+                                }
+                            }
+
+                            .post-info {
+                                flex-direction: column;
+
+                                & > *:not(:last-child) {
+                                    margin-bottom: 20px;
+                                }
+
+                                img {
+                                    width: 20px;
+                                    height: 20px;
+                                }
+
+                                span {
+                                    font-size: 14px;
+                                }
+
+                                .likes, .comments {
+                                    img {
+                                        margin-right: 10px;
+                                    }
+                                }
+
+                                .likes img {
+                                    transform: translateY(-2px);
+                                }
+
+                                & > button {
+                                    margin-top: 20px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        @media screen and (min-width: 350px) {
+            #account-page-profile {
+                #account-page-profile-info-container {
+                    #account-page-profile-picture {
+                        width: 100px;
+                        height: 100px;
+                    }
+
+                    #account-page-profile-info {
+                        margin-left: 40px;
+                    }
+                }
+
+                #account-page-profile-lists {
+                    #account-page-posts-list {
+                        .post {
+                            .post-info {
+                                flex-direction: row;
+
+                                & > *:not(:last-child) {
+                                    margin-bottom: 0px;
+                                    margin-right: 20px;
+                                }
+
+                                & > button {
+                                    margin-top: 0px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        @media screen and (min-width: 500px) {
+            #account-page-profile {
+                #account-page-profile-info-container {
+                    justify-content: left;
+
+                    #account-page-profile-picture {
+                        width: 80px;
+                        height: 80px;
+                    }
+
+                    #account-page-profile-info {
+                        margin-left: 30px;
+
+                        div {
+                            flex-direction: row;
+                        }
+                    }
+                }
+
+                #account-page-profile-lists {
+                    #account-page-posts-list {
+                        .post {
+                            .post-content {
+                                img, video {
+                                    width: 100%;
+                                    max-width: 250px;
+                                }
+                            }
+
+                            .post-info {
+                                & > *:not(:last-child) {
+                                    margin-right: 40px;
+                                }
+                            }
+                        }
                     }
                 }
             }
