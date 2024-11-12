@@ -236,45 +236,24 @@
 
         #account-page-settings {
             .settings-group {
-                padding: 20px;
-
-                h1 {
-                    margin: 0;
-                    font-size: 24px;
-                }
-
                 &:not(:last-child) {
                     border-bottom: thin solid $main_screen_division_line_color;
                 }
             }
 
             #account-page-settings-general {
-                h1 {
-                    margin-bottom: 30px;
-                }
-
                 .file-upload-container {
                     display: flex;
                     flex-direction: column;
-                    margin-bottom: 50px;
-
-                    span {
-                        margin-bottom: 10px;
-                        font-size: 16px;
-                    }
 
                     div {
                         display: flex;
                         flex-direction: row;
 
                         button {
-                            font-size: 14px;
-                            padding: 10px;
-                            border-radius: 5px;
                             cursor: pointer;
 
                             &:first-child {
-                                margin-right: 15px;
                                 border: none;
                                 color: #fff;
                                 background-color: #000;
@@ -295,9 +274,6 @@
 
                     input {
                         border: thin solid gray;
-                        margin-bottom: 30px;
-                        font-size: 14px;
-                        padding: 10px;
 
                         &:focus {
                             outline: none;
@@ -306,8 +282,6 @@
 
                     span {
                         color: $error_color;
-                        font-size: 15px;
-                        margin-bottom: 30px;
 
                         &.success {
                             color: #4677e1;
@@ -320,9 +294,6 @@
                         width: fit-content;
                         border: none;
                         cursor: pointer;
-                        padding: 10px 20px;
-                        margin-top: 20px;
-                        font-size: 16px;
 
                         &:hover {
                             background-color: $theme_color_darkened;
@@ -332,21 +303,10 @@
             }
 
             #account-page-settings-account-deletion {
-                h1 {
-                    margin-bottom: 10px;
-                }
-
-                p {
-                    line-height: 150%;
-                }
-
                 button {
                     background-color: $error_color;
                     color: #fff;
                     border: none;
-                    font-size: 16px;
-                    margin-top: 20px;
-                    padding: 10px 20px;
                     cursor: pointer;
 
                     &:hover {
@@ -529,6 +489,80 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            #account-page-settings {
+                .settings-group {
+                    padding: 20px;
+
+                    h1 {
+                        margin: 0;
+                        font-size: 22px;
+                    }
+                }
+
+                #account-page-settings-general {
+                    h1 {
+                        margin-bottom: 30px;
+                    }
+
+                    .file-upload-container {
+                        margin-bottom: 50px;
+
+                        span {
+                            margin-bottom: 10px;
+                            font-size: 14px;
+                        }
+
+                        div {
+                            button {
+                                font-size: 12px;
+                                padding: 10px;
+                                border-radius: 5px;
+
+                                &:first-child {
+                                    margin-right: 15px;
+                                }
+                            }
+                        }
+                    }
+
+                    form {
+                        input {
+                            margin-bottom: 30px;
+                            font-size: 12px;
+                            padding: 8px;
+                        }
+
+                        span {
+                            font-size: 14px;
+                            margin-bottom: 30px;
+                        }
+
+                        button {
+                            padding: 10px 20px;
+                            margin-top: 20px;
+                            font-size: 15px;
+                        }
+                    }
+                }
+
+                #account-page-settings-account-deletion {
+                    h1 {
+                        margin-bottom: 10px;
+                    }
+
+                    p {
+                        line-height: 150%;
+                        font-size: 14px;
+                    }
+
+                    button {
+                        font-size: 15px;
+                        margin-top: 20px;
+                        padding: 10px 20px;
                     }
                 }
             }
