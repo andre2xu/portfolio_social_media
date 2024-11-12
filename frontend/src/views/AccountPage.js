@@ -7,13 +7,13 @@ import NoFill_Icon_Message from '../static/icons/Icon_Message_NoFill.svg';
 
 function AccountPage() {
     return (
-        <div id='account-page' className=''>
+        <div id='account-page' className='hide'>
             <div id='account-page-tabs'>
                 <button>Profile</button>
                 <button>Settings</button>
             </div>
 
-            <div id='account-page-profile' className='hide'>
+            <div id='account-page-profile' className=''>
                 <div id='account-page-profile-cover'></div>
 
                 <div id='account-page-profile-info-container'>
@@ -219,7 +219,7 @@ function AccountPage() {
                 </div>
             </div>
 
-            <div id='account-page-settings' className=''>
+            <div id='account-page-settings' className='hide'>
                 <div id='account-page-settings-general' className='settings-group'>
                     <h1>General</h1>
 
