@@ -209,6 +209,47 @@
                     }
                 }
             }
+
+            #notifications-page-settings {
+                .settings-group {
+                    margin-bottom: 0.5vw;
+                    padding: 0.5vw 1vw;
+                    padding-bottom: 1.5vw;
+
+                    h1 {
+                        font-size: 1.1vw;
+                    }
+
+                    .setting {
+                        &:not(:last-child) {
+                            margin-bottom: 0.5vw;
+                        }
+
+                        p {
+                            font-size: 0.8vw;
+                        }
+
+                        .toggle-button {
+                            $tb_height: 1vw;
+                            $tb_border_radius: 2.5vw;
+
+                            width: 2.25vw;
+                            height: $tb_height;
+                            border-radius: $tb_border_radius;
+
+                            .bar {
+                                border-top-left-radius: $tb_border_radius;
+                                border-bottom-left-radius: $tb_border_radius;
+                            }
+
+                            .thumb {
+                                height: $tb_height;
+                                width: $tb_height;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
