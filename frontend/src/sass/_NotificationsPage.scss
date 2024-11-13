@@ -12,14 +12,10 @@
             justify-content: center;
             align-items: center;
             border-bottom: thin solid $main_screen_division_line_color;
-            margin-bottom: 20px;
 
             button {
                 background-color: transparent;
                 border: none;
-                font-size: 18px;
-                padding: 10px 5px;
-                width: 100%;
                 text-align: center;
                 color: $theme_color;
                 cursor: pointer;
@@ -34,26 +30,15 @@
             .notification {
                 display: flex;
                 flex-direction: column;
-                margin-bottom: 10px;
-                padding: 15px;
                 cursor: pointer;
 
                 &:not(:last-child) {
                     border-bottom: thin solid $main_screen_division_line_color;
                 }
 
-                h1 {
-                    margin: 0;
-                    margin-bottom: 5px;
-                    font-size: 20px;
-                }
-
                 p {
-                    font-size: 16px;
-                    margin: 0;
                     overflow: hidden;
                     text-overflow: ellipsis;
-                    line-height: 150%;
                 }
             }
         }
@@ -117,6 +102,65 @@
                             background-color: #fbfbfb;
                             outline: thin solid #dadada;
                         }
+                    }
+                }
+            }
+        }
+
+        // RESPONSIVENESS
+        @media screen and (min-width: 250px) {
+            #notifications-page-tabs {
+                margin-bottom: 15px;
+
+                button {
+                    font-size: 16px;
+                    padding: 10px 5px;
+                    width: 100%;
+                }
+            }
+
+            #notifications-page-messages {
+                .notification {
+                    margin-bottom: 10px;
+                    padding: 15px;
+
+                    h1 {
+                        margin: 0;
+                        margin-bottom: 5px;
+                        font-size: 18px;
+                    }
+
+                    p {
+                        font-size: 15px;
+                        margin: 0;
+                        line-height: 150%;
+                    }
+                }
+            }
+        }
+
+        @media screen and (min-width: 2000px) {
+            #notifications-page-tabs {
+                margin-bottom: 0.75vw;
+
+                button {
+                    font-size: 0.8vw;
+                    padding: 0.5vw 0.25vw;
+                }
+            }
+
+            #notifications-page-messages {
+                .notification {
+                    margin-bottom: 0.5vw;
+                    padding: 0.75vw;
+
+                    h1 {
+                        margin-bottom: 0.25vw;
+                        font-size: 0.9vw;
+                    }
+
+                    p {
+                        font-size: 0.75vw;
                     }
                 }
             }
