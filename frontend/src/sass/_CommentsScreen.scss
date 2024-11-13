@@ -236,6 +236,10 @@
                                     margin-right: 8px;
                                 }
 
+                                span {
+                                    font-size: 13px;
+                                }
+
                                 &.dislikes {
                                     margin-left: 30px;
 
@@ -261,10 +265,24 @@
                     }
                 }
 
+                .post-content {
+                    img, video {
+                        max-width: 300px;
+                    }
+
+                    ul li {
+                        font-size: 16px;
+                    }
+                }
+
                 .post-info {
                     img {
                         width: 20px;
                         height: 20px;
+                    }
+
+                    span {
+                        font-size: 15px;
                     }
 
                     .likes, .comments {
@@ -290,6 +308,145 @@
                             span {
                                 &:last-child {
                                     margin-left: 10px;
+                                }
+                            }
+                        }
+
+                        .comment-likes-dislikes {
+                            div {
+                                img {
+                                    width: 16px;
+                                    height: 16px;
+                                    margin-right: 10px;
+                                }
+
+                                span {
+                                    font-size: 15px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        @media screen and (min-width: 2000px) {
+            #comments-screen-post {
+                padding: 1vw 1.5vw 1.5vw;
+
+                & > button {
+                    font-size: 1.5vw;
+                    margin-bottom: 1.5vw;
+                    transform: translateX(-0.5vw);
+                }
+
+                .user-info {
+                    img {
+                        width: 2vw;
+                        height: 2vw;
+                        margin-right: 0.75vw;
+                    }
+
+                    span {
+                        font-size: 0.75vw;
+                    }
+                }
+
+                .post-content {
+                    margin-bottom: 1.5vw;
+
+                    p {
+                        font-size: 0.9vw;
+                        margin-bottom: 1vw;
+                    }
+
+                    img, video {
+                        max-width: 15vw;
+                    }
+
+                    ul {
+                        margin-top: 1.5vw;
+
+                        li {
+                            margin-right: 0.5vw;
+                            font-size: 0.8vw;
+                        }
+                    }
+                }
+
+                .post-info {
+                    img {
+                        width: 1vw;
+                        height: 1vw;
+                    }
+
+                    span {
+                        font-size: 0.75vw;
+                    }
+
+                    .likes, .comments {
+                        margin-left: 1.5vw;
+
+                        img {
+                            margin-right: 0.5vw;
+                        }
+                    }
+
+                    .likes img {
+                        transform: translateY(-0.1vw);
+                    }
+                }
+            }
+
+            #comments-screen-comments {
+                h1 {
+                    margin: 1vw 1vw 0.5vw;
+                    font-size: 1.1vw;
+                }
+
+                .comment {
+                    padding: 1.5vw 1vw;
+
+                    & > img {
+                        width: 2.5vw;
+                        height: 2.5vw;
+                    }
+
+                    & > div {
+                        padding: 0 1vw;
+
+                        .comment-info {
+                            margin-bottom: 0.5vw;
+
+                            span {
+                                font-size: 0.75vw;
+                                margin-top: 0.25vw;
+
+                                &:last-child {
+                                    margin-left: 0.5vw;
+                                }
+                            }
+                        }
+
+                        p {
+                            font-size: 0.75vw;
+                            margin-bottom: 2vw;
+                        }
+
+                        .comment-likes-dislikes {
+                            div {
+                                img {
+                                    width: 0.8vw;
+                                    height: 0.8vw;
+                                    margin-right: 0.5vw;
+                                }
+
+                                span {
+                                    font-size: 0.75vw;
+                                }
+
+                                &.dislikes {
+                                    margin-left: 1.5vw;
                                 }
                             }
                         }
