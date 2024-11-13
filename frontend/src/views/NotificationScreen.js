@@ -1,6 +1,6 @@
 function NotificationScreen() {
     return (
-        <div id='notification-screen' className='hide'>
+        <div id='notification-screen' className=''>
             <button>&larr;</button>
 
             <h1>Notification Title</h1>

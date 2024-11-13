@@ -1,12 +1,12 @@
 function NotificationsPage() {
     return (
-        <div id='notifications-page' className=''>
+        <div id='notifications-page' className='hide'>
             <div id='notifications-page-tabs'>
                 <button>Notifications</button>
                 <button>Settings</button>
             </div>
 
-            <div id='notifications-page-messages' className='hide'>
+            <div id='notifications-page-messages' className=''>
                 <div className='notification'>
                     <h1>Notification Title</h1>
                     <p>This is the notification body</p>
@@ -23,7 +23,7 @@ function NotificationsPage() {
                 </div>
             </div>
 
-            <div id='notifications-page-settings' className=''>
+            <div id='notifications-page-settings' className='hide'>
                 <div className='settings-group'>
                     <h1>Chats</h1>
 
