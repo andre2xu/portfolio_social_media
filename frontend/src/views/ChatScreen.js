@@ -1,6 +1,6 @@
 function ChatScreen() {
     return (
-        <div id='chat-screen' className='hide'>
+        <div id='chat-screen' className=''>
             <div id='chat-screen-chat-info'>
                 <button>&larr;</button>
 
