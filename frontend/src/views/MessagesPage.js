@@ -32,7 +32,7 @@ function MessagesPage() {
                         <span className='chat-info-username'>@Username</span>
                         <span className='chat-info-chat-name'>Chat Name</span>
 
-                        <p>awidfunbiushfiuhdjunqwiouuwjhduhfwihubivcqmwpqifjieiqj0fe</p>
+                        <p>iwjdijq0ijdq0wjd0qwjd0qwjd0q8wdj8qww0juwqd8w08qdd8jwq8dh08wq08hdhqw0h8dh80qwd</p>
                     </div>
 
                     <button>X</button>
