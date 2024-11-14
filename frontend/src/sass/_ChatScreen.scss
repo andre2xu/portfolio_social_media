@@ -9,51 +9,27 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 10px;
             border-bottom: thin solid $main_screen_division_line_color;
             position: relative;
 
             button {
                 position: absolute;
-                left: 10px;
-                top: 50%;
-                transform: translateY(-50%);
                 cursor: pointer;
                 background-color: transparent;
                 border: none;
-                font-size: 40px;
                 color: #c4c4c4;
             }
 
-            h1 {
-                font-size: 24px;
-                margin: 0;
-                margin-bottom: 5px;
-            }
-
             h2 {
-                font-size: 16px;
                 font-weight: normal;
-                margin: 0;
             }
         }
 
         #chat-screen-conversation {
             display: flex;
             flex-direction: column;
-            padding: 20px 10px;
             overflow: hidden;
             overflow-y: auto;
-            height: 80vh;
-
-            .message {
-                font-size: 16px;
-                width: 40%;
-                border-radius: 10px;
-                margin-bottom: 50px;
-                padding: 15px;
-                line-height: 150%;
-            }
 
             .sender {
                 background-color: $theme_color;
@@ -71,13 +47,8 @@
             display: flex;
             flex-direction: row;
             border-top: thin solid $main_screen_division_line_color;
-            padding: 15px 10px;
 
             input {
-                width: 100%;
-                margin-right: 10px;
-                font-size: 16px;
-                padding: 5px;
                 border: thin solid gray;
 
                 &:focus {
@@ -90,11 +61,64 @@
                 border: none;
                 color: #fff;
                 cursor: pointer;
-                padding: 10px 20px;
-                font-size: 14px;
 
                 &:hover {
                     background-color: $theme_color_darkened;
+                }
+            }
+        }
+
+        // RESPONSIVENESS
+        @media screen and (min-width: 250px) {
+            #chat-screen-chat-info {
+                padding: 10px 5px;
+
+                button {
+                    left: 10px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    font-size: 30px;
+                }
+
+                h1 {
+                    font-size: 20px;
+                    margin: 0;
+                    margin-bottom: 5px;
+                }
+
+                h2 {
+                    font-size: 15px;
+                    margin: 0;
+                }
+            }
+
+            #chat-screen-conversation {
+                padding: 20px 10px;
+                height: 80vh;
+
+                .message {
+                    font-size: 15px;
+                    width: 40%;
+                    border-radius: 10px;
+                    margin-bottom: 50px;
+                    padding: 15px;
+                    line-height: 150%;
+                }
+            }
+
+            #chat-screen-message-form {
+                padding: 15px 10px;
+
+                input {
+                    width: 100%;
+                    margin-right: 10px;
+                    font-size: 15px;
+                    padding: 5px 10px;
+                }
+
+                button {
+                    padding: 10px 20px;
+                    font-size: 14px;
                 }
             }
         }
