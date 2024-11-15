@@ -107,6 +107,10 @@
                         flex-direction: column;
                         border-bottom: thin solid $main_screen_division_line_color;
 
+                        &.hide {
+                            display: none;
+                        }
+
                         textarea {
                             font-family: Arial, Helvetica, sans-serif;
                             resize: none;
