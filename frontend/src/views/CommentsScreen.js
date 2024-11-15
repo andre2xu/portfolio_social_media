@@ -7,7 +7,7 @@ import NoFill_Icon_Message from '../static/icons/Icon_Message_NoFill.svg';
 
 function Comments() {
     return (
-        <div id='comments-screen' className='hide'>
+        <div id='comments-screen' className=''>
             <article id='comments-screen-post'>
                 <button>&larr;</button>
 
