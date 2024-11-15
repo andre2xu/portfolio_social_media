@@ -107,6 +107,8 @@ function AccountPage() {
                     </section>
 
                     <div id='account-page-posts-list' className=''>
+                        {/* NOTE: the post form AND the 'delete' option in posts should only appear when the user that's logged in is viewing their own profile */}
+
                         <form id='account-page-post-form' action='/' method='post' encType='multipart/form-data'>
                             <textarea name='postBody' placeholder='Enter post body'></textarea>
 
