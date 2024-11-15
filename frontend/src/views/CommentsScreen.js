@@ -45,6 +45,13 @@ function Comments() {
                 </div>
             </article>
 
+            {/* NOTE: the reply form should only appear when the user is logged in */}
+            <form id='comments-screen-reply-form' action='/' method='post'>
+                <input type='text' name='replyBody' placeholder='Write your reply here' />
+
+                <button type='submit'>Send</button>
+            </form>
+
             <section id='comments-screen-comments'>
                 <h1>Comments</h1>
 
