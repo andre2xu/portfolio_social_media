@@ -27,7 +27,7 @@ import CommentsScreen from './CommentsScreen';
 function MainScreen() {
     return (
         <div id='main-screen'>
-            <div id='main-screen-dialog'>
+            <div id='main-screen-dialog' className='hide'>
                 <p>Are you sure you want to proceed with this action?</p>
 
                 <div>

@@ -20,6 +20,10 @@
             background-color: #f8f8f8;
             border: thin solid #000;
 
+            &.hide {
+                display: none;
+            }
+
             div {
                 display: flex;
                 margin-left: auto;
