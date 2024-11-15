@@ -102,6 +102,46 @@
                         display: none;
                     }
 
+                    #account-page-post-form {
+                        display: flex;
+                        flex-direction: column;
+                        border-bottom: thin solid $main_screen_division_line_color;
+
+                        textarea {
+                            font-family: Arial, Helvetica, sans-serif;
+                            resize: none;
+                        }
+
+                        textarea, input {
+                            &:focus {
+                                outline: none;
+                            }
+                        }
+
+                        div {
+                            display: flex;
+
+                            button {
+                                background-color: $theme_color;
+                                color: #fff;
+                                border: none;
+                                cursor: pointer;
+
+                                &:hover {
+                                    background-color: $theme_color_darkened;
+                                }
+                            }
+                        }
+
+                        #account-page-post-form-error {
+                            color: $error_color;
+
+                            &.hide {
+                                display: none;
+                            }
+                        }
+                    }
+
                     .post {
                         &:not(:last-child) {
                             border-bottom: thin solid $main_screen_division_line_color;
@@ -357,6 +397,38 @@
                     }
 
                     #account-page-posts-list {
+                        #account-page-post-form {
+                            padding: 20px 10px;
+
+                            & > * {
+                                margin-bottom: 15px;
+                            }
+
+                            textarea, input {
+                                padding: 5px;
+                                font-size: 14px;
+                            }
+
+                            textarea {
+                                height: 100px;
+                            }
+
+                            div {
+                                flex-direction: column;
+
+                                button {
+                                    margin-top: 30px;
+                                    padding: 10px 15px;
+                                    font-size: 15px;
+                                }
+                            }
+
+                            #account-page-post-form-error {
+                                margin-top: 15px;
+                                font-size: 15px;
+                            }
+                        }
+
                         .post {
                             padding: 20px 30px 30px;
 
@@ -598,6 +670,22 @@
                     }
 
                     #account-page-posts-list {
+                        #account-page-post-form {
+                            padding: 20px;
+
+                            div {
+                                flex-direction: row;
+                                align-items: center;
+                                margin-top: 20px;
+
+                                button {
+                                    margin-top: 0;
+                                    margin-left: auto;
+                                    padding: 10px 20px;
+                                }
+                            }
+                        }
+
                         .post {
                             .post-content {
                                 img, video {

@@ -107,6 +107,20 @@ function AccountPage() {
                     </section>
 
                     <div id='account-page-posts-list' className=''>
+                        <form id='account-page-post-form' action='/' method='post' encType='multipart/form-data'>
+                            <textarea name='postBody' placeholder='Enter post body'></textarea>
+
+                            <input type='text' name='postTags' placeholder='tag1, tag2, tag3, ...' />
+
+                            <div>
+                                <input type='file' name='postMedia' accept='image/png, image/jpg, image/jpeg, image/gif' />
+
+                                <button type='submit'>Post</button>
+                            </div>
+
+                            <span id='account-page-post-form-error' className='hide'>Error message</span>
+                        </form>
+
                         <article className='post'>
                             <div className='user-info'>
                                 <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
