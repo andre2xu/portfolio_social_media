@@ -50,16 +50,9 @@
 
             #account-page-profile-lists {
                 #account-page-following-list, #account-page-followers-list {
-                    // padding: 0 20px;
-
                     &.hide {
                         display: none;
                     }
-
-                    // h1 {
-                    //     font-size: 20px;
-                    //     margin-bottom: 30px;
-                    // }
 
                     .users-list {
                         display: flex;
@@ -69,17 +62,8 @@
                             display: flex;
                             flex-direction: row;
                             align-items: center;
-                            // margin-bottom: 30px;
-
-                            // img {
-                            //     width: 70px;
-                            //     height: 70px;
-                            //     border-radius: 50%;
-                            // }
 
                             span {
-                                // font-size: 16px;
-                                // margin-left: 15px;
                                 cursor: pointer;
                             }
 
@@ -88,8 +72,6 @@
                                 border: none;
                                 color: #fff;
                                 background-color: #000;
-                                // font-size: 14px;
-                                // padding: 10px 20px;
                                 cursor: pointer;
 
                                 &:hover {
@@ -103,8 +85,6 @@
                         background-color: transparent;
                         border: none;
                         color: $theme_color;
-                        // font-size: 16px;
-                        // margin-top: 20px;
                         cursor: pointer;
 
                         &.hide {
@@ -127,51 +107,26 @@
                             border-bottom: thin solid $main_screen_division_line_color;
                         }
 
-                        // padding: 20px 30px 30px;
-
                         .user-info {
                             display: flex;
                             flex-direction: row;
                             align-items: center;
 
                             img {
-                                // border-radius: 50%;
-                                // width: 40px;
-                                // height: 40px;
-                                // margin-right: 15px;
                                 cursor: pointer;
                             }
-
-                            // span {
-                            //     font-size: 16px;
-                            // }
                         }
 
                         .post-content {
                             display: flex;
                             flex-direction: column;
-                            // margin-bottom: 30px;
-
-                            // p {
-                            //     font-size: 20px;
-                            //     margin-bottom: 20px;
-                            // }
-
-                            // img, video {
-                            //     width: 50%;
-                            //     max-width: 300px;
-                            // }
 
                             ul {
-                                // margin-top: 30px;
-                                // padding: 0;
                                 list-style: none;
                                 display: flex;
                                 flex-direction: row;
 
                                 li {
-                                    // margin-right: 10px;
-                                    // font-size: 16px;
                                     color: $theme_color;
                                     font-weight: bold;
                                     cursor: pointer;
@@ -186,32 +141,18 @@
                         .post-info {
                             display: flex;
                             flex-direction: row;
-                            // align-items: center;
-
-                            // img {
-                            //     width: 20px;
-                            //     height: 20px;
-                            // }
-
-                            // span {
-                            //     font-size: 14px;
-                            // }
 
                             .likes, .comments {
                                 display: flex;
                                 flex-direction: row;
                                 align-items: center;
-                                // margin-left: 30px;
 
                                 img {
-                                    // margin-right: 10px;
                                     cursor: pointer;
                                 }
                             }
 
                             .likes img {
-                                // transform: translateY(-2px);
-
                                 &.hide {
                                     display: none;
                                 }
@@ -222,7 +163,6 @@
                                 background-color: transparent;
                                 border: none;
                                 cursor: pointer;
-                                // margin-left: 30px;
 
                                 &:focus {
                                     outline: none;
