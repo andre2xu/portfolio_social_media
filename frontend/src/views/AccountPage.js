@@ -118,7 +118,7 @@ function AccountPage() {
                                 <button type='submit'>Post</button>
                             </div>
 
-                            <span id='account-page-post-form-error' className='hide'>Error message</span>
+                            <span id='account-page-post-form-error' className=''>Error message</span>
                         </form>
 
                         <article className='post'>

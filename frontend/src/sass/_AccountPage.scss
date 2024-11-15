@@ -113,9 +113,15 @@
                         }
 
                         textarea, input {
+                            border: thin solid #b9b9b9;
+
                             &:focus {
                                 outline: none;
                             }
+                        }
+
+                        input[type="file"] {
+                            border: none;
                         }
 
                         div {
@@ -788,6 +794,37 @@
                     }
 
                     #account-page-posts-list {
+                        #account-page-post-form {
+                            padding: 1vw;
+
+                            & > * {
+                                margin-bottom: 0.75vw;
+                            }
+
+                            textarea, input {
+                                padding: 0.25vw;
+                                font-size: 0.7vw;
+                            }
+
+                            textarea {
+                                height: 5vw;
+                            }
+
+                            div {
+                                margin-top: 1vw;
+
+                                button {
+                                    padding: 0.5vw 1vw;
+                                    font-size: 0.75vw;
+                                }
+                            }
+
+                            #account-page-post-form-error {
+                                margin-top: 0.75vw;
+                                font-size: 0.75vw;
+                            }
+                        }
+
                         .post {
                             padding: 1vw 1.5vw 1.5vw;
 
