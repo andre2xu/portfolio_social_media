@@ -13,6 +13,41 @@
         flex-direction: column;
         font-family: Arial, Helvetica, sans-serif;
 
+        #main-screen-dialog {
+            position: fixed;
+            display: flex;
+            flex-direction: column;
+            background-color: #f8f8f8;
+            border: thin solid #000;
+
+            div {
+                display: flex;
+                margin-left: auto;
+
+                button {
+                    border: none;
+                    cursor: pointer;
+
+                    &:first-child {
+                        background-color: $error_color;
+                        color: #fff;
+
+                        &:hover {
+                            background-color: #b14242;
+                        }
+                    }
+
+                    &:last-child {
+                        background-color: #d7d7d7;
+
+                        &:hover {
+                            background-color: #c8c8c8;
+                        }
+                    }
+                }
+            }
+        }
+
         #mobile-title-bar {
             display: flex;
             justify-content: center;
@@ -128,6 +163,37 @@
 
         // RESPONSIVENESS
         @media screen and (min-width: 250px) {
+            #main-screen-dialog {
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                padding: 30px 20px 40px;
+                border-radius: 10px;
+                z-index: 100;
+                width: 60%;
+
+                p {
+                    line-height: 150%;
+                    font-size: 16px;
+                    text-align: center;
+                }
+
+                div {
+                    flex-direction: column-reverse;
+                    margin: 20px auto 0;
+
+                    button {
+                        font-size: 16px;
+                        padding: 10px 15px;
+                        width: 100%;
+
+                        &:first-child {
+                            margin-top: 15px;
+                        }
+                    }
+                }
+            }
+
             main {
                 min-width: 0;
                 border: none;
@@ -201,6 +267,30 @@
 
         @media screen and (min-width: 400px) {
             flex-direction: row;
+
+            #main-screen-dialog {
+                padding: 40px 30px 30px;
+                width: 60%;
+                max-width: 300px;
+
+                p {
+                    text-align: left;
+                }
+
+                div {
+                    flex-direction: row;
+                    margin: 0;
+                    margin-top: 20px;
+                    margin-left: auto;
+
+                    button {
+                        &:first-child {
+                            margin-top: 0;
+                            margin-right: 15px;
+                        }
+                    }
+                }
+            }
 
             #mobile-title-bar, #mobile-navbar {
                 display: none;

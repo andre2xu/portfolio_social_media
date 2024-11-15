@@ -27,6 +27,15 @@ import CommentsScreen from './CommentsScreen';
 function MainScreen() {
     return (
         <div id='main-screen'>
+            <div id='main-screen-dialog'>
+                <p>Are you sure you want to proceed with this action?</p>
+
+                <div>
+                    <button>Cancel</button>
+                    <button>Yes</button>
+                </div>
+            </div>
+
             <div id='mobile-title-bar'>
                 <h1>My Account</h1>
             </div>
