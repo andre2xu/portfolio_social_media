@@ -1,3 +1,5 @@
+import React from 'react';
+import $ from 'jquery';
 import { Link } from 'react-router-dom';
 
 // static
@@ -15,6 +17,34 @@ import Icon_Exit from '../static/icons/Icon_Exit.svg';
 
 
 function MainScreen({component}) {
+    React.useEffect(() => {
+        // highlight the navbar button of the current page
+
+        function highlightNavbarButton(_, link) {
+            link = $(link);
+
+            if (link[0].href === window.location.href) {
+                if (link.hasClass('fill')) {
+                    link.removeClass('hide');
+                }
+                else if (link.hasClass('no-fill')) {
+                    link.addClass('hide');
+                }
+            }
+            else {
+                if (link.hasClass('fill')) {
+                    link.addClass('hide');
+                }
+                else if (link.hasClass('no-fill')) {
+                    link.removeClass('hide');
+                }
+            }
+        };
+
+        $(`#side-navbar > a`).each(highlightNavbarButton);
+        $(`#mobile-navbar > a`).each(highlightNavbarButton);
+    });
+
     return (
         <div id='main-screen'>
             <div id='main-screen-dialog' className='hide'>
@@ -83,14 +113,14 @@ function MainScreen({component}) {
             </aside>
 
             <div id='mobile-navbar'>
-                <Link to={'/account'}><img src={NoFill_Icon_Account} alt='Account Icon'></img></Link>
-                <Link to={'/account'} className='hide'><img src={Fill_Icon_Account} alt='Account Icon'></img></Link>
+                <Link to={'/account'} className='no-fill'><img src={NoFill_Icon_Account} alt='Account Icon'></img></Link>
+                <Link to={'/account'} className='fill hide'><img src={Fill_Icon_Account} alt='Account Icon'></img></Link>
 
-                <Link to={'/'}><img src={NoFill_Icon_MagnifyingGlass} alt='Explore Icon'></img></Link>
-                <Link to={'/'} className='hide'><img src={Fill_Icon_MagnifyingGlass} alt='Explore Icon'></img></Link>
+                <Link to={'/'} className='no-fill'><img src={NoFill_Icon_MagnifyingGlass} alt='Explore Icon'></img></Link>
+                <Link to={'/'} className='fill hide'><img src={Fill_Icon_MagnifyingGlass} alt='Explore Icon'></img></Link>
 
-                <Link to={'/account/messages'}><img src={NoFill_Icon_Message} alt='Message Icon'></img></Link>
-                <Link to={'/account/messages'} className='hide'><img src={Fill_Icon_Message} alt='Message Icon'></img></Link>
+                <Link to={'/account/messages'} className='no-fill'><img src={NoFill_Icon_Message} alt='Message Icon'></img></Link>
+                <Link to={'/account/messages'} className='fill hide'><img src={Fill_Icon_Message} alt='Message Icon'></img></Link>
 
                 <Link to={'/logout'}><img src={Icon_Exit} alt='Logout Icon'></img></Link>
             </div>
