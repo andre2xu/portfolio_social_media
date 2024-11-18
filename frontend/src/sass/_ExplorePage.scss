@@ -50,11 +50,13 @@
         }
 
         #explore-page-login-prompt {
-            button {
+            a {
                 background-color: $theme_color;
                 color: #fff;
-                border: none;
                 cursor: pointer;
+                text-decoration: none;
+                display: block;
+                width: fit-content;
 
                 &:hover {
                     background-color: $theme_color_darkened;
@@ -172,7 +174,7 @@
                     font-size: 16px;
                 }
 
-                button {
+                a {
                     padding: 10px 25px;
                     border-radius: 50px;
                     font-size: 16px;
@@ -356,7 +358,7 @@
                     font-size: 0.8vw;
                 }
 
-                button {
+                a {
                     padding: 0.5vw 1.25vw;
                     border-radius: 2.5vw;
                     font-size: 0.8vw;

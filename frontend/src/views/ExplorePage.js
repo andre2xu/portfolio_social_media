@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 // static
 import NoFill_Icon_ThumbsUp from '../static/icons/Icon_ThumbsUp_NoFill.svg';
 import Fill_Icon_ThumbsUp from '../static/icons/Icon_ThumbsUp_Fill.svg';
@@ -31,7 +33,7 @@ function ExplorePage() {
 
             <div id='explore-page-login-prompt'>
                 <p>You need to sign in to make a post</p>
-                <button>Login</button>
+                <Link to={'/login'}>Login</Link>
             </div>
 
             <div id='explore-page-posts'>
