@@ -83,16 +83,16 @@ function MainScreen({component}) {
             </aside>
 
             <div id='mobile-navbar'>
-                <Link to={'/'}><img src={NoFill_Icon_Account} alt='Account Icon'></img></Link>
-                <Link to={'/'} className='hide'><img src={Fill_Icon_Account} alt='Account Icon'></img></Link>
+                <Link to={'/account'}><img src={NoFill_Icon_Account} alt='Account Icon'></img></Link>
+                <Link to={'/account'} className='hide'><img src={Fill_Icon_Account} alt='Account Icon'></img></Link>
 
                 <Link to={'/'}><img src={NoFill_Icon_MagnifyingGlass} alt='Explore Icon'></img></Link>
                 <Link to={'/'} className='hide'><img src={Fill_Icon_MagnifyingGlass} alt='Explore Icon'></img></Link>
 
-                <Link to={'/'}><img src={NoFill_Icon_Message} alt='Message Icon'></img></Link>
-                <Link to={'/'} className='hide'><img src={Fill_Icon_Message} alt='Message Icon'></img></Link>
+                <Link to={'/account/messages'}><img src={NoFill_Icon_Message} alt='Message Icon'></img></Link>
+                <Link to={'/account/messages'} className='hide'><img src={Fill_Icon_Message} alt='Message Icon'></img></Link>
 
-                <Link to={'/'}><img src={Icon_Exit} alt='Logout Icon'></img></Link>
+                <Link to={'/logout'}><img src={Icon_Exit} alt='Logout Icon'></img></Link>
             </div>
         </div>
     );
