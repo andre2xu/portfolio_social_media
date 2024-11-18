@@ -19,7 +19,8 @@ backend.use(body_parser.urlencoded({extended: true})); // for URL-encoded reques
 backend.use(cookie_parser());
 backend.use(cors({
     origin: ['http://localhost:3000'],
-    optionsSuccessStatus: 200 // for legacy browsers
+    optionsSuccessStatus: 200, // for legacy browsers
+    credentials: true // allow HTTP-only cookies
 }));
 
 // ROUTES
