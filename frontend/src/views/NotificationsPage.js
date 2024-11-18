@@ -1,6 +1,6 @@
 function NotificationsPage() {
     return (
-        <div id='notifications-page' className='hide'>
+        <div id='notifications-page' className=''>
             <div id='notifications-page-tabs'>
                 <button>Notifications</button>
                 <button>Settings</button>
