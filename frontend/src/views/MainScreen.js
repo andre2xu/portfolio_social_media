@@ -111,11 +111,10 @@ function MainScreen() {
                 <Link to={'/'}><img src={NoFill_Icon_MagnifyingGlass} alt='Explore Icon'></img></Link>
                 <Link to={'/'} className='hide'><img src={Fill_Icon_MagnifyingGlass} alt='Explore Icon'></img></Link>
 
-                <Link to={'/'}><img src={NoFill_Icon_Bell} alt='Notifications Icon'></img></Link>
-                <Link to={'/'} className='hide'><img src={Fill_Icon_Bell} alt='Notifications Icon'></img></Link>
-
                 <Link to={'/'}><img src={NoFill_Icon_Message} alt='Message Icon'></img></Link>
                 <Link to={'/'} className='hide'><img src={Fill_Icon_Message} alt='Message Icon'></img></Link>
+
+                <Link to={'/'}><img src={Icon_Exit} alt='Logout Icon'></img></Link>
             </div>
         </div>
     );
