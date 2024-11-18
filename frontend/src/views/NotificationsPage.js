@@ -1,7 +1,24 @@
 function NotificationsPage() {
+    function changeTabs(event) {
+        const NOTIFICATIONS_SECTION = document.getElementById('notifications-page-messages');
+        const SETTINGS_SECTION = document.getElementById('notifications-page-settings');
+
+        switch (event.target.innerText) {
+            case 'Notifications':
+                NOTIFICATIONS_SECTION.classList.remove('hide');
+                SETTINGS_SECTION.classList.add('hide');
+                break;
+            case 'Settings':
+                SETTINGS_SECTION.classList.remove('hide');
+                NOTIFICATIONS_SECTION.classList.add('hide');
+                break;
+            default:
+        }
+    };
+
     return (
         <div id='notifications-page' className=''>
-            <div id='notifications-page-tabs'>
+            <div id='notifications-page-tabs' onClick={changeTabs}>
                 <button>Notifications</button>
                 <button>Settings</button>
             </div>
