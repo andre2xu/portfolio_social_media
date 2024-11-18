@@ -8,7 +8,7 @@ import Fill_Icon_MagnifyingGlass from '../static/icons/Icon_MagnifyingGlass_Fill
 
 
 
-function ExplorePage() {
+function ExplorePage({isLoggedIn}) {
     function search(event) {
         event.preventDefault();
     };
@@ -31,10 +31,13 @@ function ExplorePage() {
                 </div>
             </form>
 
-            <div id='explore-page-login-prompt'>
-                <p>You need to sign in to make a post</p>
-                <Link to={'/login'}>Login</Link>
-            </div>
+            { isLoggedIn ?
+                null :
+                <div id='explore-page-login-prompt'>
+                    <p>You need to sign in to make a post</p>
+                    <Link to={'/login'}>Login</Link>
+                </div>
+            }
 
             <div id='explore-page-posts'>
                 <article className='post'>

@@ -1,5 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 // static
@@ -17,6 +18,8 @@ import Icon_Exit from '../static/icons/Icon_Exit.svg';
 
 
 function MainScreen({component}) {
+    const [is_logged_in, setIsLoggedInFlag] = React.useState(false);
+
     React.useEffect(() => {
         // highlight the navbar button of the current page
 
@@ -43,6 +46,15 @@ function MainScreen({component}) {
 
         $(`#side-navbar > a`).each(highlightNavbarButton);
         $(`#mobile-navbar > a`).each(highlightNavbarButton);
+    });
+
+    React.useEffect(() => {
+        axios.post('http://localhost:8010/auth', {}, {withCredentials: true})
+        .then((response) => {
+            if (response.status === 200 && typeof response.data === 'object' && response.data.isAuthenticated) {
+                setIsLoggedInFlag(true);
+            }
+        });
     });
 
     return (
@@ -75,11 +87,11 @@ function MainScreen({component}) {
                 <Link to={'/account/messages'} className='no-fill messages-page'><img src={NoFill_Icon_Message} alt='Message Icon'></img> <span>Messages</span></Link>
                 <Link to={'/account/messages'} className='fill messages-page hide'><img src={Fill_Icon_Message} alt='Message Icon'></img> <span>Messages</span></Link>
 
-                <Link to={'/logout'} className='logout-button'><img src={Icon_Exit} alt='Logout Icon'></img> <span>Log out</span></Link>
+                { is_logged_in ? <Link to={'/logout'} className='logout-button'><img src={Icon_Exit} alt='Logout Icon'></img> <span>Log out</span></Link> : null }
             </nav>
 
             <main>
-                {component}
+                { React.cloneElement(component, {isLoggedIn: is_logged_in}) }
             </main>
 
             <aside>
@@ -122,7 +134,7 @@ function MainScreen({component}) {
                 <Link to={'/account/messages'} className='no-fill'><img src={NoFill_Icon_Message} alt='Message Icon'></img></Link>
                 <Link to={'/account/messages'} className='fill hide'><img src={Fill_Icon_Message} alt='Message Icon'></img></Link>
 
-                <Link to={'/logout'}><img src={Icon_Exit} alt='Logout Icon'></img></Link>
+                { is_logged_in ? <Link to={'/logout'}><img src={Icon_Exit} alt='Logout Icon'></img></Link> : null }
             </div>
         </div>
     );
