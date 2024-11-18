@@ -12,19 +12,9 @@ import NoFill_Icon_Message from '../static/icons/Icon_Message_NoFill.svg';
 import Fill_Icon_Message from '../static/icons/Icon_Message_Fill.svg';
 import Icon_Exit from '../static/icons/Icon_Exit.svg';
 
-// views
-import ExplorePage from './ExplorePage';
-import AccountPage from './AccountPage';
-import MessagesPage from './MessagesPage';
-import NotificationsPage from './NotificationsPage';
-
-import ChatScreen from './ChatScreen';
-import NotificationScreen from './NotificationScreen';
-import CommentsScreen from './CommentsScreen';
 
 
-
-function MainScreen() {
+function MainScreen({component}) {
     return (
         <div id='main-screen'>
             <div id='main-screen-dialog' className='hide'>
@@ -59,19 +49,7 @@ function MainScreen() {
             </nav>
 
             <main>
-                <ExplorePage />
-
-                <CommentsScreen />
-
-                <AccountPage />
-
-                <MessagesPage />
-
-                <NotificationsPage />
-
-                <ChatScreen />
-
-                <NotificationScreen />
+                {component}
             </main>
 
             <aside>

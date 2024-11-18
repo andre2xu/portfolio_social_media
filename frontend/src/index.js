@@ -5,18 +5,24 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 // stylesheets
 import './index.css';
 
-// views
+// general views
 import LoginPage from './views/LoginPage';
 import SignUpPage from './views/SignUpPage';
 import ProtectedRoutes from './components/ProtectedRoutes';
 import MainScreen from './views/MainScreen';
+
+// main screen views
+import ExplorePage from './views/ExplorePage';
+import AccountPage from './views/AccountPage';
+import MessagesPage from './views/MessagesPage';
+import NotificationsPage from './views/NotificationsPage';
 
 
 
 const ROUTER = createBrowserRouter([
   {
     path: '/',
-    element: <MainScreen />
+    element: <MainScreen component={<ExplorePage />} />
   },
   {
     path: '/login',
@@ -31,7 +37,15 @@ const ROUTER = createBrowserRouter([
     children: [
       {
         path: '/account',
-        element: <h1>My account</h1>
+        element: <MainScreen component={<AccountPage />} />
+      },
+      {
+        path: '/account/messages',
+        element: <MainScreen component={<MessagesPage />} />
+      },
+      {
+        path: '/account/notifications',
+        element: <MainScreen component={<NotificationsPage />} />
       }
     ]
   }
