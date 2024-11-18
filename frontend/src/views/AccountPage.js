@@ -6,9 +6,26 @@ import NoFill_Icon_Message from '../static/icons/Icon_Message_NoFill.svg';
 
 
 function AccountPage() {
+    function changeTabs(event) {
+        const PROFILE_SECTION = document.getElementById('account-page-profile');
+        const SETTINGS_SECTION = document.getElementById('account-page-settings');
+
+        switch (event.target.innerText) {
+            case 'Profile':
+                PROFILE_SECTION.classList.remove('hide');
+                SETTINGS_SECTION.classList.add('hide');
+                break;
+            case 'Settings':
+                SETTINGS_SECTION.classList.remove('hide');
+                PROFILE_SECTION.classList.add('hide');
+                break;
+            default:
+        }
+    };
+
     return (
         <div id='account-page' className=''>
-            <div id='account-page-tabs'>
+            <div id='account-page-tabs' onClick={changeTabs}>
                 <button>Profile</button>
                 <button>Settings</button>
             </div>
