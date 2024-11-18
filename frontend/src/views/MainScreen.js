@@ -33,19 +33,19 @@ function MainScreen({component}) {
             <nav id='side-navbar'>
                 <img src={Logo} alt='Logo'></img>
 
-                <Link to={'/'} className='no-fill'><img src={NoFill_Icon_Account} alt='Account Icon'></img> <span>My Account</span></Link>
-                <Link to={'/'} className='fill hide'><img src={Fill_Icon_Account} alt='Account Icon'></img> <span>My Account</span></Link>
+                <Link to={'/account'} className='no-fill'><img src={NoFill_Icon_Account} alt='Account Icon'></img> <span>My Account</span></Link>
+                <Link to={'/account'} className='fill hide'><img src={Fill_Icon_Account} alt='Account Icon'></img> <span>My Account</span></Link>
 
                 <Link to={'/'} className='no-fill'><img src={NoFill_Icon_MagnifyingGlass} alt='Explore Icon'></img> <span>Explore</span></Link>
                 <Link to={'/'} className='fill hide'><img src={Fill_Icon_MagnifyingGlass} alt='Explore Icon'></img> <span>Explore</span></Link>
 
-                <Link to={'/'} className='no-fill'><img src={NoFill_Icon_Bell} alt='Notifications Icon'></img> <span>Notifications</span></Link>
-                <Link to={'/'} className='fill hide'><img src={Fill_Icon_Bell} alt='Notifications Icon'></img> <span>Notifications</span></Link>
+                <Link to={'/account/notifications'} className='no-fill'><img src={NoFill_Icon_Bell} alt='Notifications Icon'></img> <span>Notifications</span></Link>
+                <Link to={'/account/notifications'} className='fill hide'><img src={Fill_Icon_Bell} alt='Notifications Icon'></img> <span>Notifications</span></Link>
 
-                <Link to={'/'} className='no-fill messages-page'><img src={NoFill_Icon_Message} alt='Message Icon'></img> <span>Messages</span></Link>
-                <Link to={'/'} className='fill messages-page hide'><img src={Fill_Icon_Message} alt='Message Icon'></img> <span>Messages</span></Link>
+                <Link to={'/account/messages'} className='no-fill messages-page'><img src={NoFill_Icon_Message} alt='Message Icon'></img> <span>Messages</span></Link>
+                <Link to={'/account/messages'} className='fill messages-page hide'><img src={Fill_Icon_Message} alt='Message Icon'></img> <span>Messages</span></Link>
 
-                <Link to={'/'} className='logout-button'><img src={Icon_Exit} alt='Logout Icon'></img> <span>Log out</span></Link>
+                <Link to={'/logout'} className='logout-button'><img src={Icon_Exit} alt='Logout Icon'></img> <span>Log out</span></Link>
             </nav>
 
             <main>
