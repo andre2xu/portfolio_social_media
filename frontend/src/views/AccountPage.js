@@ -257,7 +257,7 @@ function AccountPage() {
                     <h1>General</h1>
 
                     <div id='account-page-settings-cover' className='file-upload-container'>
-                        <span>File name</span>
+                        <span>No cover selected</span>
 
                         <div>
                             <button>Upload cover</button>
@@ -266,7 +266,7 @@ function AccountPage() {
                     </div>
 
                     <div id='account-page-settings-pfp' className='file-upload-container'>
-                        <span>File name</span>
+                        <span>No photo selected</span>
 
                         <div>
                             <button>Upload photo</button>
