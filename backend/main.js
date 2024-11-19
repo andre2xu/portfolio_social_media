@@ -15,6 +15,7 @@ try {
 catch {}
 
 // CONFIG
+backend.use('/static', express.static('public')); // static folder that's publicly accessible via: [BACKEND_ORIGIN]/static/[SUBDIRECTORY]
 backend.use(body_parser.json()); // for JSON request data
 backend.use(body_parser.urlencoded({extended: true})); // for URL-encoded request data
 backend.use(cookie_parser());
