@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import axios from 'axios';
 
 // static
 import NoFill_Icon_ThumbsUp from '../static/icons/Icon_ThumbsUp_NoFill.svg';
@@ -58,6 +59,18 @@ function AccountPage() {
                 $('#account-page-settings-pfp-filename').text(FORM_FIELD.value.split(/\\|\//).pop());
             }
         }
+    };
+
+    function onSubmit(event) {
+        event.preventDefault();
+
+        const FORM = event.target;
+        const FORM_DATA = new FormData(FORM);
+
+        axios.put(`http://localhost:8010${new URL(FORM.action).pathname}`, FORM_DATA, {withCredentials: true})
+        .then((response) => {
+            console.log(response);
+        });
     };
 
     return (
@@ -311,7 +324,7 @@ function AccountPage() {
                         </div>
                     </div>
 
-                    <form id='account-page-settings-form' action='/' method='post' encType='multipart/form-data' onChange={onChange}>
+                    <form id='account-page-settings-form' action='/account/update' method='post' encType='multipart/form-data' onChange={onChange} onSubmit={onSubmit}>
                         <input type='file' name='cover' hidden aria-hidden />
                         <input type='file' name='pfp' hidden aria-hidden />
 
