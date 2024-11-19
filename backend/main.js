@@ -6,6 +6,7 @@ const multer = require('multer');
 const cookie_parser = require('cookie-parser');
 const cors = require('cors');
 const express = require('express');
+const fs = require('fs');
 const backend = express();
 
 try {
@@ -26,7 +27,8 @@ backend.use(cors({
 }));
 
 // HELPERS
-const userProfileUploads = multer({dest: './public/users/profile'});
+const USER_PROFILE_UPLOADS_FOLDER = './public/users/profile';
+const userProfileUploads = multer({dest: USER_PROFILE_UPLOADS_FOLDER});
 
 function authenticateUser(req) {
     const RESULT = {
@@ -160,8 +162,9 @@ backend.put('/account/update', userProfileUploads.fields([{name: 'cover', maxCou
 
         // update user account data
         const USERS_COLLECTION = req.app.locals.db.collection('Users');
+        const ACCOUNT = await USERS_COLLECTION.findOne({username: AUTHENTICATION_RESULT.tokenData.uid});
 
-        if (await USERS_COLLECTION.findOne({username: AUTHENTICATION_RESULT.tokenData.uid}) !== null) {
+        if (ACCOUNT !== null) {
             const NEW_DATA = {};
 
             // validate new username and queue for update if successful
@@ -185,14 +188,26 @@ backend.put('/account/update', userProfileUploads.fields([{name: 'cover', maxCou
             }
 
             // queue file names of file uploads (if any)
-            if (FORM_FILE_DATA.length > 0) {
-                for (let i=0; i < FORM_FILE_DATA.length; i++) {
-                    const FILE_DATA = FORM_FILE_DATA[i];
+            const UPLOADS = Object.keys(FORM_FILE_DATA);
+
+            if (UPLOADS.length > 0) {
+                for (let i=0; i < UPLOADS.length; i++) {
+                    const FILE_DATA = FORM_FILE_DATA[UPLOADS[i]][0];
 
                     if (FILE_DATA.fieldname === 'cover') {
+                        // delete old cover (if one exists)
+                        if (ACCOUNT.cover.length > 0) {
+                            fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${ACCOUNT.cover}`, () => {});
+                        }
+
                         NEW_DATA.cover = FILE_DATA.filename;
                     }
                     else if (FILE_DATA.fieldname === 'pfp') {
+                        // delete old profile picture (if one exists)
+                        if (ACCOUNT.pfp.length > 0) {
+                            fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${ACCOUNT.pfp}`, () => {});
+                        }
+
                         NEW_DATA.pfp = FILE_DATA.filename;
                     }
                 }
@@ -205,8 +220,10 @@ backend.put('/account/update', userProfileUploads.fields([{name: 'cover', maxCou
                     {$set: NEW_DATA}
                 );
 
-                // update login token
-                generateLoginToken(res, NEW_DATA.username);
+                // update login token if the username changed
+                if (NEW_DATA.username !== undefined) {
+                    generateLoginToken(res, NEW_DATA.username);
+                }
             }
         }
     }
