@@ -51,7 +51,9 @@ backend.post('/signup', async (req, res) => {
 
             await USERS_COLLECTION.insertOne({
                 username: FORM_DATA.username,
-                password: HASHED_PASSWORD
+                password: HASHED_PASSWORD,
+                cover: '', // path to profile background cover
+                pfp: '' // path to profile picture
             });
 
             const TOKEN_EXPIRATION = 60 * 60 * 2;
