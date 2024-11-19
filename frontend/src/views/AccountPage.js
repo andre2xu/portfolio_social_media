@@ -331,7 +331,7 @@ function AccountPage() {
                         <input type='text' name='newUsername' placeholder='New Username' />
                         <input type='password' name='newPassword' placeholder='New Password' />
 
-                        <span id='account-page-settings-form-message' className='success'>Update successful</span>
+                        <span id='account-page-settings-form-message' className='hide'>Message</span>
 
                         <button type='submit'>Save</button>
                     </form>
