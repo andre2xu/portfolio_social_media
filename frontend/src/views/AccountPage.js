@@ -69,7 +69,26 @@ function AccountPage() {
 
         axios.put(`http://localhost:8010${new URL(FORM.action).pathname}`, FORM_DATA, {withCredentials: true})
         .then((response) => {
-            console.log(response);
+            const MESSAGE = $('#account-page-settings-form-message');
+            MESSAGE.removeClass('hide');
+            MESSAGE.removeClass('success');
+
+            if (response.status === 200) {
+                if (response.data.errorMessage !== undefined) {
+                    MESSAGE.text(response.data.errorMessage);
+                }
+                else {
+                    MESSAGE.addClass('success');
+                    MESSAGE.text('Update successful');
+                }
+            }
+            else {
+                MESSAGE.text('Server error');
+            }
+
+            setTimeout(() => {
+                MESSAGE.addClass('hide');
+            }, 4000);
         });
     };
 

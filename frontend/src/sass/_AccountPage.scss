@@ -273,6 +273,10 @@
                     span {
                         color: $error_color;
 
+                        &.hide {
+                            display: none;
+                        }
+
                         &.success {
                             color: #4677e1;
                         }
