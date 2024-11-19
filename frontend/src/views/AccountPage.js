@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 // static
 import NoFill_Icon_ThumbsUp from '../static/icons/Icon_ThumbsUp_NoFill.svg';
 import Fill_Icon_ThumbsUp from '../static/icons/Icon_ThumbsUp_Fill.svg';
@@ -20,6 +22,27 @@ function AccountPage() {
                 PROFILE_SECTION.classList.add('hide');
                 break;
             default:
+        }
+    };
+
+    function updateCover(event) {
+        switch (event.target.innerText) {
+            case 'Upload cover':
+                $('#account-page-settings-form input[name="cover"]')[0].click(); // open file explorer
+                break;
+            case 'Remove cover':
+                break;
+            default:
+        }
+    };
+
+    function onChange(event) {
+        const FORM_FIELD = event.target;
+
+        if (FORM_FIELD instanceof HTMLInputElement) {
+            if (FORM_FIELD.name === 'cover') {
+                $('#account-page-settings-cover-filename').text(FORM_FIELD.value.split(/\\|\//).pop());
+            }
         }
     };
 
@@ -257,9 +280,9 @@ function AccountPage() {
                     <h1>General</h1>
 
                     <div id='account-page-settings-cover' className='file-upload-container'>
-                        <span>No cover selected</span>
+                        <span id='account-page-settings-cover-filename'>No cover selected</span>
 
-                        <div>
+                        <div onClick={updateCover}>
                             <button>Upload cover</button>
                             <button>Remove cover</button>
                         </div>
@@ -274,7 +297,7 @@ function AccountPage() {
                         </div>
                     </div>
 
-                    <form id='account-page-settings-form' action='/' method='post' encType='multipart/form-data'>
+                    <form id='account-page-settings-form' action='/' method='post' encType='multipart/form-data' onChange={onChange}>
                         <input type='file' name='cover' hidden aria-hidden />
                         <input type='file' name='pfp' hidden aria-hidden />
 
