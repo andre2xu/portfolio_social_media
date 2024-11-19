@@ -29,20 +29,23 @@ backend.use(cors({
 const userProfileUploads = multer({dest: './public/users/profile'});
 
 function authenticateUser(req) {
-    let is_authenticated = false;
+    const DATA = {
+        isAuthenticated: false,
+        tokenData: {}
+    };
 
     const LOGIN_TOKEN = req.cookies.LT;
 
     try {
         if (LOGIN_TOKEN !== undefined) {
-            jwt.verify(LOGIN_TOKEN, process.env.LTS);
+            DATA.tokenData = jwt.verify(LOGIN_TOKEN, process.env.LTS);
 
-            is_authenticated = true;
+            DATA.isAuthenticated = true;
         }
     }
     catch {}
 
-    return is_authenticated;
+    return DATA;
 };
 
 // ROUTES
@@ -157,7 +160,7 @@ backend.post('/login', async (req, res) => {
 backend.post('/auth', async (req, res) => {
     // NOTE: this route is used by React Router in the frontend to check if users are allowed to access a view. For backend authentication, just call the 'authenticateUser' helper
 
-    return res.json({isAuthenticated: authenticateUser(req)});
+    return res.json({isAuthenticated: authenticateUser(req).isAuthenticated});
 });
 
 backend.put('/account/update', userProfileUploads.fields([{name: 'cover', maxCount: 1}, {name: 'pfp', maxCount: 1}]), async (req, res) => {
