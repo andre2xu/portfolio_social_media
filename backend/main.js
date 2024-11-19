@@ -29,7 +29,7 @@ backend.use(cors({
 const userProfileUploads = multer({dest: './public/users/profile'});
 
 function authenticateUser(req) {
-    const DATA = {
+    const RESULT = {
         isAuthenticated: false,
         tokenData: {}
     };
@@ -38,14 +38,14 @@ function authenticateUser(req) {
 
     try {
         if (LOGIN_TOKEN !== undefined) {
-            DATA.tokenData = jwt.verify(LOGIN_TOKEN, process.env.LTS);
+            RESULT.tokenData = jwt.verify(LOGIN_TOKEN, process.env.LTS);
 
-            DATA.isAuthenticated = true;
+            RESULT.isAuthenticated = true;
         }
     }
     catch {}
 
-    return DATA;
+    return RESULT;
 };
 
 // ROUTES
