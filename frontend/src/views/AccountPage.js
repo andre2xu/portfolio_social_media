@@ -36,12 +36,26 @@ function AccountPage() {
         }
     };
 
+    function updatePhoto(event) {
+        switch (event.target.innerText) {
+            case 'Upload photo':
+                $('#account-page-settings-form input[name="pfp"]')[0].click(); // open file explorer
+                break;
+            case 'Remove photo':
+                break;
+            default:
+        }
+    };
+
     function onChange(event) {
         const FORM_FIELD = event.target;
 
         if (FORM_FIELD instanceof HTMLInputElement) {
             if (FORM_FIELD.name === 'cover') {
                 $('#account-page-settings-cover-filename').text(FORM_FIELD.value.split(/\\|\//).pop());
+            }
+            else if (FORM_FIELD.name === 'pfp') {
+                $('#account-page-settings-pfp-filename').text(FORM_FIELD.value.split(/\\|\//).pop());
             }
         }
     };
@@ -289,9 +303,9 @@ function AccountPage() {
                     </div>
 
                     <div id='account-page-settings-pfp' className='file-upload-container'>
-                        <span>No photo selected</span>
+                        <span id='account-page-settings-pfp-filename'>No photo selected</span>
 
-                        <div>
+                        <div onClick={updatePhoto}>
                             <button>Upload photo</button>
                             <button>Remove photo</button>
                         </div>
