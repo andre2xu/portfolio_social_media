@@ -98,28 +98,11 @@ backend.post('/signup', async (req, res) => {
             await USERS_COLLECTION.insertOne({
                 username: FORM_DATA.username,
                 password: HASHED_PASSWORD,
-                cover: '', // path to profile background cover
-                pfp: '' // path to profile picture
+                cover: '', // profile background cover file name
+                pfp: '' // profile picture file name
             });
 
-            const TOKEN_EXPIRATION = 60 * 60 * 2;
-
-            const LOGIN_TOKEN = jwt.sign(
-                {uid: FORM_DATA.username},
-                process.env.LTS,
-                {expiresIn: TOKEN_EXPIRATION}
-            );
-
-            res.cookie(
-                'LT',
-                LOGIN_TOKEN,
-                {
-                    maxAge: TOKEN_EXPIRATION * 1000,
-                    httpOnly: true,
-                    sameSite: true,
-                    secure: true
-                }
-            );
+            generateLoginToken(res, FORM_DATA.username);
         }
         else {
             RESPONSE.errorMessage = "That username is already taken";
@@ -146,24 +129,7 @@ backend.post('/login', async (req, res) => {
             const HASHED_PASSWORD = createHash('sha256').update(FORM_DATA.password).digest('hex');
 
             if (HASHED_PASSWORD === ACCOUNT.password) {
-                const TOKEN_EXPIRATION = 60 * 60 * 2;
-
-                const LOGIN_TOKEN = jwt.sign(
-                    {uid: FORM_DATA.username},
-                    process.env.LTS,
-                    {expiresIn: TOKEN_EXPIRATION}
-                );
-
-                res.cookie(
-                    'LT',
-                    LOGIN_TOKEN,
-                    {
-                        maxAge: TOKEN_EXPIRATION * 1000,
-                        httpOnly: true,
-                        sameSite: true,
-                        secure: true
-                    }
-                );
+                generateLoginToken(res, FORM_DATA.username);
 
                 return res.json(RESPONSE);
             }
