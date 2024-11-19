@@ -2,6 +2,7 @@ const { MongoClient } = require('mongodb');
 const { createHash } = require('crypto');
 const jwt = require('jsonwebtoken');
 const body_parser = require('body-parser');
+const multer = require('multer');
 const cookie_parser = require('cookie-parser');
 const cors = require('cors');
 const express = require('express');
@@ -24,6 +25,8 @@ backend.use(cors({
 }));
 
 // HELPERS
+const userProfileUploads = multer({dest: './public/users/profile'});
+
 function authenticateUser(req) {
     let is_authenticated = false;
 
@@ -154,6 +157,17 @@ backend.post('/auth', async (req, res) => {
     // NOTE: this route is used by React Router in the frontend to check if users are allowed to access a view. For backend authentication, just call the 'authenticateUser' helper
 
     return res.json({isAuthenticated: authenticateUser(req)});
+});
+
+backend.put('/account/update', userProfileUploads.fields([{name: 'cover', maxCount: 1}, {name: 'pfp', maxCount: 1}]), async (req, res) => {
+    const RESPONSE = {status: 'failed'};
+
+    if (authenticateUser(req)) {
+        const FORM_TEXT_DATA = req.body;
+        const FORM_FILE_DATA = req.files;
+    }
+
+    res.json(RESPONSE);
 });
 
 backend.listen(8010, async () => {
