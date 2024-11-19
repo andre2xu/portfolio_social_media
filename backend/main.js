@@ -48,6 +48,27 @@ function authenticateUser(req) {
     return RESULT;
 };
 
+function generateLoginToken(res, uid) {
+    const TOKEN_EXPIRATION = 60 * 60 * 2;
+
+    const LOGIN_TOKEN = jwt.sign(
+        {uid: uid},
+        process.env.LTS,
+        {expiresIn: TOKEN_EXPIRATION}
+    );
+
+    res.cookie(
+        'LT',
+        LOGIN_TOKEN,
+        {
+            maxAge: TOKEN_EXPIRATION * 1000,
+            httpOnly: true,
+            sameSite: true,
+            secure: true
+        }
+    );
+};
+
 // ROUTES
 backend.post('/signup', async (req, res) => {
     const RESPONSE = {};
