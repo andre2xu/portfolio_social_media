@@ -23,6 +23,24 @@ backend.use(cors({
     credentials: true // allow HTTP-only cookies
 }));
 
+// HELPERS
+function authenticateUser(req) {
+    let is_authenticated = false;
+
+    const LOGIN_TOKEN = req.cookies.LT;
+
+    try {
+        if (LOGIN_TOKEN !== undefined) {
+            jwt.verify(LOGIN_TOKEN, process.env.LTS);
+
+            is_authenticated = true;
+        }
+    }
+    catch {}
+
+    return is_authenticated;
+};
+
 // ROUTES
 backend.post('/signup', async (req, res) => {
     const RESPONSE = {};
@@ -133,19 +151,9 @@ backend.post('/login', async (req, res) => {
 });
 
 backend.post('/auth', async (req, res) => {
-    const RESPONSE = {isAuthenticated: false};
-    const LOGIN_TOKEN = req.cookies.LT;
+    // NOTE: this route is used by React Router in the frontend to check if users are allowed to access a view. For backend authentication, just call the 'authenticateUser' helper
 
-    try {
-        if (LOGIN_TOKEN !== undefined) {
-            jwt.verify(LOGIN_TOKEN, process.env.LTS);
-
-            RESPONSE.isAuthenticated = true;
-        }
-    }
-    catch {}
-
-    return res.json(RESPONSE);
+    return res.json({isAuthenticated: authenticateUser(req)});
 });
 
 backend.listen(8010, async () => {
