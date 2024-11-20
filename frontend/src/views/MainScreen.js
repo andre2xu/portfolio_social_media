@@ -20,7 +20,7 @@ import Icon_Exit from '../static/icons/Icon_Exit.svg';
 function MainScreen({component}) {
     const [is_logged_in, setIsLoggedInFlag] = React.useState(false);
 
-    function displayConfirmationDialog(confirmCallback, denyCallback, message, confirmText, denyText) {
+    function displayConfirmationDialog(confirmCallback, denyCallback, message="Are you sure you want to proceed with this action?", confirmText="Yes", denyText="Cancel") {
         if (typeof confirmCallback !== 'function') {
             throw TypeError("A confirmation callback function is required");
         }
@@ -38,11 +38,11 @@ function MainScreen({component}) {
         }
 
         if (typeof confirmText === 'string' && confirmText.length > 0) {
-            DIALOG_BUTTONS.first().text(confirmText);
+            DIALOG_BUTTONS.last().text(confirmText);
         }
 
         if (typeof denyText === 'string' && denyText.length > 0) {
-            DIALOG_BUTTONS.last().text(denyText);
+            DIALOG_BUTTONS.first().text(denyText);
         }
 
         // add events to buttons
