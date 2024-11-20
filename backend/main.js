@@ -286,6 +286,8 @@ backend.delete('/account/delete', async (req, res) => {
         const USERS_COLLECTION = req.app.locals.db.collection('Users');
 
         await USERS_COLLECTION.deleteOne({username: AUTHENTICATION_RESULT.tokenData.uid});
+
+        res.clearCookie('LT');
     }
 
     return res.json({});
