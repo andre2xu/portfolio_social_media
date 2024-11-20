@@ -279,6 +279,18 @@ backend.put('/account/remove', async (req, res) => {
     return res.json(RESPONSE);
 });
 
+backend.delete('/account/delete', async (req, res) => {
+    const AUTHENTICATION_RESULT = authenticateUser(req);
+
+    if (AUTHENTICATION_RESULT.isAuthenticated) {
+        const USERS_COLLECTION = req.app.locals.db.collection('Users');
+
+        await USERS_COLLECTION.deleteOne({username: AUTHENTICATION_RESULT.tokenData.uid});
+    }
+
+    return res.json({});
+});
+
 backend.listen(8010, async () => {
     // connect to database & store the connection in a shared variable
     const MONGO_CLIENT = new MongoClient(process.env.MONGO_CLUSTER_URI);
