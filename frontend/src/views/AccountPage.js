@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 // static
 import NoFill_Icon_ThumbsUp from '../static/icons/Icon_ThumbsUp_NoFill.svg';
@@ -9,6 +10,8 @@ import NoFill_Icon_Message from '../static/icons/Icon_Message_NoFill.svg';
 
 
 function AccountPage({displayConfirmationDialog}) {
+    const redirectTo = useNavigate();
+
     function changeTabs(event) {
         const PROFILE_SECTION = document.getElementById('account-page-profile');
         const SETTINGS_SECTION = document.getElementById('account-page-settings');
@@ -148,6 +151,21 @@ function AccountPage({displayConfirmationDialog}) {
                 MESSAGE.addClass('hide');
             }, 4000);
         });
+    };
+
+    function deleteAccount() {
+        displayConfirmationDialog(
+            () => {
+                axios.delete('http://localhost:8010/account/delete', {withCredentials: true})
+                .then((response) => {
+                    if (response.status === 200) {
+                        // redirect user to login page
+                        redirectTo('/login', {replace: true});
+                    }
+                });
+            },
+            () => {}
+        );
     };
 
     return (
@@ -421,7 +439,7 @@ function AccountPage({displayConfirmationDialog}) {
                         This action will erase all your data including any posts you've made and any media you've uploaded. It cannot be undone. Clicking the button below means that you understand and acknowledge this.
                     </p>
 
-                    <button>Delete</button>
+                    <button onClick={deleteAccount}>Delete</button>
                 </div>
             </div>
         </div>
