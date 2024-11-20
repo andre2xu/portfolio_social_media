@@ -20,6 +20,71 @@ import Icon_Exit from '../static/icons/Icon_Exit.svg';
 function MainScreen({component}) {
     const [is_logged_in, setIsLoggedInFlag] = React.useState(false);
 
+    function displayConfirmationDialog(confirmCallback, denyCallback, message, confirmText, denyText) {
+        if (typeof confirmCallback !== 'function') {
+            throw TypeError("A confirmation callback function is required");
+        }
+
+        if (typeof denyCallback !== 'function') {
+            throw TypeError("A denial callback function is required");
+        }
+
+        const DIALOG = $('#main-screen-dialog');
+        const DIALOG_BUTTONS = DIALOG.find('div button');
+
+        // change messages
+        if (typeof message === 'string' && message.length > 0) {
+            DIALOG.children('p').first().text(message);
+        }
+
+        if (typeof confirmText === 'string' && confirmText.length > 0) {
+            DIALOG_BUTTONS.first().text(confirmText);
+        }
+
+        if (typeof denyText === 'string' && denyText.length > 0) {
+            DIALOG_BUTTONS.last().text(denyText);
+        }
+
+        // add events to buttons
+        DIALOG_BUTTONS.each((i, button) => {
+            button = $(button);
+
+            if (i === 0) {
+                // deny button
+
+                button.on('click', () => {
+                    denyCallback();
+
+                    // hide dialog
+                    DIALOG.addClass('hide');
+
+                    DIALOG_BUTTONS.each((_, button) => {
+                        // remove events after user interaction
+                        $(button).off();
+                    });
+                });
+            }
+            else if (i === 1) {
+                // confirm button
+
+                button.on('click', () => {
+                    confirmCallback();
+
+                    // hide dialog
+                    DIALOG.addClass('hide');
+
+                    DIALOG_BUTTONS.each((_, button) => {
+                        // remove events after user interaction
+                        $(button).off();
+                    });
+                });
+            }
+        });
+
+        // display
+        DIALOG.removeClass('hide');
+    };
+
     React.useEffect(() => {
         // highlight the navbar button of the current page
 
@@ -57,6 +122,16 @@ function MainScreen({component}) {
         });
     });
 
+    React.useEffect(() => {
+        // cleanup
+        return () => {
+            // delete dialog events (if any)
+            $('#main-screen-dialog div button').each((_, button) => {
+                $(button).off();
+            });
+        }
+    });
+
     return (
         <div id='main-screen'>
             <div id='main-screen-dialog' className='hide'>
@@ -91,7 +166,7 @@ function MainScreen({component}) {
             </nav>
 
             <main>
-                { React.cloneElement(component, {isLoggedIn: is_logged_in}) }
+                { React.cloneElement(component, {isLoggedIn: is_logged_in, displayConfirmationDialog: displayConfirmationDialog}) }
             </main>
 
             <aside>
