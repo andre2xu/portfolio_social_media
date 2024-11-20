@@ -8,7 +8,7 @@ import NoFill_Icon_Message from '../static/icons/Icon_Message_NoFill.svg';
 
 
 
-function AccountPage() {
+function AccountPage({displayConfirmationDialog}) {
     function changeTabs(event) {
         const PROFILE_SECTION = document.getElementById('account-page-profile');
         const SETTINGS_SECTION = document.getElementById('account-page-settings');
@@ -32,6 +32,35 @@ function AccountPage() {
                 $('#account-page-settings-form input[name="cover"]')[0].click(); // open file explorer
                 break;
             case 'Remove cover':
+                displayConfirmationDialog(
+                    () => {
+                        axios.put(`http://localhost:8010/account/remove`, {type: 'profile', target: 'cover'}, {withCredentials: true})
+                        .then((response) => {
+                            const MESSAGE = $('#account-page-settings-form-message');
+                            MESSAGE.removeClass('hide');
+                            MESSAGE.removeClass('success');
+
+                            if (response.status === 200) {
+                                if (response.data.errorMessage !== undefined) {
+                                    MESSAGE.text(response.data.errorMessage);
+                                }
+                                else {
+                                    MESSAGE.addClass('success');
+                                    MESSAGE.text('Cover deleted successfully');
+                                }
+                            }
+                            else {
+                                MESSAGE.text('Server error');
+                            }
+
+                            setTimeout(() => {
+                                MESSAGE.addClass('hide');
+                            }, 4000);
+                        });
+                    },
+                    () => {},
+                    "Are you sure you want to delete your profile background cover?"
+                );
                 break;
             default:
         }
