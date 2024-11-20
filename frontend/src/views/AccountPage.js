@@ -72,6 +72,35 @@ function AccountPage({displayConfirmationDialog}) {
                 $('#account-page-settings-form input[name="pfp"]')[0].click(); // open file explorer
                 break;
             case 'Remove photo':
+                displayConfirmationDialog(
+                    () => {
+                        axios.put(`http://localhost:8010/account/remove`, {type: 'profile', target: 'pfp'}, {withCredentials: true})
+                        .then((response) => {
+                            const MESSAGE = $('#account-page-settings-form-message');
+                            MESSAGE.removeClass('hide');
+                            MESSAGE.removeClass('success');
+
+                            if (response.status === 200) {
+                                if (response.data.errorMessage !== undefined) {
+                                    MESSAGE.text(response.data.errorMessage);
+                                }
+                                else {
+                                    MESSAGE.addClass('success');
+                                    MESSAGE.text('Profile picture deleted successfully');
+                                }
+                            }
+                            else {
+                                MESSAGE.text('Server error');
+                            }
+
+                            setTimeout(() => {
+                                MESSAGE.addClass('hide');
+                            }, 4000);
+                        });
+                    },
+                    () => {},
+                    "Are you sure you want to delete your profile picture?"
+                );
                 break;
             default:
         }
