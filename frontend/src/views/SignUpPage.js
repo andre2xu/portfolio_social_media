@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import shared from '../shared';
 
 // static
 import Logo from '../static/Logo.svg';
@@ -23,7 +24,7 @@ function SignUpPage() {
             REQUEST_BODY[INPUT.name] = INPUT.value;
         }
 
-        axios.post(`http://localhost:8010${new URL(FORM.action).pathname}`, REQUEST_BODY, {withCredentials: true})
+        axios.post(shared.resolveBackendRoute(new URL(FORM.action).pathname), REQUEST_BODY, {withCredentials: true})
         .then((response) => {
             if (response.status === 200 && typeof response.data === 'object') {
                 if (response.data.errorMessage !== undefined) {
