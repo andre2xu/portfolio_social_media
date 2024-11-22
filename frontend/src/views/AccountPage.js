@@ -138,9 +138,21 @@ function AccountPage({displayConfirmationDialog}) {
                 if (response.data.errorMessage !== undefined) {
                     MESSAGE.text(response.data.errorMessage);
                 }
-                else {
+                else if (response.data.newData !== undefined) {
                     MESSAGE.addClass('success');
                     MESSAGE.text('Update successful');
+
+                    // update profile
+                    $(['username', 'cover', 'pfp']).each((_, key) => {
+                        if (response.data.newData[key] === undefined) {
+                            response.data.newData[key] = '';
+                        }
+                    });
+
+                    updateProfile(response.data.newData);
+                }
+                else {
+                    MESSAGE.text('Profile data error');
                 }
             }
             else {
