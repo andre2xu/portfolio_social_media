@@ -152,6 +152,30 @@ backend.post('/auth', async (req, res) => {
     return res.json({isAuthenticated: authenticateUser(req).isAuthenticated});
 });
 
+backend.get('/account/info', async (req, res) => {
+    let response = {};
+
+    const AUTHENTICATION_RESULT = authenticateUser(req);
+
+    if (AUTHENTICATION_RESULT.isAuthenticated) {
+        const USERS_COLLECTION = req.app.locals.db.collection('Users');
+        const ACCOUNT = await USERS_COLLECTION.findOne({username: AUTHENTICATION_RESULT.tokenData.uid});
+
+        if (ACCOUNT !== null) {
+            Object.keys(ACCOUNT).forEach((key) => {
+                // remove irrelevant data
+                if (key !== 'username' && key !== 'cover' && key !== 'pfp') {
+                    delete ACCOUNT[key];
+                }
+
+                response = ACCOUNT;
+            });
+        }
+    }
+
+    return res.json(response);
+});
+
 backend.put('/account/update', userProfileUploads.fields([{name: 'cover', maxCount: 1}, {name: 'pfp', maxCount: 1}]), async (req, res) => {
     const RESPONSE = {};
     const AUTHENTICATION_RESULT = authenticateUser(req);
