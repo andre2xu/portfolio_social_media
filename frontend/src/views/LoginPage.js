@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
+import shared from '../shared';
 
 // static
 import Logo from '../static/Logo.svg';
@@ -24,7 +25,7 @@ function LoginPage() {
             REQUEST_BODY[INPUT.name] = INPUT.value;
         }
 
-        axios.post(`http://localhost:8010${new URL(FORM.action).pathname}`, REQUEST_BODY, {withCredentials: true})
+        axios.post(shared.resolveBackendRoute(new URL(FORM.action).pathname), REQUEST_BODY, {withCredentials: true})
         .then((response) => {
             if (response.status === 200 && typeof response.data === 'object') {
                 if (response.data.errorMessage !== undefined) {
@@ -47,7 +48,7 @@ function LoginPage() {
 
     React.useEffect(() => {
         // attempt to auto login the user if there's a token
-        axios.post('http://localhost:8010/auth', {}, {withCredentials: true})
+        axios.post(shared.resolveBackendRoute('/auth'), {}, {withCredentials: true})
         .then((response) => {
             if (response.status === 200 && typeof response.data === 'object' && response.data.isAuthenticated) {
                 redirectTo('/account', {replace: true});
