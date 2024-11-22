@@ -52,6 +52,9 @@ function AccountPage({displayConfirmationDialog}) {
                                 else {
                                     MESSAGE.addClass('success');
                                     MESSAGE.text('Cover deleted successfully');
+
+                                    // reset profile cover to default
+                                    $('#account-page-profile-cover')[0].removeAttribute('style');
                                 }
                             }
                             else {
@@ -92,6 +95,9 @@ function AccountPage({displayConfirmationDialog}) {
                                 else {
                                     MESSAGE.addClass('success');
                                     MESSAGE.text('Profile picture deleted successfully');
+
+                                    // reset profile picture to default
+                                    $('#account-page-profile-picture').prop('src', '/pfp/Default_Profile_Picture.png');
                                 }
                             }
                             else {
