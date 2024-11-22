@@ -12,6 +12,8 @@ import NoFill_Icon_Message from '../static/icons/Icon_Message_NoFill.svg';
 
 
 function AccountPage({displayConfirmationDialog}) {
+    const SETTINGS_FORM_MESSAGE_TIMEOUT_FUNCTION = React.useRef(null);
+
     const redirectTo = useNavigate();
 
     function changeTabs(event) {
@@ -45,6 +47,9 @@ function AccountPage({displayConfirmationDialog}) {
                             MESSAGE.removeClass('hide');
                             MESSAGE.removeClass('success');
 
+                            clearTimeout(SETTINGS_FORM_MESSAGE_TIMEOUT_FUNCTION.current);
+                            SETTINGS_FORM_MESSAGE_TIMEOUT_FUNCTION.current = null;
+
                             if (response.status === 200) {
                                 if (response.data.errorMessage !== undefined) {
                                     MESSAGE.text(response.data.errorMessage);
@@ -61,7 +66,7 @@ function AccountPage({displayConfirmationDialog}) {
                                 MESSAGE.text('Server error');
                             }
 
-                            setTimeout(() => {
+                            SETTINGS_FORM_MESSAGE_TIMEOUT_FUNCTION.current = setTimeout(() => {
                                 MESSAGE.addClass('hide');
                             }, 4000);
                         });
@@ -88,6 +93,9 @@ function AccountPage({displayConfirmationDialog}) {
                             MESSAGE.removeClass('hide');
                             MESSAGE.removeClass('success');
 
+                            clearTimeout(SETTINGS_FORM_MESSAGE_TIMEOUT_FUNCTION.current);
+                            SETTINGS_FORM_MESSAGE_TIMEOUT_FUNCTION.current = null;
+
                             if (response.status === 200) {
                                 if (response.data.errorMessage !== undefined) {
                                     MESSAGE.text(response.data.errorMessage);
@@ -104,7 +112,7 @@ function AccountPage({displayConfirmationDialog}) {
                                 MESSAGE.text('Server error');
                             }
 
-                            setTimeout(() => {
+                            SETTINGS_FORM_MESSAGE_TIMEOUT_FUNCTION.current = setTimeout(() => {
                                 MESSAGE.addClass('hide');
                             }, 4000);
                         });
@@ -142,6 +150,9 @@ function AccountPage({displayConfirmationDialog}) {
             MESSAGE.removeClass('hide');
             MESSAGE.removeClass('success');
 
+            clearTimeout(SETTINGS_FORM_MESSAGE_TIMEOUT_FUNCTION.current);
+            SETTINGS_FORM_MESSAGE_TIMEOUT_FUNCTION.current = null;
+
             if (response.status === 200) {
                 if (response.data.errorMessage !== undefined) {
                     MESSAGE.text(response.data.errorMessage);
@@ -167,7 +178,7 @@ function AccountPage({displayConfirmationDialog}) {
                 MESSAGE.text('Server error');
             }
 
-            setTimeout(() => {
+            SETTINGS_FORM_MESSAGE_TIMEOUT_FUNCTION.current = setTimeout(() => {
                 MESSAGE.addClass('hide');
             }, 4000);
         });
