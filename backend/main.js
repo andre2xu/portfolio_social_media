@@ -224,6 +224,11 @@ backend.put('/account/update', userProfileUploads.fields([{name: 'cover', maxCou
                 if (NEW_DATA.username !== undefined) {
                     generateLoginToken(res, NEW_DATA.username);
                 }
+
+                // pass relevant database info to frontend
+                delete NEW_DATA['password'];
+
+                RESPONSE.newData = NEW_DATA;
             }
         }
     }
