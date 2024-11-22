@@ -153,6 +153,26 @@ function AccountPage({displayConfirmationDialog}) {
         });
     };
 
+    function updateProfile(newData) {
+        if (typeof newData !== 'object' || ('username' in newData && 'cover' in newData && 'pfp' in newData) === false || (typeof newData.username === 'string' && typeof newData.cover === 'string' && typeof newData.pfp === 'string') === false) {
+            throw TypeError("Invalid profile data");
+        }
+
+        if (newData.username.length > 0) {
+            $('#account-page-profile-info span').first().text(`@${newData.username}`);
+        }
+
+        const PROFILE_STATIC_ASSETS_PATH = 'http://localhost:8010/static/users/profile/';
+
+        if (newData.cover.length > 0) {
+            $('#account-page-profile-cover').css({backgroundImage: `url("${PROFILE_STATIC_ASSETS_PATH}/${newData.cover}")`});
+        }
+
+        if (newData.pfp.length > 0) {
+            $('#account-page-profile-picture').prop('src', `${PROFILE_STATIC_ASSETS_PATH}/${newData.pfp}`);
+        }
+    };
+
     function deleteAccount() {
         displayConfirmationDialog(
             () => {
