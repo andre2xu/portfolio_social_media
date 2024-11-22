@@ -2,6 +2,7 @@ import React from 'react';
 import $ from 'jquery';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import shared from '../shared';
 
 // static
 import Logo from '../static/Logo.svg';
@@ -114,7 +115,7 @@ function MainScreen({component}) {
     });
 
     React.useEffect(() => {
-        axios.post('http://localhost:8010/auth', {}, {withCredentials: true})
+        axios.post(shared.resolveBackendRoute('/auth'), {}, {withCredentials: true})
         .then((response) => {
             if (response.status === 200 && typeof response.data === 'object' && response.data.isAuthenticated) {
                 setIsLoggedInFlag(true);
