@@ -1,3 +1,4 @@
+import React from 'react';
 import $ from 'jquery';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -199,6 +200,16 @@ function AccountPage({displayConfirmationDialog}) {
             () => {}
         );
     };
+
+    React.useEffect(() => {
+        // load profile info
+        axios.get('http://localhost:8010/account/info', {withCredentials: true})
+        .then((response) => {
+            if (response.status === 200) {
+                updateProfile(response.data);
+            }
+        });
+    }, []);
 
     return (
         <div id='account-page' className=''>
