@@ -2,6 +2,7 @@ import React from 'react';
 import $ from 'jquery';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import shared from '../shared';
 
 // static
 import NoFill_Icon_ThumbsUp from '../static/icons/Icon_ThumbsUp_NoFill.svg';
@@ -38,7 +39,7 @@ function AccountPage({displayConfirmationDialog}) {
             case 'Remove cover':
                 displayConfirmationDialog(
                     () => {
-                        axios.put(`http://localhost:8010/account/remove`, {type: 'profile', target: 'cover'}, {withCredentials: true})
+                        axios.put(shared.resolveBackendRoute('/account/remove'), {type: 'profile', target: 'cover'}, {withCredentials: true})
                         .then((response) => {
                             const MESSAGE = $('#account-page-settings-form-message');
                             MESSAGE.removeClass('hide');
@@ -78,7 +79,7 @@ function AccountPage({displayConfirmationDialog}) {
             case 'Remove photo':
                 displayConfirmationDialog(
                     () => {
-                        axios.put(`http://localhost:8010/account/remove`, {type: 'profile', target: 'pfp'}, {withCredentials: true})
+                        axios.put(shared.resolveBackendRoute('/account/remove'), {type: 'profile', target: 'pfp'}, {withCredentials: true})
                         .then((response) => {
                             const MESSAGE = $('#account-page-settings-form-message');
                             MESSAGE.removeClass('hide');
@@ -129,7 +130,7 @@ function AccountPage({displayConfirmationDialog}) {
         const FORM = event.target;
         const FORM_DATA = new FormData(FORM);
 
-        axios.put(`http://localhost:8010${new URL(FORM.action).pathname}`, FORM_DATA, {withCredentials: true})
+        axios.put(shared.resolveBackendRoute(new URL(FORM.action).pathname), FORM_DATA, {withCredentials: true})
         .then((response) => {
             const MESSAGE = $('#account-page-settings-form-message');
             MESSAGE.removeClass('hide');
@@ -175,7 +176,7 @@ function AccountPage({displayConfirmationDialog}) {
             $('#account-page-profile-info span').first().text(`@${newData.username}`);
         }
 
-        const PROFILE_STATIC_ASSETS_PATH = 'http://localhost:8010/static/users/profile/';
+        const PROFILE_STATIC_ASSETS_PATH = shared.resolveBackendRoute('/static/users/profile/');
 
         if (newData.cover.length > 0) {
             $('#account-page-profile-cover').css({backgroundImage: `url("${PROFILE_STATIC_ASSETS_PATH}/${newData.cover}")`});
@@ -189,7 +190,7 @@ function AccountPage({displayConfirmationDialog}) {
     function deleteAccount() {
         displayConfirmationDialog(
             () => {
-                axios.delete('http://localhost:8010/account/delete', {withCredentials: true})
+                axios.delete(shared.resolveBackendRoute('/account/delete'), {withCredentials: true})
                 .then((response) => {
                     if (response.status === 200) {
                         // redirect user to login page
@@ -203,7 +204,7 @@ function AccountPage({displayConfirmationDialog}) {
 
     React.useEffect(() => {
         // load profile info
-        axios.get('http://localhost:8010/account/info', {withCredentials: true})
+        axios.get(shared.resolveBackendRoute('/account/info'), {withCredentials: true})
         .then((response) => {
             if (response.status === 200) {
                 updateProfile(response.data);
