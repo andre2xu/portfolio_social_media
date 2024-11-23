@@ -138,7 +138,7 @@ function AccountPage({displayConfirmationDialog}) {
         }
     };
 
-    function onSubmit(event) {
+    function onSubmitSettingsForm(event) {
         event.preventDefault();
 
         const FORM = event.target;
@@ -480,7 +480,7 @@ function AccountPage({displayConfirmationDialog}) {
                         </div>
                     </div>
 
-                    <form id='account-page-settings-form' action='/account/update' method='post' encType='multipart/form-data' onChange={onChange} onSubmit={onSubmit}>
+                    <form id='account-page-settings-form' action='/account/update' method='post' encType='multipart/form-data' onChange={onChange} onSubmit={onSubmitSettingsForm}>
                         <input type='file' name='cover' hidden aria-hidden />
                         <input type='file' name='pfp' hidden aria-hidden />
 
