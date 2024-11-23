@@ -12,6 +12,7 @@ import NoFill_Icon_Message from '../static/icons/Icon_Message_NoFill.svg';
 
 
 function AccountPage({displayConfirmationDialog}) {
+    const POSTS_FORM_MESSAGE_TIMEOUT_FUNCTION = React.useRef(null);
     const SETTINGS_FORM_MESSAGE_TIMEOUT_FUNCTION = React.useRef(null);
 
     const redirectTo = useNavigate();
@@ -184,6 +185,42 @@ function AccountPage({displayConfirmationDialog}) {
         });
     };
 
+    function onSubmitPostsForm(event) {
+        event.preventDefault();
+
+        const FORM = event.target;
+        const FORM_DATA = new FormData(FORM);
+
+        function displayError(message) {
+            const MESSAGE = $('#account-page-post-form-error');
+            MESSAGE.removeClass('hide');
+
+            MESSAGE.text(message);
+
+            clearTimeout(POSTS_FORM_MESSAGE_TIMEOUT_FUNCTION.current);
+            POSTS_FORM_MESSAGE_TIMEOUT_FUNCTION.current = null;
+
+            POSTS_FORM_MESSAGE_TIMEOUT_FUNCTION.current = setTimeout(() => {
+                MESSAGE.addClass('hide');
+            }, 4000);
+        };
+
+        axios.post(shared.resolveBackendRoute(new URL(FORM.action).pathname), FORM_DATA, {withCredentials: true})
+        .then((response) => {
+            if (response.status === 200) {
+                if (response.data.errorMessage !== undefined) {
+                    displayError(response.data.errorMessage);
+                }
+                else {
+                    // update posts list
+                }
+            }
+            else {
+                displayError("Server error");
+            }
+        });
+    };
+
     function updateProfile(newData) {
         if (typeof newData !== 'object' || ('username' in newData && 'cover' in newData && 'pfp' in newData) === false || (typeof newData.username === 'string' && typeof newData.cover === 'string' && typeof newData.pfp === 'string') === false) {
             throw TypeError("Invalid profile data");
@@ -332,7 +369,7 @@ function AccountPage({displayConfirmationDialog}) {
                     <div id='account-page-posts-list' className=''>
                         {/* NOTE: the post form AND the 'delete' option in posts should only appear when the user that's logged in is viewing their own profile */}
 
-                        <form id='account-page-post-form' action='/' method='post' encType='multipart/form-data'>
+                        <form id='account-page-post-form' action='/post' method='post' encType='multipart/form-data' onSubmit={onSubmitPostsForm}>
                             <textarea name='postBody' placeholder='Enter post body'></textarea>
 
                             <input type='text' name='postTags' placeholder='tag1, tag2, tag3, ...' />
@@ -343,7 +380,7 @@ function AccountPage({displayConfirmationDialog}) {
                                 <button type='submit'>Post</button>
                             </div>
 
-                            <span id='account-page-post-form-error' className=''>Error message</span>
+                            <span id='account-page-post-form-error' className='hide'>Error message</span>
                         </form>
 
                         <article className='post'>
