@@ -332,6 +332,84 @@ backend.delete('/account/delete', async (req, res) => {
     return res.json({});
 });
 
+backend.post('/post', userProfileUploads.fields([{name: 'postMedia', maxCount: 1}]), async (req, res) => {
+    const RESPONSE = {};
+    const AUTHENTICATION_RESULT = authenticateUser(req);
+
+    if (AUTHENTICATION_RESULT.isAuthenticated) {
+        let valid_post = true;
+        const BODY_CHARACTER_LIMIT = 500;
+
+        const BODY = req.body.postBody;
+        const TAGS = req.body.postTags;
+
+        if (BODY === undefined || BODY.length === 0) {
+            RESPONSE.errorMessage = "Post body missing";
+            valid_post = false;
+        }
+        else if (BODY !== undefined && BODY.length > BODY_CHARACTER_LIMIT) {
+            RESPONSE.errorMessage = `Only ${BODY_CHARACTER_LIMIT} characters are allowed for the body`;
+            valid_post = false;
+        }
+        else if (TAGS === undefined || TAGS.length === 0) {
+            RESPONSE.errorMessage = "Post tags missing";
+            valid_post = false;
+        }
+
+        if (valid_post) {
+            let tags = TAGS.trim();
+            tags = tags.replace(/\s/g, '');
+
+            const CURRENT_DATE = new Date();
+            let day = CURRENT_DATE.getDate();
+            let month = CURRENT_DATE.getMonth() + 1;
+            let year = CURRENT_DATE.getFullYear();
+
+            if (day.length === 1) {
+                day = `0${day}`;
+            }
+
+            if (month.length === 1) {
+                month = `0${month}`;
+            }
+
+            const POST_DATA = {
+                uid: AUTHENTICATION_RESULT.tokenData.uid,
+                body: BODY,
+                tags: tags.split(','),
+                media: [], // file names in static folder
+                date: `${day}/${month}/${year}`
+            };
+
+            if (req.files.postMedia !== undefined) {
+                // validate & save media
+
+                const MEDIA = req.files.postMedia;
+                const VALID_EXTENSIONS = ['png', 'jpg', 'jpeg', 'mp4'];
+                const VALID_MIME_TYPES = ['image', 'video'];
+
+                const IS_VALID_MEDIA = MEDIA.every((file) => {
+                    const EXTENSION = file.originalname.split('.').pop();
+                    const MIME_TYPE = file.mimetype.split('/')[0];
+
+                    return VALID_EXTENSIONS.includes(EXTENSION) && VALID_MIME_TYPES.includes(MIME_TYPE);
+                });
+
+                if (IS_VALID_MEDIA) {
+                    MEDIA.forEach((file) => {
+                        POST_DATA.media.push(file.filename);
+                    });
+                }
+            }
+
+            const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
+            await POSTS_COLLECTION.insertOne(POST_DATA);
+        }
+    }
+
+    return res.json(RESPONSE);
+});
+
 // INITIALIZATION
 backend.listen(8010, async () => {
     // connect to database & store the connection in a shared variable
