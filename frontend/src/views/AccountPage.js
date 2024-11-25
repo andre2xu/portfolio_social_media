@@ -14,7 +14,7 @@ import NoFill_Icon_Message from '../static/icons/Icon_Message_NoFill.svg';
 function Post({
     userInfo={pfp: '/pfp/Default_Profile_Picture.png', username: '@User'},
     postInfo={body: '', tags: [], date: 'DD/MM/YYYY', likes: 0, comments: 0},
-    media=undefined
+    media={src: '', type: 'image'}
 }) {
     return (
         <article className='post'>
@@ -28,12 +28,14 @@ function Post({
                     {postInfo.body}
                 </p>
 
-                { typeof media === 'string' && media.length > 0 ? <img src={media} alt='Post'></img> : null }
+                { media.type === 'image' && typeof media.src === 'string' && media.src.length > 0 ? <img src={media.src} alt='Post'></img> : null }
+
+                { media.type === 'video' && typeof media.src === 'string' && media.src.length > 0 ? <video src={media.src} loop controls controlsList='nodownload' disablePictureInPicture></video> : null }
 
                 <ul>
                     {
-                        postInfo.tags.map((tag) => {
-                            return <li>#{tag}</li>;
+                        postInfo.tags.map((tag, index) => {
+                            return <li key={index}>#{tag}</li>;
                         })
                     }
                 </ul>
@@ -430,115 +432,6 @@ function AccountPage({displayConfirmationDialog}) {
 
                             <span id='account-page-post-form-error' className='hide'>Error message</span>
                         </form>
-
-                        <article className='post'>
-                            <div className='user-info'>
-                                <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
-                                <span>Username</span>
-                            </div>
-
-                            <div className='post-content'>
-                                <p>
-                                    This is a regular post.
-                                </p>
-
-                                <ul>
-                                    <li>#vanilla</li>
-                                    <li>#explore</li>
-                                </ul>
-                            </div>
-
-                            <div className='post-info'>
-                                <span className='publish-date'>DD/MM/YYYY</span>
-
-                                <div className='likes'>
-                                    <img src={NoFill_Icon_ThumbsUp} alt='Like Icon'></img>
-                                    <img className='hide' src={Fill_Icon_ThumbsUp} alt='Like Icon'></img>
-                                    <span>100</span>
-                                </div>
-
-                                <div className='comments'>
-                                    <img src={NoFill_Icon_Message} alt='Comment Icon'></img>
-                                    <span>0</span>
-                                </div>
-
-                                <button>Delete</button>
-                            </div>
-                        </article>
-
-                        <article className='post'>
-                            <div className='user-info'>
-                                <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
-                                <span>Username</span>
-                            </div>
-
-                            <div className='post-content'>
-                                <p>
-                                    This is a picture.
-                                </p>
-
-                                <img src='/pfp/Default_Profile_Picture.png' alt='Post'></img>
-
-                                <ul>
-                                    <li>#pics</li>
-                                    <li>#explore</li>
-                                </ul>
-                            </div>
-
-                            <div className='post-info'>
-                                <span className='publish-date'>DD/MM/YYYY</span>
-
-                                <div className='likes'>
-                                    <img src={NoFill_Icon_ThumbsUp} alt='Like Icon'></img>
-                                    <img className='hide' src={Fill_Icon_ThumbsUp} alt='Like Icon'></img>
-                                    <span>100</span>
-                                </div>
-
-                                <div className='comments'>
-                                    <img src={NoFill_Icon_Message} alt='Comment Icon'></img>
-                                    <span>0</span>
-                                </div>
-
-                                <button>Delete</button>
-                            </div>
-                        </article>
-
-                        <article className='post'>
-                            <div className='user-info'>
-                                <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
-                                <span>Username</span>
-                            </div>
-
-                            <div className='post-content'>
-                                <p>
-                                    This is a video.
-                                </p>
-
-                                <video src='https://www.pexels.com/download/video/5896379/?fps=23.97599983215332&h=1920&w=1080' loop controls controlsList='nodownload' disablePictureInPicture></video>
-
-                                <ul>
-                                    <li>#vids</li>
-                                    <li>#explore</li>
-                                </ul>
-                            </div>
-
-                            <div className='post-info'>
-                                <span className='publish-date'>DD/MM/YYYY</span>
-
-                                <div className='likes'>
-                                    <img src={NoFill_Icon_ThumbsUp} alt='Like Icon'></img>
-                                    <img className='hide' src={Fill_Icon_ThumbsUp} alt='Like Icon'></img>
-                                    <span>100</span>
-                                </div>
-
-                                <div className='comments'>
-                                    <img src={NoFill_Icon_Message} alt='Comment Icon'></img>
-                                    <span>0</span>
-                                </div>
-
-                                <button>Delete</button>
-                            </div>
-                        </article>
                     </div>
                 </div>
             </div>
