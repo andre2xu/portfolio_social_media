@@ -280,7 +280,7 @@ function AccountPage({displayConfirmationDialog}) {
                     <img id='account-page-profile-picture' src='/pfp/Default_Profile_Picture.png' alt='User' />
 
                     <div id='account-page-profile-info'>
-                        <span>@Username</span>
+                        <span>@</span>
 
                         <div>
                             <div className='profile-counts'>
