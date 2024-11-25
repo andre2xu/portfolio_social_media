@@ -12,7 +12,7 @@ import NoFill_Icon_Message from '../static/icons/Icon_Message_NoFill.svg';
 
 
 function Post({
-    userInfo={pfp: '/pfp/Default_Profile_Picture.png', username: '@User'},
+    userInfo={pfp: '/pfp/Default_Profile_Picture.png', username: 'User'},
     postInfo={body: '', tags: [], date: 'DD/MM/YYYY', likes: 0, comments: 0},
     media={src: '', type: 'image'}
 }) {
