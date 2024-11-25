@@ -160,8 +160,17 @@ function AccountPage({displayConfirmationDialog}) {
                                     MESSAGE.addClass('success');
                                     MESSAGE.text('Profile picture deleted successfully');
 
+                                    const DEFAULT_PFP_SRC = '/pfp/Default_Profile_Picture.png';
+
+                                    PROFILE_DATA.current.pfp = DEFAULT_PFP_SRC;
+
                                     // reset profile picture to default
-                                    $('#account-page-profile-picture').prop('src', '/pfp/Default_Profile_Picture.png');
+                                    $('#account-page-profile-picture').prop('src', DEFAULT_PFP_SRC);
+
+                                    // reset profile picture in posts
+                                    $('#account-page-posts-list .post .user-info img').each((_, pfp) => {
+                                        pfp.src = DEFAULT_PFP_SRC;
+                                    });
                                 }
                             }
                             else {
@@ -293,7 +302,16 @@ function AccountPage({displayConfirmationDialog}) {
         }
 
         if (newData.pfp.length > 0) {
-            $('#account-page-profile-picture').prop('src', `${PROFILE_STATIC_ASSETS_PATH}/${newData.pfp}`);
+            const PROFILE_PICTURE_SRC = `${PROFILE_STATIC_ASSETS_PATH}/${newData.pfp}`;
+
+            PROFILE_DATA.current.pfp = PROFILE_PICTURE_SRC;
+
+            $('#account-page-profile-picture').prop('src', PROFILE_PICTURE_SRC);
+
+            // update profile picture in posts
+            $('#account-page-posts-list .post .user-info img').each((_, pfp) => {
+                pfp.src = PROFILE_PICTURE_SRC;
+            });
         }
     };
 
