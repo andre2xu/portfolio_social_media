@@ -11,6 +11,54 @@ import NoFill_Icon_Message from '../static/icons/Icon_Message_NoFill.svg';
 
 
 
+function Post({
+    userInfo={pfp: '/pfp/Default_Profile_Picture.png', username: '@User'},
+    postInfo={body: '', tags: [], date: 'DD/MM/YYYY', likes: 0, comments: 0},
+    media=undefined
+}) {
+    return (
+        <article className='post'>
+            <div className='user-info'>
+                <img src={userInfo.pfp} alt='User'></img>
+                <span>{userInfo.username}</span>
+            </div>
+
+            <div className='post-content'>
+                <p>
+                    {postInfo.body}
+                </p>
+
+                { typeof media === 'string' && media.length > 0 ? <img src={media} alt='Post'></img> : null }
+
+                <ul>
+                    {
+                        postInfo.tags.map((tag) => {
+                            return <li>#{tag}</li>;
+                        })
+                    }
+                </ul>
+            </div>
+
+            <div className='post-info'>
+                <span className='publish-date'>{postInfo.date}</span>
+
+                <div className='likes'>
+                    <img src={NoFill_Icon_ThumbsUp} alt='Like Icon'></img>
+                    <img className='hide' src={Fill_Icon_ThumbsUp} alt='Like Icon'></img>
+                    <span>{postInfo.likes}</span>
+                </div>
+
+                <div className='comments'>
+                    <img src={NoFill_Icon_Message} alt='Comment Icon'></img>
+                    <span>{postInfo.comments}</span>
+                </div>
+
+                <button>Delete</button>
+            </div>
+        </article>
+    );
+};
+
 function AccountPage({displayConfirmationDialog}) {
     const POSTS_FORM_MESSAGE_TIMEOUT_FUNCTION = React.useRef(null);
     const SETTINGS_FORM_MESSAGE_TIMEOUT_FUNCTION = React.useRef(null);
