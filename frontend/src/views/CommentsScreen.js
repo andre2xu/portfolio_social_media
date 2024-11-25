@@ -115,6 +115,6 @@ function Comments() {
             </section>
         </div>
     );
-}
+};
 
 export default Comments;

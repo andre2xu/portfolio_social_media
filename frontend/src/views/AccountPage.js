@@ -558,6 +558,6 @@ function AccountPage({displayConfirmationDialog}) {
             </div>
         </div>
     );
-}
+};
 
 export default AccountPage;

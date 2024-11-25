@@ -25,6 +25,6 @@ function ChatScreen() {
             </form>
         </div>
     );
-}
+};
 
 export default ChatScreen;

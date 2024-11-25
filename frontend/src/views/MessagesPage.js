@@ -40,6 +40,6 @@ function MessagesPage() {
             </div>
         </div>
     );
-}
+};
 
 export default MessagesPage;

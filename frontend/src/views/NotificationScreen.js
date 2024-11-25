@@ -10,6 +10,6 @@ function NotificationScreen() {
             </p>
         </div>
     );
-}
+};
 
 export default NotificationScreen;
