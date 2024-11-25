@@ -323,8 +323,28 @@ backend.delete('/account/delete', async (req, res) => {
 
     if (AUTHENTICATION_RESULT.isAuthenticated) {
         const USERS_COLLECTION = req.app.locals.db.collection('Users');
+        const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
 
-        await USERS_COLLECTION.deleteOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
+        const FILTER = {uid: AUTHENTICATION_RESULT.tokenData.uid};
+
+        // get static files linked to user & remove them from the server
+        const USER_INFO = await USERS_COLLECTION.findOne(FILTER);
+        const USER_POSTS = await POSTS_COLLECTION.find(FILTER).toArray();
+
+        fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${USER_INFO.pfp}`, () => {});
+        fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${USER_INFO.cover}`, () => {});
+
+        if (USER_POSTS.length > 0) {
+            USER_POSTS.forEach((postData) => {
+                if (postData.media.length > 0) {
+                    fs.unlink(`${USER_POSTS_MEDIA_FOLDER}/${postData.media[0].src}`, () => {});
+                }
+            });
+        }
+
+        // delete user data
+        await USERS_COLLECTION.deleteOne(FILTER);
+        await POSTS_COLLECTION.deleteMany(FILTER);
 
         res.clearCookie('LT');
     }
