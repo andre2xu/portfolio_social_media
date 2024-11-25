@@ -99,15 +99,17 @@ backend.post('/signup', async (req, res) => {
 
         if (await USERS_COLLECTION.findOne({username: FORM_DATA.username}) === null) {
             const HASHED_PASSWORD = createHash('sha256').update(FORM_DATA.password).digest('hex');
+            const UID = createHash('sha256').update(`${FORM_DATA.username}${HASHED_PASSWORD}${new Date().getMilliseconds()}`).digest('hex');
 
             await USERS_COLLECTION.insertOne({
+                uid: UID,
                 username: FORM_DATA.username,
                 password: HASHED_PASSWORD,
                 cover: '', // profile background cover file name
                 pfp: '' // profile picture file name
             });
 
-            generateLoginToken(res, FORM_DATA.username);
+            generateLoginToken(res, UID);
         }
         else {
             RESPONSE.errorMessage = "That username is already taken";
@@ -134,7 +136,7 @@ backend.post('/login', async (req, res) => {
             const HASHED_PASSWORD = createHash('sha256').update(FORM_DATA.password).digest('hex');
 
             if (HASHED_PASSWORD === ACCOUNT.password) {
-                generateLoginToken(res, FORM_DATA.username);
+                generateLoginToken(res, ACCOUNT.uid);
 
                 return res.json(RESPONSE);
             }
@@ -172,7 +174,7 @@ backend.get('/account/info', async (req, res) => {
 
     if (AUTHENTICATION_RESULT.isAuthenticated) {
         const USERS_COLLECTION = req.app.locals.db.collection('Users');
-        const ACCOUNT = await USERS_COLLECTION.findOne({username: AUTHENTICATION_RESULT.tokenData.uid});
+        const ACCOUNT = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
 
         if (ACCOUNT !== null) {
             Object.keys(ACCOUNT).forEach((key) => {
@@ -199,7 +201,7 @@ backend.put('/account/update', userProfileUploads.fields([{name: 'cover', maxCou
 
         // update user account data
         const USERS_COLLECTION = req.app.locals.db.collection('Users');
-        const ACCOUNT = await USERS_COLLECTION.findOne({username: AUTHENTICATION_RESULT.tokenData.uid});
+        const ACCOUNT = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
 
         if (ACCOUNT !== null) {
             const NEW_DATA = {};
@@ -253,14 +255,9 @@ backend.put('/account/update', userProfileUploads.fields([{name: 'cover', maxCou
             if (Object.keys(NEW_DATA).length > 0 && RESPONSE.errorMessage === undefined) {
                 // update user account data
                 await USERS_COLLECTION.updateOne(
-                    {username: AUTHENTICATION_RESULT.tokenData.uid},
+                    {uid: AUTHENTICATION_RESULT.tokenData.uid},
                     {$set: NEW_DATA}
                 );
-
-                // update login token if the username changed
-                if (NEW_DATA.username !== undefined) {
-                    generateLoginToken(res, NEW_DATA.username);
-                }
 
                 // pass relevant database info to frontend
                 delete NEW_DATA['password'];
@@ -282,7 +279,7 @@ backend.put('/account/remove', async (req, res) => {
 
         if (DATA.type === 'profile') {
             const USERS_COLLECTION = req.app.locals.db.collection('Users');
-            const ACCOUNT = await USERS_COLLECTION.findOne({username: AUTHENTICATION_RESULT.tokenData.uid});
+            const ACCOUNT = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
 
             if (ACCOUNT !== null) {
                 switch (DATA.target) {
@@ -291,7 +288,7 @@ backend.put('/account/remove', async (req, res) => {
                             fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${ACCOUNT.cover}`, () => {});
 
                             await USERS_COLLECTION.updateOne(
-                                {username: AUTHENTICATION_RESULT.tokenData.uid},
+                                {uid: AUTHENTICATION_RESULT.tokenData.uid},
                                 {$set: {cover: ''}}
                             );
                         }
@@ -304,7 +301,7 @@ backend.put('/account/remove', async (req, res) => {
                             fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${ACCOUNT.pfp}`, () => {});
 
                             await USERS_COLLECTION.updateOne(
-                                {username: AUTHENTICATION_RESULT.tokenData.uid},
+                                {uid: AUTHENTICATION_RESULT.tokenData.uid},
                                 {$set: {pfp: ''}}
                             );
                         }
@@ -327,7 +324,7 @@ backend.delete('/account/delete', async (req, res) => {
     if (AUTHENTICATION_RESULT.isAuthenticated) {
         const USERS_COLLECTION = req.app.locals.db.collection('Users');
 
-        await USERS_COLLECTION.deleteOne({username: AUTHENTICATION_RESULT.tokenData.uid});
+        await USERS_COLLECTION.deleteOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
 
         res.clearCookie('LT');
     }
