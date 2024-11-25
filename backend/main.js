@@ -30,6 +30,9 @@ backend.use(cors({
 const USER_PROFILE_UPLOADS_FOLDER = './public/users/profile';
 const userProfileUploads = multer({dest: USER_PROFILE_UPLOADS_FOLDER});
 
+const USER_POSTS_MEDIA_FOLDER = './public/users/posts';
+const userPostsMedia = multer({dest: USER_POSTS_MEDIA_FOLDER});
+
 function authenticateUser(req) {
     const RESULT = {
         isAuthenticated: false,
@@ -332,7 +335,7 @@ backend.delete('/account/delete', async (req, res) => {
     return res.json({});
 });
 
-backend.post('/post', userProfileUploads.fields([{name: 'postMedia', maxCount: 1}]), async (req, res) => {
+backend.post('/post', userPostsMedia.fields([{name: 'postMedia', maxCount: 1}]), async (req, res) => {
     const RESPONSE = {};
     const AUTHENTICATION_RESULT = authenticateUser(req);
 
