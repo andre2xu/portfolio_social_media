@@ -64,6 +64,11 @@ function Post({
 function AccountPage({displayConfirmationDialog}) {
     const POSTS_FORM_MESSAGE_TIMEOUT_FUNCTION = React.useRef(null);
     const SETTINGS_FORM_MESSAGE_TIMEOUT_FUNCTION = React.useRef(null);
+    const [posts, loadPosts] = React.useState([]);
+    const PROFILE_DATA = React.useRef({
+        username: 'User',
+        pfp: '/pfp/Default_Profile_Picture.png'
+    });
 
     const redirectTo = useNavigate();
 
@@ -311,7 +316,23 @@ function AccountPage({displayConfirmationDialog}) {
         axios.get(shared.resolveBackendRoute('/account/info'), {withCredentials: true})
         .then((response) => {
             if (response.status === 200) {
+                if (response.data.username.length > 0) {
+                    PROFILE_DATA.current.username = response.data.username;
+                }
+
+                if (response.data.pfp.length > 0) {
+                    PROFILE_DATA.current.pfp = shared.resolveBackendRoute(`/static/users/profile/${response.data.pfp}`);
+                }
+
                 updateProfile(response.data);
+            }
+        });
+
+        // load posts
+        axios.get(shared.resolveBackendRoute('/post'), {withCredentials: true})
+        .then((response) => {
+            if (response.status === 200 && typeof response.data === 'object' && 'posts' in response.data) {
+                loadPosts(response.data.posts);
             }
         });
     }, []);
@@ -432,6 +453,17 @@ function AccountPage({displayConfirmationDialog}) {
 
                             <span id='account-page-post-form-error' className='hide'>Error message</span>
                         </form>
+
+                        {
+                            posts.map((postData, index) => {
+                                return (<Post
+                                    key={index}
+                                    userInfo={{pfp: PROFILE_DATA.current.pfp, username: PROFILE_DATA.current.username}}
+                                    postInfo={{body: postData.body, tags: postData.tags, date: postData.date, likes: 0, comments: 0}}
+                                    media={{src: shared.resolveBackendRoute(`/static/users/posts/${postData.media[0].src}`), type: postData.media[0].type}}
+                                />);
+                            })
+                        }
                     </div>
                 </div>
             </div>
