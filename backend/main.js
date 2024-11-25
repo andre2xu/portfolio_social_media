@@ -410,6 +410,22 @@ backend.post('/post', userProfileUploads.fields([{name: 'postMedia', maxCount: 1
     return res.json(RESPONSE);
 });
 
+backend.get('/post', async (req, res) => {
+    const RESPONSE = {};
+    const AUTHENTICATION_RESULT = authenticateUser(req);
+
+    if (AUTHENTICATION_RESULT.isAuthenticated) {
+        const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
+        const USER_POSTS = await POSTS_COLLECTION.find({uid: AUTHENTICATION_RESULT.tokenData.uid}, {projection: {_id: 0, uid: 0}}).toArray();
+
+        if (USER_POSTS.length > 0) {
+            RESPONSE.posts = USER_POSTS;
+        }
+    }
+
+    return res.json(RESPONSE);
+});
+
 // INITIALIZATION
 backend.listen(8010, async () => {
     // connect to database & store the connection in a shared variable
