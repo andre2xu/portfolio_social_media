@@ -293,6 +293,11 @@ function AccountPage({displayConfirmationDialog}) {
 
         if (newData.username.length > 0) {
             $('#account-page-profile-info span').first().text(`@${newData.username}`);
+
+            // update username in posts
+            $('#account-page-posts-list .post .user-info span').each((_, username) => {
+                username.innerText = newData.username;
+            });
         }
 
         const PROFILE_STATIC_ASSETS_PATH = shared.resolveBackendRoute('/static/users/profile/');
