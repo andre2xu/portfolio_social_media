@@ -268,6 +268,7 @@ function AccountPage({displayConfirmationDialog}) {
                 }
                 else {
                     // update posts list
+                    updatePostsList();
                 }
             }
             else {
@@ -294,6 +295,15 @@ function AccountPage({displayConfirmationDialog}) {
         if (newData.pfp.length > 0) {
             $('#account-page-profile-picture').prop('src', `${PROFILE_STATIC_ASSETS_PATH}/${newData.pfp}`);
         }
+    };
+
+    function updatePostsList() {
+        axios.get(shared.resolveBackendRoute('/post'), {withCredentials: true})
+        .then((response) => {
+            if (response.status === 200 && typeof response.data === 'object' && 'posts' in response.data) {
+                loadPosts(response.data.posts);
+            }
+        });
     };
 
     function deleteAccount() {
@@ -329,12 +339,7 @@ function AccountPage({displayConfirmationDialog}) {
         });
 
         // load posts
-        axios.get(shared.resolveBackendRoute('/post'), {withCredentials: true})
-        .then((response) => {
-            if (response.status === 200 && typeof response.data === 'object' && 'posts' in response.data) {
-                loadPosts(response.data.posts);
-            }
-        });
+        updatePostsList();
     }, []);
 
     return (
@@ -456,12 +461,27 @@ function AccountPage({displayConfirmationDialog}) {
 
                         {
                             posts.map((postData, index) => {
-                                return (<Post
-                                    key={index}
-                                    userInfo={{pfp: PROFILE_DATA.current.pfp, username: PROFILE_DATA.current.username}}
-                                    postInfo={{body: postData.body, tags: postData.tags, date: postData.date, likes: 0, comments: 0}}
-                                    media={{src: shared.resolveBackendRoute(`/static/users/posts/${postData.media[0].src}`), type: postData.media[0].type}}
-                                />);
+                                if (postData.media.length > 0) {
+                                    // with media
+                                    return (
+                                        <Post
+                                            key={index}
+                                            userInfo={{pfp: PROFILE_DATA.current.pfp, username: PROFILE_DATA.current.username}}
+                                            postInfo={{body: postData.body, tags: postData.tags, date: postData.date, likes: 0, comments: 0}}
+                                            media={{src: shared.resolveBackendRoute(`/static/users/posts/${postData.media[0].src}`), type: postData.media[0].type}}
+                                        />
+                                    );
+                                }
+                                else {
+                                    // without media
+                                    return (
+                                        <Post
+                                            key={index}
+                                            userInfo={{pfp: PROFILE_DATA.current.pfp, username: PROFILE_DATA.current.username}}
+                                            postInfo={{body: postData.body, tags: postData.tags, date: postData.date, likes: 0, comments: 0}}
+                                        />
+                                    );
+                                }
                             })
                         }
                     </div>
