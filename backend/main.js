@@ -377,7 +377,7 @@ backend.post('/post', userProfileUploads.fields([{name: 'postMedia', maxCount: 1
                 uid: AUTHENTICATION_RESULT.tokenData.uid,
                 body: BODY,
                 tags: tags.split(','),
-                media: [], // file names in static folder
+                media: [], // [{src: 'filename': type: 'image/video'}, ...]
                 date: `${day}/${month}/${year}`
             };
 
@@ -397,7 +397,7 @@ backend.post('/post', userProfileUploads.fields([{name: 'postMedia', maxCount: 1
 
                 if (IS_VALID_MEDIA) {
                     MEDIA.forEach((file) => {
-                        POST_DATA.media.push(file.filename);
+                        POST_DATA.media.push({src: file.filename, type: file.mimetype.split('/')[0]});
                     });
                 }
             }
