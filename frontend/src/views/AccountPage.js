@@ -278,6 +278,11 @@ function AccountPage({displayConfirmationDialog}) {
                 else {
                     // update posts list
                     updatePostsList();
+
+                    // clear posts form fields
+                    $(FORM).find('input, textarea').each((_, field) => {
+                        field.value = '';
+                    });
                 }
             }
             else {
