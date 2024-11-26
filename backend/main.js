@@ -447,6 +447,33 @@ backend.get('/post', async (req, res) => {
     return res.json(RESPONSE);
 });
 
+backend.delete('/post/:pid', async (req, res) => {
+    const RESPONSE = {status: 'failed'};
+    const AUTHENTICATION_RESULT = authenticateUser(req);
+
+    if (AUTHENTICATION_RESULT.isAuthenticated) {
+        const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
+        const FILTER = {uid: AUTHENTICATION_RESULT.tokenData.uid, pid: req.params.pid};
+
+        const POST_DATA = await POSTS_COLLECTION.findOne(FILTER);
+
+        if (POST_DATA !== null) {
+            // delete media stored in server (if any)
+            if (POST_DATA.media.length > 0) {
+                POST_DATA.media.forEach((file) => {
+                    fs.unlink(`${USER_POSTS_MEDIA_FOLDER}/${file.src}`, () => {});
+                });
+            }
+
+            await POSTS_COLLECTION.deleteOne(FILTER);
+
+            RESPONSE.status = 'success';
+        }
+    }
+
+    res.json(RESPONSE);
+});
+
 // INITIALIZATION
 backend.listen(8010, async () => {
     // connect to database & store the connection in a shared variable
