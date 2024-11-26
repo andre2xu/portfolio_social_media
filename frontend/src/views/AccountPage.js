@@ -291,6 +291,23 @@ function AccountPage({displayConfirmationDialog}) {
         });
     };
 
+    function onClickPost(event) {
+        const ELEMENT_CLICKED = event.target;
+
+        if (ELEMENT_CLICKED instanceof HTMLButtonElement && ELEMENT_CLICKED.innerText === 'Delete' && $(ELEMENT_CLICKED.parentElement.parentElement).hasClass('post')) {
+            // delete post
+
+            const POST_ID = ELEMENT_CLICKED.parentElement.parentElement.getAttribute('data-pid');
+
+            axios.delete(shared.resolveBackendRoute(`/post/${POST_ID}`), {withCredentials: true})
+            .then((response) => {
+                if (response.status === 200 && 'status' in response.data && response.data.status === 'success') {
+                    $(`#account-page-posts-list .post[data-pid="${POST_ID}"]`).remove();
+                }
+            });
+        }
+    };
+
     function updateProfile(newData) {
         if (typeof newData !== 'object' || ('username' in newData && 'cover' in newData && 'pfp' in newData) === false || (typeof newData.username === 'string' && typeof newData.cover === 'string' && typeof newData.pfp === 'string') === false) {
             throw TypeError("Invalid profile data");
@@ -470,7 +487,7 @@ function AccountPage({displayConfirmationDialog}) {
                         <button className='account-page-lists-show-more'>Show more</button>
                     </section>
 
-                    <div id='account-page-posts-list' className=''>
+                    <div id='account-page-posts-list' className='' onClick={onClickPost}>
                         {/* NOTE: the post form AND the 'delete' option in posts should only appear when the user that's logged in is viewing their own profile */}
 
                         <form id='account-page-post-form' action='/post' method='post' encType='multipart/form-data' onSubmit={onSubmitPostsForm}>
