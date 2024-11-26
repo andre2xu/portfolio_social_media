@@ -13,11 +13,11 @@ import NoFill_Icon_Message from '../static/icons/Icon_Message_NoFill.svg';
 
 function Post({
     userInfo={pfp: '/pfp/Default_Profile_Picture.png', username: 'User'},
-    postInfo={body: '', tags: [], date: 'DD/MM/YYYY', likes: 0, comments: 0},
+    postInfo={pid: '', body: '', tags: [], date: 'DD/MM/YYYY', likes: 0, comments: 0},
     media={src: '', type: 'image'}
 }) {
     return (
-        <article className='post'>
+        <article className='post' data-pid={postInfo.pid}>
             <div className='user-info'>
                 <img src={userInfo.pfp} alt='User'></img>
                 <span>{userInfo.username}</span>
@@ -495,7 +495,7 @@ function AccountPage({displayConfirmationDialog}) {
                                         <Post
                                             key={index}
                                             userInfo={{pfp: PROFILE_DATA.current.pfp, username: PROFILE_DATA.current.username}}
-                                            postInfo={{body: postData.body, tags: postData.tags, date: postData.date, likes: 0, comments: 0}}
+                                            postInfo={{pid: postData.pid, body: postData.body, tags: postData.tags, date: postData.date, likes: 0, comments: 0}}
                                             media={{src: shared.resolveBackendRoute(`/static/users/posts/${postData.media[0].src}`), type: postData.media[0].type}}
                                         />
                                     );
@@ -506,7 +506,7 @@ function AccountPage({displayConfirmationDialog}) {
                                         <Post
                                             key={index}
                                             userInfo={{pfp: PROFILE_DATA.current.pfp, username: PROFILE_DATA.current.username}}
-                                            postInfo={{body: postData.body, tags: postData.tags, date: postData.date, likes: 0, comments: 0}}
+                                            postInfo={{pid: postData.pid, body: postData.body, tags: postData.tags, date: postData.date, likes: 0, comments: 0}}
                                         />
                                     );
                                 }
