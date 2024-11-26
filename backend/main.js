@@ -394,6 +394,7 @@ backend.post('/post', userPostsMedia.fields([{name: 'postMedia', maxCount: 1}]),
             }
 
             const POST_DATA = {
+                pid: createHash('sha256').update(`${AUTHENTICATION_RESULT.tokenData.uid}${BODY}${new Date().getMilliseconds()}`).digest('hex'),
                 uid: AUTHENTICATION_RESULT.tokenData.uid,
                 body: BODY,
                 tags: tags.split(','),
