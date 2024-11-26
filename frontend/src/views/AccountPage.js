@@ -496,7 +496,7 @@ function AccountPage({displayConfirmationDialog}) {
                             <input type='text' name='postTags' placeholder='tag1, tag2, tag3, ...' />
 
                             <div>
-                                <input type='file' name='postMedia' accept='image/png, image/jpg, image/jpeg, image/gif' />
+                                <input type='file' name='postMedia' accept='image/png, image/jpg, image/jpeg, image/gif, video/mp4' />
 
                                 <button type='submit'>Post</button>
                             </div>
