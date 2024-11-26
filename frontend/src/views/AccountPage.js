@@ -297,14 +297,20 @@ function AccountPage({displayConfirmationDialog}) {
         if (ELEMENT_CLICKED instanceof HTMLButtonElement && ELEMENT_CLICKED.innerText === 'Delete' && $(ELEMENT_CLICKED.parentElement.parentElement).hasClass('post')) {
             // delete post
 
-            const POST_ID = ELEMENT_CLICKED.parentElement.parentElement.getAttribute('data-pid');
+            displayConfirmationDialog(
+                () => {
+                    const POST_ID = ELEMENT_CLICKED.parentElement.parentElement.getAttribute('data-pid');
 
-            axios.delete(shared.resolveBackendRoute(`/post/${POST_ID}`), {withCredentials: true})
-            .then((response) => {
-                if (response.status === 200 && 'status' in response.data && response.data.status === 'success') {
-                    $(`#account-page-posts-list .post[data-pid="${POST_ID}"]`).remove();
-                }
-            });
+                    axios.delete(shared.resolveBackendRoute(`/post/${POST_ID}`), {withCredentials: true})
+                    .then((response) => {
+                        if (response.status === 200 && 'status' in response.data && response.data.status === 'success') {
+                            $(`#account-page-posts-list .post[data-pid="${POST_ID}"]`).remove();
+                        }
+                    });
+                },
+                () => {},
+                "Are you sure you want to delete this post? This cannot be undone."
+            );
         }
     };
 
