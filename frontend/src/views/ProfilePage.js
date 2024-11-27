@@ -1,5 +1,7 @@
 import React from 'react';
+import axios from 'axios';
 import shared from '../shared';
+import { useParams } from 'react-router-dom';
 
 // general views
 import Post from '../components/Post';
@@ -7,6 +9,7 @@ import Post from '../components/Post';
 
 
 function ProfilePage() {
+    const URL_PARAMETERS = useParams();
     const [posts, loadPosts] = React.useState([]);
     const PROFILE_DATA = React.useRef({
         username: 'User',
@@ -16,6 +19,17 @@ function ProfilePage() {
     function onClickPost(event) {
         
     };
+
+    React.useEffect(() => {
+        // retrieve & load posts
+        axios.get(shared.resolveBackendRoute(`/post/${URL_PARAMETERS.username}`), {withCredentials: true})
+        .then((response) => {
+            if (response.status === 200 && typeof response.data === 'object' && 'posts' in response.data) {
+                loadPosts(response.data.posts);
+            }
+        });
+
+    }, [URL_PARAMETERS]);
 
     return (
         <div id='account-page' className=''>
