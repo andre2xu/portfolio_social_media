@@ -167,25 +167,32 @@ backend.post('/auth', async (req, res) => {
     return res.json({isAuthenticated: authenticateUser(req).isAuthenticated});
 });
 
-backend.get('/account/info', async (req, res) => {
+backend.get('/account/info/:username?', async (req, res) => {
     let response = {};
+    let account = null;
 
-    const AUTHENTICATION_RESULT = authenticateUser(req);
+    const USERS_COLLECTION = req.app.locals.db.collection('Users');
 
-    if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const USERS_COLLECTION = req.app.locals.db.collection('Users');
-        const ACCOUNT = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
+    if (req.params.username !== undefined && req.params.username.length > 0) {
+        account = await USERS_COLLECTION.findOne({username: req.params.username});
+    }
+    else {
+        const AUTHENTICATION_RESULT = authenticateUser(req);
 
-        if (ACCOUNT !== null) {
-            Object.keys(ACCOUNT).forEach((key) => {
-                // remove irrelevant data
-                if (key !== 'username' && key !== 'cover' && key !== 'pfp') {
-                    delete ACCOUNT[key];
-                }
-
-                response = ACCOUNT;
-            });
+        if (AUTHENTICATION_RESULT.isAuthenticated) {
+            account = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
         }
+    }
+
+    if (account !== null) {
+        Object.keys(account).forEach((key) => {
+            // remove irrelevant data
+            if (key !== 'username' && key !== 'cover' && key !== 'pfp') {
+                delete account[key];
+            }
+
+            response = account;
+        });
     }
 
     return res.json(response);
