@@ -1,4 +1,5 @@
 import React from 'react';
+import $ from 'jquery';
 import axios from 'axios';
 import shared from '../shared';
 import { useParams } from 'react-router-dom';
@@ -55,6 +56,22 @@ function ProfilePage() {
     };
 
     React.useEffect(() => {
+        // load profile info
+        axios.get(shared.resolveBackendRoute(`/account/info/${URL_PARAMETERS.username}`), {withCredentials: true})
+        .then((response) => {
+            if (response.status === 200) {
+                if (response.data.username.length > 0) {
+                    PROFILE_DATA.current.username = response.data.username;
+                }
+
+                if (response.data.pfp.length > 0) {
+                    PROFILE_DATA.current.pfp = shared.resolveBackendRoute(`/static/users/profile/${response.data.pfp}`);
+                }
+
+                updateProfile(response.data);
+            }
+        });
+
         // retrieve & load posts
         axios.get(shared.resolveBackendRoute(`/post/${URL_PARAMETERS.username}`), {withCredentials: true})
         .then((response) => {
