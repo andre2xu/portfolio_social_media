@@ -2,7 +2,7 @@ import React from 'react';
 import $ from 'jquery';
 import axios from 'axios';
 import shared from '../shared';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 // general views
 import Post from '../components/Post';
@@ -10,7 +10,6 @@ import Post from '../components/Post';
 
 
 function ProfilePage() {
-    const URL_PARAMETERS = useParams();
     const [posts, loadPosts] = React.useState([]);
     const PROFILE_DATA = React.useRef({
         username: 'User',
@@ -55,20 +54,29 @@ function ProfilePage() {
         }
     };
 
+    const URL_PARAMETERS = useParams();
+    const redirectTo = useNavigate();
+
     React.useEffect(() => {
         // load profile info
         axios.get(shared.resolveBackendRoute(`/account/info/${URL_PARAMETERS.username}`), {withCredentials: true})
         .then((response) => {
-            if (response.status === 200) {
-                if (response.data.username.length > 0) {
-                    PROFILE_DATA.current.username = response.data.username;
-                }
+            if (response.status === 200 && typeof response.data === 'object') {
+                if (Object.keys(response.data).length > 0) {
+                    if (response.data.username.length > 0) {
+                        PROFILE_DATA.current.username = response.data.username;
+                    }
 
-                if (response.data.pfp.length > 0) {
-                    PROFILE_DATA.current.pfp = shared.resolveBackendRoute(`/static/users/profile/${response.data.pfp}`);
-                }
+                    if (response.data.pfp.length > 0) {
+                        PROFILE_DATA.current.pfp = shared.resolveBackendRoute(`/static/users/profile/${response.data.pfp}`);
+                    }
 
-                updateProfile(response.data);
+                    updateProfile(response.data);
+                }
+                else {
+                    // profile page owner does not exist so redirect to explore page
+                    redirectTo('/');
+                }
             }
         });
 
@@ -80,7 +88,7 @@ function ProfilePage() {
             }
         });
 
-    }, [URL_PARAMETERS]);
+    }, [URL_PARAMETERS, redirectTo]);
 
     return (
         <div id='account-page' className=''>
