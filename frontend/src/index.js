@@ -14,6 +14,7 @@ import MainScreen from './views/MainScreen';
 // main screen views
 import ExplorePage from './views/ExplorePage';
 import AccountPage from './views/AccountPage';
+import ProfilePage from './views/ProfilePage';
 import MessagesPage from './views/MessagesPage';
 import NotificationsPage from './views/NotificationsPage';
 
@@ -38,6 +39,10 @@ const ROUTER = createBrowserRouter([
       {
         path: '/account',
         element: <MainScreen component={<AccountPage />} />
+      },
+      {
+        path: '/profile/:username',
+        element: <MainScreen component={<ProfilePage />} />
       },
       {
         path: '/account/messages',
