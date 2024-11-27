@@ -34,15 +34,15 @@ const ROUTER = createBrowserRouter([
     element: <SignUpPage />
   },
   {
+    path: '/profile/:username',
+    element: <MainScreen component={<ProfilePage />} />
+  },
+  {
     element: <ProtectedRoutes />,
     children: [
       {
         path: '/account',
         element: <MainScreen component={<AccountPage />} />
-      },
-      {
-        path: '/profile/:username',
-        element: <MainScreen component={<ProfilePage />} />
       },
       {
         path: '/account/messages',
