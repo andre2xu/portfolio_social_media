@@ -431,13 +431,31 @@ backend.post('/post', userPostsMedia.fields([{name: 'postMedia', maxCount: 1}]),
     return res.json(RESPONSE);
 });
 
-backend.get('/post', async (req, res) => {
+backend.get('/post/:username?', async (req, res) => {
+    // NOTE: usernames should only be passed when retrieving user posts for a public page (i.e. a page that doesn't require a login token) as this approach is costly
+
     const RESPONSE = {};
     const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    if (AUTHENTICATION_RESULT.isAuthenticated) {
+    let uid = undefined;
+
+    if (req.params.username !== undefined && req.params.username.length > 0) {
+        const USERS_COLLECTION = req.app.locals.db.collection('Users');
+
+        const ACCOUNT = await USERS_COLLECTION.findOne({username: req.params.username});
+
+        if (ACCOUNT !== null) {
+            uid = ACCOUNT.uid;
+        }
+    }
+
+    if (AUTHENTICATION_RESULT.isAuthenticated && uid === undefined) {
+        uid = AUTHENTICATION_RESULT.tokenData.uid;
+    }
+
+    if (uid !== undefined) {
         const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
-        const USER_POSTS = await POSTS_COLLECTION.find({uid: AUTHENTICATION_RESULT.tokenData.uid}, {projection: {_id: 0, uid: 0}}).toArray();
+        const USER_POSTS = await POSTS_COLLECTION.find({uid: uid}, {projection: {_id: 0, uid: 0}}).toArray();
 
         if (USER_POSTS.length > 0) {
             RESPONSE.posts = USER_POSTS;
