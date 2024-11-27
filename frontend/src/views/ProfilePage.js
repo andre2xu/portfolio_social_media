@@ -20,6 +20,40 @@ function ProfilePage() {
         
     };
 
+    function updateProfile(newData) {
+        if (typeof newData !== 'object' || ('username' in newData && 'cover' in newData && 'pfp' in newData) === false || (typeof newData.username === 'string' && typeof newData.cover === 'string' && typeof newData.pfp === 'string') === false) {
+            throw TypeError("Invalid profile data");
+        }
+
+        if (newData.username.length > 0) {
+            $('#account-page-profile-info span').first().text(`@${newData.username}`);
+
+            // update username in posts
+            $('#account-page-posts-list .post .user-info span').each((_, username) => {
+                username.innerText = newData.username;
+            });
+        }
+
+        const PROFILE_STATIC_ASSETS_PATH = shared.resolveBackendRoute('/static/users/profile/');
+
+        if (newData.cover.length > 0) {
+            $('#account-page-profile-cover').css({backgroundImage: `url("${PROFILE_STATIC_ASSETS_PATH}/${newData.cover}")`});
+        }
+
+        if (newData.pfp.length > 0) {
+            const PROFILE_PICTURE_SRC = `${PROFILE_STATIC_ASSETS_PATH}/${newData.pfp}`;
+
+            PROFILE_DATA.current.pfp = PROFILE_PICTURE_SRC;
+
+            $('#account-page-profile-picture').prop('src', PROFILE_PICTURE_SRC);
+
+            // update profile picture in posts
+            $('#account-page-posts-list .post .user-info img').each((_, pfp) => {
+                pfp.src = PROFILE_PICTURE_SRC;
+            });
+        }
+    };
+
     React.useEffect(() => {
         // retrieve & load posts
         axios.get(shared.resolveBackendRoute(`/post/${URL_PARAMETERS.username}`), {withCredentials: true})
