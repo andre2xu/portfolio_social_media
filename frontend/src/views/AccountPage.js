@@ -260,6 +260,33 @@ function AccountPage({displayConfirmationDialog}) {
                 "Are you sure you want to delete this post? This cannot be undone."
             );
         }
+        else if (ELEMENT_CLICKED instanceof HTMLImageElement) {
+            if (ELEMENT_CLICKED.alt === 'Like Icon') {
+                axios.put(shared.resolveBackendRoute('/post/like'), {pid: $(ELEMENT_CLICKED).closest('.post').data('pid')}, {withCredentials: true})
+                .then((response) => {
+                    if (response.status === 200 && 'action' in response.data && 'count' in response.data) {
+                        const LIKES_CONTAINER = $(ELEMENT_CLICKED).parent();
+                        const NO_FILL_LIKE_BUTTON = LIKES_CONTAINER.children('.no-fill').first();
+                        const FILL_LIKE_BUTTON = LIKES_CONTAINER.children('.fill').first();
+                        const LIKE_COUNTER = LIKES_CONTAINER.children('span').first();
+
+                        switch (response.data.action) {
+                            case 'added':
+                                NO_FILL_LIKE_BUTTON.addClass('hide');
+                                FILL_LIKE_BUTTON.removeClass('hide');
+                                break;
+                            case 'removed':
+                                FILL_LIKE_BUTTON.addClass('hide');
+                                NO_FILL_LIKE_BUTTON.removeClass('hide');
+                                break;
+                            default:
+                        }
+
+                        LIKE_COUNTER.text(response.data.count);
+                    }
+                });
+            }
+        }
     };
 
     function updateProfile(newData) {
