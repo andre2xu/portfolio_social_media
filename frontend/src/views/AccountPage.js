@@ -12,6 +12,7 @@ import Post from '../components/Post';
 function AccountPage({displayConfirmationDialog}) {
     const POSTS_FORM_MESSAGE_TIMEOUT_FUNCTION = React.useRef(null);
     const SETTINGS_FORM_MESSAGE_TIMEOUT_FUNCTION = React.useRef(null);
+    const LIKED_POSTS = React.useRef([]);
     const [posts, loadPosts] = React.useState([]);
     const PROFILE_DATA = React.useRef({
         username: 'User',
@@ -327,6 +328,10 @@ function AccountPage({displayConfirmationDialog}) {
         axios.get(shared.resolveBackendRoute('/post'), {withCredentials: true})
         .then((response) => {
             if (response.status === 200 && typeof response.data === 'object' && 'posts' in response.data) {
+                if ('likedPosts' in response.data && response.data.likedPosts.length > 0) {
+                    LIKED_POSTS.current = response.data.likedPosts;
+                }
+
                 loadPosts(response.data.posts);
             }
         });
@@ -487,6 +492,12 @@ function AccountPage({displayConfirmationDialog}) {
 
                         {
                             posts.map((postData, index) => {
+                                let is_liked_by_poster = false;
+
+                                if (LIKED_POSTS.current.length > 0 && LIKED_POSTS.current.includes(postData.pid)) {
+                                    is_liked_by_poster = true;
+                                }
+
                                 if (postData.media.length > 0) {
                                     // with media
                                     return (
@@ -495,6 +506,7 @@ function AccountPage({displayConfirmationDialog}) {
                                             userInfo={{pfp: PROFILE_DATA.current.pfp, username: PROFILE_DATA.current.username}}
                                             postInfo={{pid: postData.pid, body: postData.body, tags: postData.tags, date: postData.date, likes: postData.likes.length, comments: 0}}
                                             media={{src: shared.resolveBackendRoute(`/static/users/posts/${postData.media[0].src}`), type: postData.media[0].type}}
+                                            isLiked={is_liked_by_poster}
                                         />
                                     );
                                 }
@@ -505,6 +517,7 @@ function AccountPage({displayConfirmationDialog}) {
                                             key={index}
                                             userInfo={{pfp: PROFILE_DATA.current.pfp, username: PROFILE_DATA.current.username}}
                                             postInfo={{pid: postData.pid, body: postData.body, tags: postData.tags, date: postData.date, likes: postData.likes.length, comments: 0}}
+                                            isLiked={is_liked_by_poster}
                                         />
                                     );
                                 }
