@@ -40,8 +40,8 @@ function Post({
                 <span className='publish-date'>{postInfo.date}</span>
 
                 <div className='likes'>
-                    <img src={NoFill_Icon_ThumbsUp} alt='Like Icon'></img>
-                    <img className='hide' src={Fill_Icon_ThumbsUp} alt='Like Icon'></img>
+                    <img className='no-fill' src={NoFill_Icon_ThumbsUp} alt='Like Icon'></img>
+                    <img className='fill hide' src={Fill_Icon_ThumbsUp} alt='Like Icon'></img>
                     <span>{postInfo.likes}</span>
                 </div>
 
