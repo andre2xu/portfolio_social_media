@@ -9,7 +9,8 @@ function Post({
     userInfo={pfp: '/pfp/Default_Profile_Picture.png', username: 'User'},
     postInfo={pid: '', body: '', tags: [], date: 'DD/MM/YYYY', likes: 0, comments: 0},
     media={src: '', type: 'image'},
-    isDeletable=true
+    isDeletable=true,
+    isLiked=false
 }) {
     return (
         <article className='post' data-pid={postInfo.pid}>
@@ -40,8 +41,14 @@ function Post({
                 <span className='publish-date'>{postInfo.date}</span>
 
                 <div className='likes'>
-                    <img className='no-fill' src={NoFill_Icon_ThumbsUp} alt='Like Icon'></img>
-                    <img className='fill hide' src={Fill_Icon_ThumbsUp} alt='Like Icon'></img>
+                    {
+                        isLiked ? <img className='no-fill hide' src={NoFill_Icon_ThumbsUp} alt='Like Icon'></img> : <img className='no-fill' src={NoFill_Icon_ThumbsUp} alt='Like Icon'></img>
+                    }
+
+                    {
+                        isLiked ? <img className='fill' src={Fill_Icon_ThumbsUp} alt='Like Icon'></img> : <img className='fill hide' src={Fill_Icon_ThumbsUp} alt='Like Icon'></img>
+                    }
+
                     <span>{postInfo.likes}</span>
                 </div>
 
