@@ -406,7 +406,8 @@ backend.post('/post', userPostsMedia.fields([{name: 'postMedia', maxCount: 1}]),
                 body: BODY,
                 tags: tags.split(','),
                 media: [], // [{src: 'filename': type: 'image/video'}, ...]
-                date: `${day}/${month}/${year}`
+                date: `${day}/${month}/${year}`,
+                likes: [] // list of uids
             };
 
             if (req.files.postMedia !== undefined) {
