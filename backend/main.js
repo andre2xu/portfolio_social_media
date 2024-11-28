@@ -467,6 +467,23 @@ backend.get('/post/:username?', async (req, res) => {
 
         if (USER_POSTS.length > 0) {
             RESPONSE.posts = USER_POSTS;
+
+            // get id of posts liked by the current user that's logged in
+            if (AUTHENTICATION_RESULT.isAuthenticated) {
+                const LOGGED_IN_USER = AUTHENTICATION_RESULT.tokenData.uid; // this can also be the 'uid' variable but I did it like this just to be 100% sure it's the user that's logged in
+
+                const LIKED_POSTS = [];
+
+                USER_POSTS.forEach((postData) => {
+                    if (postData.likes.includes(LOGGED_IN_USER)) {
+                        LIKED_POSTS.push(postData.pid);
+                    }
+                });
+
+                if (LIKED_POSTS.length > 0) {
+                    RESPONSE.likedPosts = LIKED_POSTS;
+                }
+            }
         }
     }
 
