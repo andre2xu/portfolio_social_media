@@ -334,6 +334,12 @@ backend.delete('/account/delete', async (req, res) => {
 
         const FILTER = {uid: AUTHENTICATION_RESULT.tokenData.uid};
 
+        // delete the user's like from posts (if any)
+        await POSTS_COLLECTION.updateMany(
+            {},
+            {$pull: {likes: AUTHENTICATION_RESULT.tokenData.uid}}
+        );
+
         // get static files linked to user & remove them from the server
         const USER_INFO = await USERS_COLLECTION.findOne(FILTER);
         const USER_POSTS = await POSTS_COLLECTION.find(FILTER).toArray();
