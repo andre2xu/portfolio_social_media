@@ -493,7 +493,7 @@ function AccountPage({displayConfirmationDialog}) {
                                         <Post
                                             key={index}
                                             userInfo={{pfp: PROFILE_DATA.current.pfp, username: PROFILE_DATA.current.username}}
-                                            postInfo={{pid: postData.pid, body: postData.body, tags: postData.tags, date: postData.date, likes: 0, comments: 0}}
+                                            postInfo={{pid: postData.pid, body: postData.body, tags: postData.tags, date: postData.date, likes: postData.likes.length, comments: 0}}
                                             media={{src: shared.resolveBackendRoute(`/static/users/posts/${postData.media[0].src}`), type: postData.media[0].type}}
                                         />
                                     );
@@ -504,7 +504,7 @@ function AccountPage({displayConfirmationDialog}) {
                                         <Post
                                             key={index}
                                             userInfo={{pfp: PROFILE_DATA.current.pfp, username: PROFILE_DATA.current.username}}
-                                            postInfo={{pid: postData.pid, body: postData.body, tags: postData.tags, date: postData.date, likes: 0, comments: 0}}
+                                            postInfo={{pid: postData.pid, body: postData.body, tags: postData.tags, date: postData.date, likes: postData.likes.length, comments: 0}}
                                         />
                                     );
                                 }
