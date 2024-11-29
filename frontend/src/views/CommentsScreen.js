@@ -68,9 +68,21 @@ function Comments() {
                         default:
                     }
                 }
+
+                // load tags
+                const POST_TAGS_LIST = POST_CONTENT.children('ul').first();
+
+                if (response.data.postData.tags.length > 0) {
+                    response.data.postData.tags.forEach((tag) => {
+                        const LIST_ITEM = document.createElement('li');
+                        LIST_ITEM.innerText += `#${tag}`;
+
+                        POST_TAGS_LIST.append(LIST_ITEM);
+                    });
+                }
             }
         });
-    });
+    }, [URL_PARAMETERS]);
 
     return (
         <div id='comments-screen' className=''>
@@ -85,10 +97,7 @@ function Comments() {
                 <div className='post-content'>
                     <p></p>
 
-                    <ul>
-                        <li>#pics</li>
-                        <li>#explore</li>
-                    </ul>
+                    <ul></ul>
                 </div>
 
                 <div className='post-info'>
