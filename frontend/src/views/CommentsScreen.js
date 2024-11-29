@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import $ from 'jquery';
 import shared from '../shared';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -23,7 +24,16 @@ function Comments() {
         axios.get(shared.resolveBackendRoute(`/comments/${URL_PARAMETERS.pid}`), {withCredentials: true})
         .then((response) => {
             if (response.status === 200 && typeof response.data === 'object' && 'postData' in response.data && 'userData' in response.data) {
-                console.log(response.data);
+                const POST = $('#comments-screen-post');
+
+                // load username & profile picture
+                const USER_INFO = POST.children('.user-info').first();
+
+                USER_INFO.children('span').text(response.data.userData.username);
+
+                if (response.data.userData.pfp.length > 0) {
+                    USER_INFO.children('img').attr('src', shared.resolveBackendRoute(`/static/users/profile/${response.data.userData.pfp}`));
+                }
             }
         });
     });
@@ -35,7 +45,7 @@ function Comments() {
 
                 <div className='user-info'>
                     <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
-                    <span>Username</span>
+                    <span></span>
                 </div>
 
                 <div className='post-content'>
