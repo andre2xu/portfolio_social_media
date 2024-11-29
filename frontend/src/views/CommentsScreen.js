@@ -85,6 +85,16 @@ function Comments() {
                 const POST_INFO = POST.children('.post-info').first();
 
                 POST_INFO.children('.publish-date').text(response.data.postData.date);
+
+                // load likes
+                const LIKES_CONTAINER = POST_INFO.children('.likes').first();
+
+                LIKES_CONTAINER.children('span').text(response.data.postData.likes.length);
+
+                if ('likedByUser' in response.data.postData) {
+                    LIKES_CONTAINER.children('.no-fill').addClass('hide');
+                    LIKES_CONTAINER.children('.fill').removeClass('hide');
+                }
             }
         });
     }, [URL_PARAMETERS]);
@@ -109,9 +119,9 @@ function Comments() {
                     <span className='publish-date'>DD/MM/YYYY</span>
 
                     <div className='likes'>
-                        <img src={NoFill_Icon_ThumbsUp} alt='Like Icon'></img>
-                        <img className='hide' src={Fill_Icon_ThumbsUp} alt='Like Icon'></img>
-                        <span>100</span>
+                        <img className='no-fill' src={NoFill_Icon_ThumbsUp} alt='Like Icon'></img>
+                        <img className='hide fill' src={Fill_Icon_ThumbsUp} alt='Like Icon'></img>
+                        <span>0</span>
                     </div>
 
                     <div className='comments'>
