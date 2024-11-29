@@ -496,6 +496,30 @@ backend.get('/post/:username?', async (req, res) => {
     return res.json(RESPONSE);
 });
 
+backend.get('/comments/:pid', async (req, res) => {
+    const RESPONSE = {};
+    const AUTHENTICATION_RESULT = authenticateUser(req);
+
+    if (AUTHENTICATION_RESULT.isAuthenticated) {
+        const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
+        const POST_DATA = await POSTS_COLLECTION.findOne({pid: req.params.pid}, {projection: {_id: 0}});
+
+        if (POST_DATA !== null) {
+            const USERS_COLLECTION = req.app.locals.db.collection('Users');
+            const USER_INFO = await USERS_COLLECTION.findOne({uid: POST_DATA.uid}, {projection: {_id: 0, uid: 0, password: 0}});
+
+            if (USER_INFO !== null) {
+                delete POST_DATA['uid']; // remove sensitive information
+
+                RESPONSE.postData = POST_DATA;
+                RESPONSE.userData = USER_INFO;
+            }
+        }
+    }
+
+    return res.json(RESPONSE);
+});
+
 backend.delete('/post/:pid', async (req, res) => {
     const RESPONSE = {status: 'failed'};
     const AUTHENTICATION_RESULT = authenticateUser(req);
