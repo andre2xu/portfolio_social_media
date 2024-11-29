@@ -15,6 +15,40 @@ function Comments() {
     const URL_PARAMETERS = useParams();
     const redirectTo = useNavigate();
 
+    function onClickPost(event) {
+        const ELEMENT_CLICKED = event.target;
+
+        if (ELEMENT_CLICKED instanceof HTMLImageElement) {
+            if (ELEMENT_CLICKED.alt === 'Like Icon') {
+                // like or unlike a post
+
+                axios.put(shared.resolveBackendRoute('/post/like'), {pid: URL_PARAMETERS.pid}, {withCredentials: true})
+                .then((response) => {
+                    if (response.status === 200 && 'action' in response.data && 'count' in response.data) {
+                        const LIKES_CONTAINER = $('#comments-screen-post .post-info .likes');
+                        const NO_FILL_LIKE_BUTTON = LIKES_CONTAINER.children('.no-fill').first();
+                        const FILL_LIKE_BUTTON = LIKES_CONTAINER.children('.fill').first();
+                        const LIKE_COUNTER = LIKES_CONTAINER.children('span').first();
+
+                        switch (response.data.action) {
+                            case 'added':
+                                NO_FILL_LIKE_BUTTON.addClass('hide');
+                                FILL_LIKE_BUTTON.removeClass('hide');
+                                break;
+                            case 'removed':
+                                FILL_LIKE_BUTTON.addClass('hide');
+                                NO_FILL_LIKE_BUTTON.removeClass('hide');
+                                break;
+                            default:
+                        }
+
+                        LIKE_COUNTER.text(response.data.count);
+                    }
+                });
+            }
+        }
+    };
+
     function goBack() {
         redirectTo(-1);
     };
@@ -101,7 +135,7 @@ function Comments() {
 
     return (
         <div id='comments-screen' className=''>
-            <article id='comments-screen-post'>
+            <article id='comments-screen-post' onClick={onClickPost}>
                 <button onClick={goBack}>&larr;</button>
 
                 <div className='user-info'>
