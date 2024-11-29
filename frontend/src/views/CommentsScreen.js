@@ -1,4 +1,7 @@
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import axios from 'axios';
+import shared from '../shared';
+import { useNavigate, useParams } from 'react-router-dom';
 
 // static
 import NoFill_Icon_ThumbsUp from '../static/icons/Icon_ThumbsUp_NoFill.svg';
@@ -8,11 +11,22 @@ import NoFill_Icon_Message from '../static/icons/Icon_Message_NoFill.svg';
 
 
 function Comments() {
+    const URL_PARAMETERS = useParams();
     const redirectTo = useNavigate();
 
     function goBack() {
         redirectTo(-1);
     };
+
+    React.useEffect(() => {
+        // load post data
+        axios.get(shared.resolveBackendRoute(`/comments/${URL_PARAMETERS.pid}`), {withCredentials: true})
+        .then((response) => {
+            if (response.status === 200 && typeof response.data === 'object' && 'postData' in response.data && 'userData' in response.data) {
+                console.log(response.data);
+            }
+        });
+    });
 
     return (
         <div id='comments-screen' className=''>
