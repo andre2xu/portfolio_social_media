@@ -513,6 +513,11 @@ backend.get('/comments/:pid', async (req, res) => {
 
                 RESPONSE.postData = POST_DATA;
                 RESPONSE.userData = USER_INFO;
+
+                // check if the user that's logged in has liked the post
+                if (POST_DATA.likes.includes(AUTHENTICATION_RESULT.tokenData.uid)) {
+                    RESPONSE.postData.likedByUser = true;
+                }
             }
         }
     }
