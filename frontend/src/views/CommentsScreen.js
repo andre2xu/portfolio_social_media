@@ -80,6 +80,11 @@ function Comments() {
                         POST_TAGS_LIST.append(LIST_ITEM);
                     });
                 }
+
+                // load date
+                const POST_INFO = POST.children('.post-info').first();
+
+                POST_INFO.children('.publish-date').text(response.data.postData.date);
             }
         });
     }, [URL_PARAMETERS]);
