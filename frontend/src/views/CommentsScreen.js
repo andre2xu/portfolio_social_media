@@ -34,6 +34,40 @@ function Comments() {
                 if (response.data.userData.pfp.length > 0) {
                     USER_INFO.children('img').attr('src', shared.resolveBackendRoute(`/static/users/profile/${response.data.userData.pfp}`));
                 }
+
+                // load post content
+                const POST_CONTENT = POST.children('.post-content').first();
+                const POST_BODY = POST_CONTENT.children('p').first();
+
+                POST_BODY.text(response.data.postData.body);
+
+                if (response.data.postData.media.length > 0) {
+                    const MEDIA_DATA = response.data.postData.media[0];
+
+                    switch (MEDIA_DATA.type) {
+                        case 'image':
+                            const IMAGE = $(document.createElement('img'));
+
+                            IMAGE.attr('src', shared.resolveBackendRoute(`/static/users/posts/${MEDIA_DATA.src}`));
+                            IMAGE.attr('alt', 'Post');
+
+                            IMAGE.insertAfter(POST_BODY);
+                            break;
+                        case 'video':
+                            const VIDEO = $(document.createElement('video'));
+
+                            VIDEO[0].loop = true;
+                            VIDEO[0].controls = true;
+                            VIDEO[0].disablePictureInPicture = true;
+
+                            VIDEO.attr('controlsList', 'nodownload');
+                            VIDEO.attr('src', shared.resolveBackendRoute(`/static/users/posts/${MEDIA_DATA.src}`));
+
+                            VIDEO.insertAfter(POST_BODY);
+                            break;
+                        default:
+                    }
+                }
             }
         });
     });
@@ -49,11 +83,7 @@ function Comments() {
                 </div>
 
                 <div className='post-content'>
-                    <p>
-                        This is a picture.
-                    </p>
-
-                    <img src='/pfp/Default_Profile_Picture.png' alt='Post'></img>
+                    <p></p>
 
                     <ul>
                         <li>#pics</li>
