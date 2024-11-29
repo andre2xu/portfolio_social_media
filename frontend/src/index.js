@@ -17,6 +17,7 @@ import AccountPage from './views/AccountPage';
 import ProfilePage from './views/ProfilePage';
 import MessagesPage from './views/MessagesPage';
 import NotificationsPage from './views/NotificationsPage';
+import CommentsScreen from './views/CommentsScreen';
 
 
 
@@ -51,6 +52,10 @@ const ROUTER = createBrowserRouter([
       {
         path: '/account/notifications',
         element: <MainScreen component={<NotificationsPage />} />
+      },
+      {
+        path: '/post/:pid',
+        element: <MainScreen component={<CommentsScreen />} />
       }
     ]
   }
