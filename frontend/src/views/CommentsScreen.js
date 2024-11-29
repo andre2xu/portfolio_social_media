@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom';
+
 // static
 import NoFill_Icon_ThumbsUp from '../static/icons/Icon_ThumbsUp_NoFill.svg';
 import Fill_Icon_ThumbsUp from '../static/icons/Icon_ThumbsUp_Fill.svg';
@@ -6,10 +8,16 @@ import NoFill_Icon_Message from '../static/icons/Icon_Message_NoFill.svg';
 
 
 function Comments() {
+    const redirectTo = useNavigate();
+
+    function goBack() {
+        redirectTo(-1);
+    };
+
     return (
         <div id='comments-screen' className=''>
             <article id='comments-screen-post'>
-                <button>&larr;</button>
+                <button onClick={goBack}>&larr;</button>
 
                 <div className='user-info'>
                     <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
