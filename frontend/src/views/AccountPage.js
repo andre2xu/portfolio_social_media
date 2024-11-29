@@ -287,6 +287,10 @@ function AccountPage({displayConfirmationDialog}) {
                     }
                 });
             }
+            else if (ELEMENT_CLICKED.alt === 'Comment Icon') {
+                // take the user to the post's comments section
+                redirectTo(`/post/${$(ELEMENT_CLICKED).closest('.post').data('pid')}`);
+            }
         }
     };
 
