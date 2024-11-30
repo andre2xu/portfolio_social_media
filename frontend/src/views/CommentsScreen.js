@@ -74,7 +74,12 @@ function Comments() {
                 });
 
                 // update comments list
-                loadComments(comments.concat(response.data));
+                const NEW_COMMENTS_LIST = comments.concat(response.data);
+
+                // update comment count on post
+                $('#comments-screen-post .post-info .comments span').first().text(NEW_COMMENTS_LIST.length);
+
+                loadComments(NEW_COMMENTS_LIST);
             }
         });
     };
