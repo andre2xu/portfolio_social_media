@@ -87,7 +87,7 @@ function Comments() {
         // load post data
         axios.get(shared.resolveBackendRoute(`/comments/${URL_PARAMETERS.pid}`), {withCredentials: true})
         .then((response) => {
-            if (response.status === 200 && typeof response.data === 'object' && 'postData' in response.data && 'userData' in response.data) {
+            if (response.status === 200 && typeof response.data === 'object' && 'postData' in response.data && 'userData' in response.data && 'comments' in response.data) {
                 const POST = $('#comments-screen-post');
 
                 // load username & profile picture
@@ -158,6 +158,25 @@ function Comments() {
                 if ('likedByUser' in response.data.postData) {
                     LIKES_CONTAINER.children('.no-fill').addClass('hide');
                     LIKES_CONTAINER.children('.fill').removeClass('hide');
+                }
+
+                // load comments
+                if (response.data.comments.length > 0) {
+                    // create an array of comment objects with a new structure
+                    const COMMENTS = response.data.comments.map((comment) => {
+                        return {
+                            userData: {
+                                pfp: comment.pfp,
+                                username: comment.username
+                            },
+                            commentData: {
+                                comment: comment.comment,
+                                date: comment.date
+                            }
+                        };
+                    });
+
+                    loadComments(comments.concat(COMMENTS));
                 }
             }
         });
