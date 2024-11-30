@@ -590,6 +590,47 @@ backend.get('/comments/:pid', async (req, res) => {
     return res.json(RESPONSE);
 });
 
+backend.post('/comments/:pid', async (req, res) => {
+    const RESPONSE = {};
+    const AUTHENTICATION_RESULT = authenticateUser(req);
+
+    if (AUTHENTICATION_RESULT.isAuthenticated) {
+        const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
+
+        // save comment to database
+        const TIMESTAMP = new Date().toISOString();
+
+        await COMMENTS_COLLECTION.insertOne({
+            pid: req.params.pid,
+            uid: AUTHENTICATION_RESULT.tokenData.uid,
+            comment: req.body.replyBody,
+            timestamp: TIMESTAMP
+        });
+
+        // get user data of commenter
+        const USERS_COLLECTION = req.app.locals.db.collection('Users');
+        const USER_INFO = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
+
+        // generate response data
+        if (USER_INFO !== null) {
+            Object.keys(USER_INFO).forEach((data) => {
+                if (data !== 'username' && data !== 'pfp') {
+                    delete USER_INFO[data]; // remove unnecessary or sensitive data
+                }
+            });
+
+            RESPONSE.userData = USER_INFO;
+
+            RESPONSE.commentData = {
+                comment: req.body.replyBody,
+                timestamp: TIMESTAMP
+            };
+        }
+    }
+
+    return res.json(RESPONSE);
+});
+
 // INITIALIZATION
 backend.listen(8010, async () => {
     // connect to database & store the connection in a shared variable
