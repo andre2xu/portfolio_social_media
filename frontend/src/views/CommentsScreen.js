@@ -49,6 +49,31 @@ function Comments() {
         }
     };
 
+    function onSubmit(event) {
+        event.preventDefault();
+
+        const FORM = event.target;
+        const FORM_FIELDS = $(FORM).children('input');
+        const FORM_DATA = {};
+
+        FORM_FIELDS.each((_, input) => {
+            FORM_DATA[input.name] = input.value;
+        });
+
+        axios.post(shared.resolveBackendRoute(new URL(FORM.action).pathname), FORM_DATA, {withCredentials: true})
+        .then((response) => {
+            if (response.status === 200 && 'userData' in response.data && 'commentData' in response.data) {
+                // clear reply form
+                FORM_FIELDS.each((_, input) => {
+                    input.value = '';
+                });
+
+                // update comments list
+                console.log(response.data);
+            }
+        });
+    };
+
     function goBack() {
         redirectTo(-1);
     };
@@ -165,7 +190,7 @@ function Comments() {
                 </div>
             </article>
 
-            <form id='comments-screen-reply-form' action='/' method='post'>
+            <form id='comments-screen-reply-form' action={`/comments/${URL_PARAMETERS.pid}`} method='post' onSubmit={onSubmit}>
                 <input type='text' name='replyBody' placeholder='Write your reply here' />
 
                 <button type='submit'>Send</button>
