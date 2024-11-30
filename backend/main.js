@@ -331,6 +331,7 @@ backend.delete('/account/delete', async (req, res) => {
     if (AUTHENTICATION_RESULT.isAuthenticated) {
         const USERS_COLLECTION = req.app.locals.db.collection('Users');
         const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
+        const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
 
         const FILTER = {uid: AUTHENTICATION_RESULT.tokenData.uid};
 
@@ -339,6 +340,9 @@ backend.delete('/account/delete', async (req, res) => {
             {},
             {$pull: {likes: AUTHENTICATION_RESULT.tokenData.uid}}
         );
+
+        // delete the user's comments in posts (if any)
+        await COMMENTS_COLLECTION.deleteMany(FILTER);
 
         // get static files linked to user & remove them from the server
         const USER_INFO = await USERS_COLLECTION.findOne(FILTER);
