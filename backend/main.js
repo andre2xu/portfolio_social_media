@@ -598,13 +598,26 @@ backend.post('/comments/:pid', async (req, res) => {
         const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
 
         // save comment to database
-        const TIMESTAMP = new Date().toISOString();
+        const CURRENT_DATE = new Date();
+        let day = CURRENT_DATE.getDate();
+        let month = CURRENT_DATE.getMonth() + 1;
+        let year = CURRENT_DATE.getFullYear();
+
+        if (day.length === 1) {
+            day = `0${day}`;
+        }
+
+        if (month.length === 1) {
+            month = `0${month}`;
+        }
+
+        const FORMATTED_DATE = `${day}/${month}/${year}`;
 
         await COMMENTS_COLLECTION.insertOne({
             pid: req.params.pid,
             uid: AUTHENTICATION_RESULT.tokenData.uid,
             comment: req.body.replyBody,
-            timestamp: TIMESTAMP
+            date: FORMATTED_DATE
         });
 
         // get user data of commenter
@@ -623,7 +636,7 @@ backend.post('/comments/:pid', async (req, res) => {
 
             RESPONSE.commentData = {
                 comment: req.body.replyBody,
-                timestamp: TIMESTAMP
+                date: FORMATTED_DATE
             };
         }
     }
