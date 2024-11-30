@@ -543,6 +543,11 @@ backend.delete('/post/:pid', async (req, res) => {
                 });
             }
 
+            // delete comments (if any)
+            const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
+            await COMMENTS_COLLECTION.deleteMany({pid: req.params.pid});
+
+            // delete the post itself
             await POSTS_COLLECTION.deleteOne(FILTER);
 
             RESPONSE.status = 'success';
