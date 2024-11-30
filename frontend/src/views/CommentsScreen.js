@@ -162,6 +162,9 @@ function Comments() {
 
                 // load comments
                 if (response.data.comments.length > 0) {
+                    // update comment count on post
+                    $('#comments-screen-post .post-info .comments span').first().text(response.data.comments.length);
+
                     // create an array of comment objects with a new structure
                     const COMMENTS = response.data.comments.map((comment) => {
                         return {
