@@ -1,3 +1,5 @@
+import shared from '../shared';
+
 // static
 import NoFill_Icon_ThumbsUp from '../static/icons/Icon_ThumbsUp_NoFill.svg';
 import Fill_Icon_ThumbsUp from '../static/icons/Icon_ThumbsUp_Fill.svg';
@@ -5,12 +7,14 @@ import Fill_Icon_ThumbsUp from '../static/icons/Icon_ThumbsUp_Fill.svg';
 
 
 function Comment({
-    userData={pfp: '/pfp/Default_Profile_Picture.png', username: ''},
+    userData={pfp: '', username: ''},
     commentData={comment: '', date: 'DD/MM/YYYY'}
 }) {
     return (
         <div className='comment'>
-            <img src={userData.pfp} alt='User'></img>
+            {
+                userData.pfp.length > 0 ? <img src={shared.resolveBackendRoute(`/static/users/profile/${userData.pfp}`)} alt='User'></img> : <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
+            }
 
             <div>
                 <div className='comment-info'>
