@@ -571,6 +571,9 @@ backend.get('/comments/:pid', async (req, res) => {
 
         if (POST_DATA !== null) {
             const USERS_COLLECTION = req.app.locals.db.collection('Users');
+            const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
+
+            // retrieve data about poster
             const USER_INFO = await USERS_COLLECTION.findOne({uid: POST_DATA.uid}, {projection: {_id: 0, uid: 0, password: 0}});
 
             if (USER_INFO !== null) {
@@ -584,6 +587,30 @@ backend.get('/comments/:pid', async (req, res) => {
                     RESPONSE.postData.likedByUser = true;
                 }
             }
+
+            // retrieve comments data
+            const COMMENTS = await COMMENTS_COLLECTION.aggregate([
+                {
+                    $lookup: {
+                        from: 'Users',
+                        localField: 'uid',
+                        foreignField: 'uid',
+                        as: 'user'
+                    }
+                },
+                {$unwind: '$user'}, // store lookup result in the '$user' object
+                {
+                    $project: {
+                        comment: 1,
+                        date: 1,
+                        username: '$user.username',
+                        pfp: '$user.pfp'
+                    }
+                },
+                {$unset: '_id'} // exclude from final result
+            ]).toArray();
+
+            RESPONSE.comments = COMMENTS;
         }
     }
 
