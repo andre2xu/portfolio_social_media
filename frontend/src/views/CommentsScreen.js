@@ -176,7 +176,10 @@ function Comments() {
                         };
                     });
 
-                    loadComments(comments.concat(COMMENTS));
+                    loadComments((commentsList) => {
+                        // update comments list
+                        return commentsList.concat(COMMENTS);
+                    });
                 }
             }
         });
