@@ -591,6 +591,10 @@ backend.get('/comments/:pid', async (req, res) => {
             // retrieve comments data
             const COMMENTS = await COMMENTS_COLLECTION.aggregate([
                 {
+                    $match: {pid: req.params.pid} // get only the comments for the given post
+                },
+                {
+                    // find the user account data of each commenter
                     $lookup: {
                         from: 'Users',
                         localField: 'uid',
