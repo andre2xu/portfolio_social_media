@@ -469,7 +469,36 @@ backend.get('/post/:username?', async (req, res) => {
 
     if (uid !== undefined) {
         const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
-        const USER_POSTS = await POSTS_COLLECTION.find({uid: uid}, {projection: {_id: 0, uid: 0}}).toArray();
+        const USER_POSTS = await POSTS_COLLECTION.aggregate([
+            {
+                $match: {uid: uid} // get only the posts of the given user
+            },
+            {
+                $lookup: {
+                    from: 'Comments',
+                    localField: 'pid',
+                    foreignField: 'pid',
+                    as: 'comments'
+                }
+            },
+            {
+                $addFields: {
+                    comments: {$size: '$comments'} // include no. comments in final result
+                }
+            },
+            {
+                $project: {
+                    pid: 1,
+                    body: 1,
+                    tags: 1,
+                    media: 1,
+                    date: 1,
+                    likes: 1,
+                    comments: 1
+                }
+            },
+            {$unset: '_id'} // exclude from final result
+        ]).toArray();
 
         if (USER_POSTS.length > 0) {
             RESPONSE.posts = USER_POSTS;
