@@ -1,3 +1,9 @@
+// static
+import NoFill_Icon_ThumbsUp from '../static/icons/Icon_ThumbsUp_NoFill.svg';
+import Fill_Icon_ThumbsUp from '../static/icons/Icon_ThumbsUp_Fill.svg';
+
+
+
 function Comment({
     userData={pfp: '/pfp/Default_Profile_Picture.png', username: ''},
     commentData={comment: '', date: 'DD/MM/YYYY'}
