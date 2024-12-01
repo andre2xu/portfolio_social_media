@@ -716,7 +716,8 @@ backend.post('/comments/:pid', async (req, res) => {
 
             RESPONSE.commentData = {
                 comment: req.body.replyBody,
-                date: FORMATTED_DATE
+                date: FORMATTED_DATE,
+                ownedByUser: true
             };
         }
     }
