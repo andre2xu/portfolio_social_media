@@ -254,6 +254,11 @@ function AccountPage({displayConfirmationDialog}) {
                     .then((response) => {
                         if (response.status === 200 && 'status' in response.data && response.data.status === 'success') {
                             $(`#account-page-posts-list .post[data-pid="${POST_ID}"]`).remove();
+
+                            const POST_COUNT = $('#account-page-profile-info .profile-counts span').first();
+                            const CURRENT_COUNT = parseInt(POST_COUNT.text());
+
+                            POST_COUNT.text(CURRENT_COUNT - 1);
                         }
                     });
                 },
@@ -395,7 +400,7 @@ function AccountPage({displayConfirmationDialog}) {
 
                         <div>
                             <div className='profile-counts'>
-                                <span>0</span>
+                                <span>{posts.length}</span>
                                 <span>Posts</span>
                             </div>
 
