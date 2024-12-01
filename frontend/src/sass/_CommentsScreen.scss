@@ -147,6 +147,13 @@
                                 }
                             }
                         }
+
+                        button {
+                            border: none;
+                            background-color: transparent;
+                            color: $error_color;
+                            cursor: pointer;
+                        }
                     }
                 }
             }
@@ -287,12 +294,17 @@
                                 }
 
                                 &.dislikes {
-                                    margin-left: 30px;
+                                    margin-left: 20px;
 
                                     img {
                                         transform: rotateX(180deg);
                                     }
                                 }
+                            }
+
+                            button {
+                                font-size: 13px;
+                                margin-left: 10px;
                             }
                         }
                     }
@@ -369,6 +381,14 @@
                                 span {
                                     font-size: 15px;
                                 }
+
+                                &.dislikes {
+                                    margin-left: 30px;
+                                }
+                            }
+
+                            button {
+                                margin-left: 30px;
                             }
                         }
                     }
@@ -509,6 +529,11 @@
                                 &.dislikes {
                                     margin-left: 1.5vw;
                                 }
+                            }
+
+                            button {
+                                font-size: 0.65vw;
+                                margin-left: 1.5vw;
                             }
                         }
                     }
