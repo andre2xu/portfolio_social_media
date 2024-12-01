@@ -142,7 +142,7 @@ function ProfilePage() {
 
                         <div>
                             <div className='profile-counts'>
-                                <span>0</span>
+                                <span>{posts.length}</span>
                                 <span>Posts</span>
                             </div>
 
