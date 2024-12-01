@@ -179,7 +179,8 @@ function Comments() {
                             },
                             commentData: {
                                 comment: comment.comment,
-                                date: comment.date
+                                date: comment.date,
+                                ownedByUser: comment.ownedByUser // can be 'undefined' or 'true'
                             }
                         };
                     });
