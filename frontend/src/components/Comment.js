@@ -8,10 +8,10 @@ import Fill_Icon_ThumbsUp from '../static/icons/Icon_ThumbsUp_Fill.svg';
 
 function Comment({
     userData={pfp: '', username: ''},
-    commentData={comment: '', date: 'DD/MM/YYYY', ownedByUser: undefined}
+    commentData={cid: '', comment: '', date: 'DD/MM/YYYY', ownedByUser: undefined}
 }) {
     return (
-        <div className='comment'>
+        <div className='comment' data-cid={commentData.cid}>
             {
                 userData.pfp.length > 0 ? <img src={shared.resolveBackendRoute(`/static/users/profile/${userData.pfp}`)} alt='User'></img> : <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
             }

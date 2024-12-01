@@ -178,6 +178,7 @@ function Comments() {
                                 username: comment.username
                             },
                             commentData: {
+                                cid: comment.cid,
                                 comment: comment.comment,
                                 date: comment.date,
                                 ownedByUser: comment.ownedByUser // can be 'undefined' or 'true'
