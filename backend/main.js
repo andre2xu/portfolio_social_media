@@ -643,6 +643,7 @@ backend.get('/comments/:pid', async (req, res) => {
                 {$unwind: '$user'}, // store lookup result in the '$user' object
                 {
                     $project: {
+                        cid: 1,
                         comment: 1,
                         date: 1,
                         username: '$user.username',
@@ -692,8 +693,10 @@ backend.post('/comments/:pid', async (req, res) => {
         }
 
         const FORMATTED_DATE = `${day}/${month}/${year}`;
+        const COMMENT_ID = createHash('sha256').update(`${req.params.pid}${AUTHENTICATION_RESULT.tokenData.uid}${req.body.replyBody}${FORMATTED_DATE}${CURRENT_DATE.getMilliseconds()}`).digest('hex');
 
         await COMMENTS_COLLECTION.insertOne({
+            cid: COMMENT_ID,
             pid: req.params.pid,
             uid: AUTHENTICATION_RESULT.tokenData.uid,
             comment: req.body.replyBody,
@@ -715,6 +718,7 @@ backend.post('/comments/:pid', async (req, res) => {
             RESPONSE.userData = USER_INFO;
 
             RESPONSE.commentData = {
+                cid: COMMENT_ID,
                 comment: req.body.replyBody,
                 date: FORMATTED_DATE,
                 ownedByUser: true
