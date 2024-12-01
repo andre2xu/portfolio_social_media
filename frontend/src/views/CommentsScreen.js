@@ -14,7 +14,7 @@ import Comment from '../components/Comment';
 
 
 
-function Comments() {
+function Comments({displayConfirmationDialog}) {
     const [comments, loadComments] = React.useState([]);
 
     const URL_PARAMETERS = useParams();
@@ -51,6 +51,35 @@ function Comments() {
                     }
                 });
             }
+        }
+    };
+
+    function onClickComment(event) {
+        event.preventDefault();
+
+        const ELEMENT_CLICKED = event.target;
+        const COMMENT = $(ELEMENT_CLICKED).closest('.comment');
+
+        if (ELEMENT_CLICKED instanceof HTMLButtonElement && ELEMENT_CLICKED.innerText === 'Delete') {
+            displayConfirmationDialog(
+                () => {
+                    axios.delete(shared.resolveBackendRoute(`/comments/${COMMENT.data('cid')}`), {withCredentials: true})
+                    .then((response) => {
+                        if (response.status === 200 && 'status' in response.data && response.data.status === 'success') {
+                            // delete comment
+                            COMMENT.remove();
+
+                            // update comment count on post
+                            const COMMENT_COUNT = $('#comments-screen-post .post-info .comments span').first();
+                            const CURRENT_COUNT = parseInt(COMMENT_COUNT.text());
+
+                            COMMENT_COUNT.text(CURRENT_COUNT - 1);
+                        }
+                    });
+                },
+                () => {},
+                "Are you sure you want to delete this comment?"
+            );
         }
     };
 
@@ -233,7 +262,7 @@ function Comments() {
                 <button type='submit'>Send</button>
             </form>
 
-            <section id='comments-screen-comments'>
+            <section id='comments-screen-comments' onClick={onClickComment}>
                 <h1>Comments</h1>
 
                 {
