@@ -653,6 +653,17 @@ backend.get('/comments/:pid', async (req, res) => {
             ]).toArray();
 
             RESPONSE.comments = COMMENTS;
+
+            // check which comments were sent by the user that's logged in
+            const LOGGED_IN_USER_INFO = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
+
+            if (LOGGED_IN_USER_INFO !== null) {
+                COMMENTS.forEach((comment) => {
+                    if (LOGGED_IN_USER_INFO.username === comment.username) {
+                        comment.ownedByUser = true; // add a flag to show this comment was posted by the user that's logged in
+                    }
+                });
+            }
         }
     }
 
