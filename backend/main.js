@@ -729,6 +729,21 @@ backend.post('/comments/:pid', async (req, res) => {
     return res.json(RESPONSE);
 });
 
+backend.delete('/comments/:cid', async (req, res) => {
+    const RESPONSE = {status: 'failed'};
+    const AUTHENTICATION_RESULT = authenticateUser(req);
+
+    if (AUTHENTICATION_RESULT.isAuthenticated) {
+        const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
+
+        await COMMENTS_COLLECTION.deleteOne({cid: req.params.cid});
+
+        RESPONSE.status = 'success';
+    }
+
+    return res.json(RESPONSE);
+});
+
 // INITIALIZATION
 backend.listen(8010, async () => {
     // connect to database & store the connection in a shared variable
