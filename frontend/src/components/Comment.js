@@ -1,3 +1,5 @@
+import React from 'react';
+import $ from 'jquery';
 import shared from '../shared';
 
 // static
@@ -10,6 +12,24 @@ function Comment({
     userData={pfp: '', username: ''},
     commentData={cid: '', comment: '', date: 'DD/MM/YYYY', ownedByUser: undefined, likes: [], dislikes: [], likedByUser: undefined, dislikedByUser: undefined}
 }) {
+    React.useEffect(() => {
+        // highlight all usernames in the comments
+        const COMMENT_BODY = $(`[data-cid="${commentData.cid}"] > div p`);
+
+        const USERNAME_PATTERN = /@[a-zA-Z0-9]{1,20}/g;
+        const ALL_USERNAMES = COMMENT_BODY.text().match(USERNAME_PATTERN);
+
+        if (ALL_USERNAMES !== null) {
+            let new_comment_html = COMMENT_BODY.html();
+
+            $(ALL_USERNAMES).each((_, username) => {
+                new_comment_html = new_comment_html.replace(username, `<span class="reply-username">${username}</span>`);
+            });
+
+            COMMENT_BODY.html(new_comment_html);
+        }
+    }, [commentData.cid]);
+
     return (
         <div className='comment' data-cid={commentData.cid} data-likedbyuser={commentData.likedByUser} data-dislikedbyuser={commentData.dislikedByUser}>
             {
