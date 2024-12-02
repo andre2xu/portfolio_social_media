@@ -281,7 +281,9 @@ function Comments({displayConfirmationDialog}) {
                                 date: comment.date,
                                 ownedByUser: comment.ownedByUser, // can be 'undefined' or 'true'
                                 likes: comment.likes,
-                                dislikes: comment.dislikes
+                                dislikes: comment.dislikes,
+                                likedByUser: comment.likedByUser, // can be 'undefined' or 'true'
+                                dislikedByUser: comment.dislikedByUser // can be 'undefined' or 'true'
                             }
                         };
                     });
