@@ -742,7 +742,9 @@ backend.post('/comments/:pid', async (req, res) => {
                 cid: COMMENT_ID,
                 comment: req.body.replyBody,
                 date: FORMATTED_DATE,
-                ownedByUser: true
+                ownedByUser: true,
+                likes: [],
+                dislikes: []
             };
         }
     }
