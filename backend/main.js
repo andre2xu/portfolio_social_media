@@ -700,7 +700,9 @@ backend.post('/comments/:pid', async (req, res) => {
             pid: req.params.pid,
             uid: AUTHENTICATION_RESULT.tokenData.uid,
             comment: req.body.replyBody,
-            date: FORMATTED_DATE
+            date: FORMATTED_DATE,
+            likes: [],
+            dislikes: []
         });
 
         // get user data of commenter
