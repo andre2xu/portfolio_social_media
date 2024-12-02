@@ -101,7 +101,7 @@ function Comments({displayConfirmationDialog}) {
                             case 'added':
                                 NO_FILL_LIKE_BUTTON.addClass('hide');
                                 FILL_LIKE_BUTTON.removeClass('hide');
-                                COMMENT.data('likedbyuser', true);
+                                COMMENT.attr('data-likedbyuser', true);
 
                                 // remove dislike
                                 if (COMMENT.data('dislikedbyuser') === true) {
@@ -111,14 +111,14 @@ function Comments({displayConfirmationDialog}) {
                                     const CURRENT_DISLIKE_COUNT = parseInt(DISLIKE_COUNTER.text());
                                     if (CURRENT_DISLIKE_COUNT > 0) DISLIKE_COUNTER.text(CURRENT_DISLIKE_COUNT - 1);
 
-                                    COMMENT.removeData('dislikedbyuser');
+                                    COMMENT.removeAttr('data-dislikedbyuser');
                                 }
 
                                 break;
                             case 'removed':
                                 FILL_LIKE_BUTTON.addClass('hide');
                                 NO_FILL_LIKE_BUTTON.removeClass('hide');
-                                COMMENT.removeData('likedbyuser');
+                                COMMENT.removeAttr('data-likedbyuser');
                                 break;
                             default:
                         }
@@ -135,7 +135,7 @@ function Comments({displayConfirmationDialog}) {
                             case 'added':
                                 NO_FILL_DISLIKE_BUTTON.addClass('hide');
                                 FILL_DISLIKE_BUTTON.removeClass('hide');
-                                COMMENT.data('dislikedbyuser', true);
+                                COMMENT.attr('data-dislikedbyuser', true);
 
                                 // remove like
                                 if (COMMENT.data('likedbyuser') === true) {
@@ -145,14 +145,14 @@ function Comments({displayConfirmationDialog}) {
                                     const CURRENT_LIKE_COUNT = parseInt(LIKE_COUNTER.text());
                                     if (CURRENT_LIKE_COUNT > 0) LIKE_COUNTER.text(CURRENT_LIKE_COUNT - 1);
 
-                                    COMMENT.removeData('likedbyuser');
+                                    COMMENT.removeAttr('data-likedbyuser');
                                 }
 
                                 break;
                             case 'removed':
                                 FILL_DISLIKE_BUTTON.addClass('hide');
                                 NO_FILL_DISLIKE_BUTTON.removeClass('hide');
-                                COMMENT.removeData('dislikedbyuser');
+                                COMMENT.removeAttr('data-dislikedbyuser');
                                 break;
                             default:
                         }
