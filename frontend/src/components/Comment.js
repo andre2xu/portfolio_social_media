@@ -11,7 +11,7 @@ function Comment({
     commentData={cid: '', comment: '', date: 'DD/MM/YYYY', ownedByUser: undefined, likes: [], dislikes: [], likedByUser: undefined, dislikedByUser: undefined}
 }) {
     return (
-        <div className='comment' data-cid={commentData.cid}>
+        <div className='comment' data-cid={commentData.cid} data-likedbyuser={commentData.likedByUser} data-dislikedbyuser={commentData.dislikedByUser}>
             {
                 userData.pfp.length > 0 ? <img src={shared.resolveBackendRoute(`/static/users/profile/${userData.pfp}`)} alt='User'></img> : <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
             }

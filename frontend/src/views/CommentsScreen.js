@@ -101,18 +101,24 @@ function Comments({displayConfirmationDialog}) {
                             case 'added':
                                 NO_FILL_LIKE_BUTTON.addClass('hide');
                                 FILL_LIKE_BUTTON.removeClass('hide');
+                                COMMENT.data('likedbyuser', true);
 
                                 // remove dislike
-                                NO_FILL_DISLIKE_BUTTON.removeClass('hide');
-                                FILL_DISLIKE_BUTTON.addClass('hide');
+                                if (COMMENT.data('dislikedbyuser') === true) {
+                                    NO_FILL_DISLIKE_BUTTON.removeClass('hide');
+                                    FILL_DISLIKE_BUTTON.addClass('hide');
 
-                                const CURRENT_DISLIKE_COUNT = parseInt(DISLIKE_COUNTER.text());
-                                if (CURRENT_DISLIKE_COUNT > 0) DISLIKE_COUNTER.text(CURRENT_DISLIKE_COUNT - 1);
+                                    const CURRENT_DISLIKE_COUNT = parseInt(DISLIKE_COUNTER.text());
+                                    if (CURRENT_DISLIKE_COUNT > 0) DISLIKE_COUNTER.text(CURRENT_DISLIKE_COUNT - 1);
+
+                                    COMMENT.removeData('dislikedbyuser');
+                                }
 
                                 break;
                             case 'removed':
                                 FILL_LIKE_BUTTON.addClass('hide');
                                 NO_FILL_LIKE_BUTTON.removeClass('hide');
+                                COMMENT.removeData('likedbyuser');
                                 break;
                             default:
                         }
@@ -129,18 +135,24 @@ function Comments({displayConfirmationDialog}) {
                             case 'added':
                                 NO_FILL_DISLIKE_BUTTON.addClass('hide');
                                 FILL_DISLIKE_BUTTON.removeClass('hide');
+                                COMMENT.data('dislikedbyuser', true);
 
                                 // remove like
-                                NO_FILL_LIKE_BUTTON.removeClass('hide');
-                                FILL_LIKE_BUTTON.addClass('hide');
+                                if (COMMENT.data('likedbyuser') === true) {
+                                    NO_FILL_LIKE_BUTTON.removeClass('hide');
+                                    FILL_LIKE_BUTTON.addClass('hide');
 
-                                const CURRENT_LIKE_COUNT = parseInt(LIKE_COUNTER.text());
-                                if (CURRENT_LIKE_COUNT > 0) LIKE_COUNTER.text(CURRENT_LIKE_COUNT - 1);
+                                    const CURRENT_LIKE_COUNT = parseInt(LIKE_COUNTER.text());
+                                    if (CURRENT_LIKE_COUNT > 0) LIKE_COUNTER.text(CURRENT_LIKE_COUNT - 1);
+
+                                    COMMENT.removeData('likedbyuser');
+                                }
 
                                 break;
                             case 'removed':
                                 FILL_DISLIKE_BUTTON.addClass('hide');
                                 NO_FILL_DISLIKE_BUTTON.removeClass('hide');
+                                COMMENT.removeData('dislikedbyuser');
                                 break;
                             default:
                         }
