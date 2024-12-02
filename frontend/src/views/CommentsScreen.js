@@ -59,11 +59,12 @@ function Comments({displayConfirmationDialog}) {
 
         const ELEMENT_CLICKED = event.target;
         const COMMENT = $(ELEMENT_CLICKED).closest('.comment');
+        const COMMENT_ID = COMMENT.data('cid');
 
         if (ELEMENT_CLICKED instanceof HTMLButtonElement && ELEMENT_CLICKED.innerText === 'Delete') {
             displayConfirmationDialog(
                 () => {
-                    axios.delete(shared.resolveBackendRoute(`/comments/${COMMENT.data('cid')}`), {withCredentials: true})
+                    axios.delete(shared.resolveBackendRoute(`/comments/${COMMENT_ID}`), {withCredentials: true})
                     .then((response) => {
                         if (response.status === 200 && 'status' in response.data && response.data.status === 'success') {
                             // delete comment
@@ -80,6 +81,49 @@ function Comments({displayConfirmationDialog}) {
                 () => {},
                 "Are you sure you want to delete this comment?"
             );
+        }
+        else if (ELEMENT_CLICKED instanceof HTMLImageElement) {
+            const LIKES_CONTAINER = $(`#comments-screen-comments [data-cid="${COMMENT_ID}"] .likes`);
+            const NO_FILL_LIKE_BUTTON = LIKES_CONTAINER.children('.no-fill').first();
+            const FILL_LIKE_BUTTON = LIKES_CONTAINER.children('.fill').first();
+            const LIKE_COUNTER = LIKES_CONTAINER.children('span').first();
+
+            const DISLIKES_CONTAINER = LIKES_CONTAINER.siblings('.dislikes');
+            const NO_FILL_DISLIKE_BUTTON = DISLIKES_CONTAINER.children('.no-fill').first();
+            const FILL_DISLIKE_BUTTON = DISLIKES_CONTAINER.children('.fill').first();
+            const DISLIKE_COUNTER = DISLIKES_CONTAINER.children('span').first();
+
+            if (ELEMENT_CLICKED.alt === 'Like Icon') {
+                axios.put(shared.resolveBackendRoute(`/comments/like`), {cid: COMMENT_ID}, {withCredentials: true})
+                .then((response) => {
+                    if (response.status === 200 && 'action' in response.data && 'count' in response.data) {
+                        switch (response.data.action) {
+                            case 'added':
+                                NO_FILL_LIKE_BUTTON.addClass('hide');
+                                FILL_LIKE_BUTTON.removeClass('hide');
+
+                                // remove dislike
+                                NO_FILL_DISLIKE_BUTTON.removeClass('hide');
+                                FILL_DISLIKE_BUTTON.addClass('hide');
+
+                                const CURRENT_DISLIKE_COUNT = parseInt(DISLIKE_COUNTER.text());
+                                if (CURRENT_DISLIKE_COUNT > 0) DISLIKE_COUNTER.text(CURRENT_DISLIKE_COUNT - 1);
+
+                                break;
+                            case 'removed':
+                                FILL_LIKE_BUTTON.addClass('hide');
+                                NO_FILL_LIKE_BUTTON.removeClass('hide');
+                                break;
+                            default:
+                        }
+
+                        LIKE_COUNTER.text(response.data.count);
+                    }
+                });
+            }
+            else if (ELEMENT_CLICKED.alt === 'Dislike Icon') {
+
+            }
         }
     };
 
