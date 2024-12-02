@@ -122,7 +122,32 @@ function Comments({displayConfirmationDialog}) {
                 });
             }
             else if (ELEMENT_CLICKED.alt === 'Dislike Icon') {
+                axios.put(shared.resolveBackendRoute(`/comments/dislike`), {cid: COMMENT_ID}, {withCredentials: true})
+                .then((response) => {
+                    if (response.status === 200 && 'action' in response.data && 'count' in response.data) {
+                        switch (response.data.action) {
+                            case 'added':
+                                NO_FILL_DISLIKE_BUTTON.addClass('hide');
+                                FILL_DISLIKE_BUTTON.removeClass('hide');
 
+                                // remove like
+                                NO_FILL_LIKE_BUTTON.removeClass('hide');
+                                FILL_LIKE_BUTTON.addClass('hide');
+
+                                const CURRENT_LIKE_COUNT = parseInt(LIKE_COUNTER.text());
+                                if (CURRENT_LIKE_COUNT > 0) LIKE_COUNTER.text(CURRENT_LIKE_COUNT - 1);
+
+                                break;
+                            case 'removed':
+                                FILL_DISLIKE_BUTTON.addClass('hide');
+                                NO_FILL_DISLIKE_BUTTON.removeClass('hide');
+                                break;
+                            default:
+                        }
+
+                        DISLIKE_COUNTER.text(response.data.count);
+                    }
+                });
             }
         }
     };
