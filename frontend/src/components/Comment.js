@@ -26,15 +26,15 @@ function Comment({
 
                 <div className='comment-likes-dislikes'>
                     <div className='likes'>
-                        <img src={NoFill_Icon_ThumbsUp} alt='Like Icon'></img>
-                        <img className='hide' src={Fill_Icon_ThumbsUp} alt='Like Icon'></img>
-                        <span>50</span>
+                        <img className='no-fill' src={NoFill_Icon_ThumbsUp} alt='Like Icon'></img>
+                        <img className='fill hide' src={Fill_Icon_ThumbsUp} alt='Like Icon'></img>
+                        <span>0</span>
                     </div>
 
                     <div className='dislikes'>
-                        <img src={NoFill_Icon_ThumbsUp} alt='Dislike Icon'></img>
-                        <img className='hide' src={Fill_Icon_ThumbsUp} alt='Dislike Icon'></img>
-                        <span>50</span>
+                        <img className='no-fill' src={NoFill_Icon_ThumbsUp} alt='Dislike Icon'></img>
+                        <img className='fill hide' src={Fill_Icon_ThumbsUp} alt='Dislike Icon'></img>
+                        <span>0</span>
                     </div>
 
                     { commentData.ownedByUser === true ? <button>Delete</button> : null }
