@@ -650,10 +650,13 @@ backend.get('/comments/:pid', async (req, res) => {
                 },
                 {$unwind: '$user'}, // store lookup result in the '$user' object
                 {
+                    // ensure that all the fields required by the frontend are set to 1 so that they appear in the result
                     $project: {
                         cid: 1,
                         comment: 1,
                         date: 1,
+                        likes: 1,
+                        dislikes: 1,
                         username: '$user.username',
                         pfp: '$user.pfp'
                     }
