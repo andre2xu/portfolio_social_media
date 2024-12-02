@@ -754,6 +754,55 @@ backend.delete('/comments/:cid', async (req, res) => {
     return res.json(RESPONSE);
 });
 
+backend.put('/comments/like', async (req, res) => {
+    const RESPONSE = {};
+    const AUTHENTICATION_RESULT = authenticateUser(req);
+
+    if (AUTHENTICATION_RESULT.isAuthenticated) {
+        const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
+        const ALREADY_LIKED = await COMMENTS_COLLECTION.findOne({cid: req.body.cid, likes: AUTHENTICATION_RESULT.tokenData.uid}) !== null;
+
+        if (ALREADY_LIKED) {
+            // remove like
+
+            await COMMENTS_COLLECTION.updateOne(
+                {cid: req.body.cid},
+                {$pull: {likes: AUTHENTICATION_RESULT.tokenData.uid}}
+            );
+
+            RESPONSE.action = 'removed';
+        }
+        else {
+            // add like & remove dislike if it exists
+
+            await COMMENTS_COLLECTION.updateOne(
+                {cid: req.body.cid},
+                {
+                    $push: {likes: AUTHENTICATION_RESULT.tokenData.uid},
+                    $pull: {dislikes: AUTHENTICATION_RESULT.tokenData.uid}
+                }
+            );
+
+            RESPONSE.action = 'added';
+        }
+
+        // get number of likes
+        const LIKES_COUNT = await COMMENTS_COLLECTION.aggregate([
+            {$match: {cid: req.body.cid}},
+            {
+                $project: {
+                    _id: 0,
+                    likes: {$size: '$likes'}
+                }
+            }
+        ]).toArray();
+
+        RESPONSE.count = LIKES_COUNT[0].likes;
+    }
+
+    return res.json(RESPONSE);
+});
+
 // INITIALIZATION
 backend.listen(8010, async () => {
     // connect to database & store the connection in a shared variable
