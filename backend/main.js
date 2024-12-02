@@ -591,7 +591,15 @@ backend.put('/post/like', async (req, res) => {
         }
 
         // get number of likes
-        const LIKES_COUNT = await POSTS_COLLECTION.aggregate([{$project: {_id: 0, likes: {$size: '$likes'}}}]).toArray();
+        const LIKES_COUNT = await POSTS_COLLECTION.aggregate([
+            {$match: {pid: req.body.pid}},
+            {
+                $project: {
+                    _id: 0,
+                    likes: {$size: '$likes'}
+                }
+            }
+        ]).toArray();
 
         RESPONSE.count = LIKES_COUNT[0].likes;
     }
