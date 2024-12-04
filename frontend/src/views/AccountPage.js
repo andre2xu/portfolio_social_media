@@ -15,6 +15,7 @@ function AccountPage({displayConfirmationDialog}) {
     const LIKED_POSTS = React.useRef([]);
     const [posts, loadPosts] = React.useState([]);
     const [followers, loadFollowers] = React.useState([]);
+    const [following, loadFollowing] = React.useState([]);
     const PROFILE_DATA = React.useRef({
         username: 'User',
         pfp: '/pfp/Default_Profile_Picture.png'
@@ -409,6 +410,18 @@ function AccountPage({displayConfirmationDialog}) {
                             loadFollowers(response.data.followers);
                         }
                     });
+
+                    // retrieve following
+                    axios.get(shared.resolveBackendRoute(`/following/${PROFILE_DATA.current.username}`), {withCredentials: true})
+                    .then((response) => {
+                        if (response.status === 200 && 'following' in response.data) {
+                            // update following count
+                            $('#account-page-profile-info .following-count span').first().text(response.data.following.length);
+
+                            // update following list
+                            loadFollowing(response.data.following);
+                        }
+                    });
                 }
 
                 if (response.data.pfp.length > 0) {
@@ -463,29 +476,25 @@ function AccountPage({displayConfirmationDialog}) {
                         <h1>Following</h1>
 
                         <div className='users-list'>
-                            <div className='user'>
-                                <img src='/pfp/Default_Profile_Picture.png' alt='User' />
+                            {
+                                following.map((followingData, index) => {
+                                    let pfp = '/pfp/Default_Profile_Picture.png';
 
-                                <span>@Username</span>
+                                    if (followingData.pfp.length > 0) {
+                                        pfp = shared.resolveBackendRoute(`/static/users/profile/${followingData.pfp}`);
+                                    }
 
-                                <button>Unfollow</button>
-                            </div>
+                                    return (
+                                        <div className='user' key={index}>
+                                            <img src={pfp} alt='User' />
 
-                            <div className='user'>
-                                <img src='/pfp/Default_Profile_Picture.png' alt='User' />
+                                            <span>@{followingData.username}</span>
 
-                                <span>@Username</span>
-
-                                <button>Unfollow</button>
-                            </div>
-
-                            <div className='user'>
-                                <img src='/pfp/Default_Profile_Picture.png' alt='User' />
-
-                                <span>@Username</span>
-
-                                <button>Unfollow</button>
-                            </div>
+                                            <button>Unfollow</button>
+                                        </div>
+                                    );
+                                })
+                            }
                         </div>
 
                         <button className='account-page-lists-show-more hide'>Show more</button>
