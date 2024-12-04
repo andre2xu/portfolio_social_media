@@ -865,6 +865,34 @@ backend.put('/comments/dislike', async (req, res) => {
     return res.json(RESPONSE);
 });
 
+backend.get('/followers/:username', async (req, res) => {
+    const RESPONSE = {};
+    const AUTHENTICATION_RESULT = authenticateUser(req);
+
+    if (AUTHENTICATION_RESULT.isAuthenticated) {
+        const USERS_COLLECTION = req.app.locals.db.collection('Users');
+        const USER_INFO = await USERS_COLLECTION.findOne({username: req.params.username});
+
+        if (USER_INFO !== null) {
+            const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
+            const FOLLOWERS = await FOLLOWERS_COLLECTION.find({uid: USER_INFO.uid}, {projection: {_id: 0, uid: 0}}).toArray();
+            const FOLLOWER_IDS = [];
+
+            if (FOLLOWERS.length > 0) {
+                FOLLOWERS.forEach((followerData) => {
+                    FOLLOWER_IDS.push(followerData.fid);
+                });
+
+                const FOLLOWER_ACCOUNTS = await USERS_COLLECTION.find({uid: {$in: FOLLOWER_IDS}}, {projection: {_id: 0, username: 1, pfp: 1}}).toArray();
+
+                RESPONSE.followers = FOLLOWER_ACCOUNTS;
+            }
+        }
+    }
+
+    return res.json(RESPONSE);
+});
+
 backend.post('/follow', async (req, res) => {
     const RESPONSE = {status: 'failed'};
     const AUTHENTICATION_RESULT = authenticateUser(req);
