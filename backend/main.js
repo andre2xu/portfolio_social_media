@@ -880,6 +880,11 @@ backend.get('/followers/:username', async (req, res) => {
 
             if (FOLLOWERS.length > 0) {
                 FOLLOWERS.forEach((followerData) => {
+                    // check if the user that's logged in is following the user being queried
+                    if (followerData.fid === AUTHENTICATION_RESULT.tokenData.uid) {
+                        RESPONSE.followedByUser = true;
+                    }
+
                     FOLLOWER_IDS.push(followerData.fid);
                 });
 

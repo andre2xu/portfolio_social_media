@@ -188,6 +188,11 @@ function ProfilePage() {
                         countContainer.firstElementChild.innerHTML = response.data.followers.length;
                     }
                 });
+
+                if ('followedByUser' in response.data) {
+                    // change the follow button to an unfollow button
+                    $('#account-page-profile-info > div button').text('Unfollow');
+                }
             }
         });
 
