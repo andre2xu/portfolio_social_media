@@ -92,6 +92,11 @@ function ProfilePage() {
                 if (response.status === 200 && 'status' in response.data && response.data.status === 'success') {
                     // change the follow button to an unfollow button
                     BUTTON.innerText = 'Unfollow';
+
+                    // increment followers count
+                    const FOLLOWERS_COUNT = $('#account-page-profile-info .followers-count span').first();
+
+                    FOLLOWERS_COUNT.text(parseInt(FOLLOWERS_COUNT.text()) + 1);
                 }
             });
         }
@@ -101,6 +106,11 @@ function ProfilePage() {
                 if (response.status === 200 && 'status' in response.data && response.data.status === 'success') {
                     // change the unfollow button to a follow button
                     BUTTON.innerText = 'Follow';
+
+                    // decrement followers count
+                    const FOLLOWERS_COUNT = $('#account-page-profile-info .followers-count span').first();
+
+                    FOLLOWERS_COUNT.text(parseInt(FOLLOWERS_COUNT.text()) - 1);
                 }
             });
         }
