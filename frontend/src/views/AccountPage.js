@@ -446,12 +446,12 @@ function AccountPage({displayConfirmationDialog}) {
                                 <span>Posts</span>
                             </div>
 
-                            <div className='profile-counts'>
+                            <div className='profile-counts following-count'>
                                 <span>0</span>
                                 <span>Following</span>
                             </div>
 
-                            <div className='profile-counts'>
+                            <div className='profile-counts followers-count'>
                                 <span>0</span>
                                 <span>Followers</span>
                             </div>
