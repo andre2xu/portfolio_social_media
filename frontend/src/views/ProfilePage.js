@@ -178,6 +178,19 @@ function ProfilePage() {
             }
         });
 
+        // retrieve followers
+        axios.get(shared.resolveBackendRoute(`/followers/${URL_PARAMETERS.username}`), {withCredentials: true})
+        .then((response) => {
+            if (response.status === 200 && 'followers' in response.data) {
+                // update followers count
+                $('#account-page-profile-info .profile-counts').each((_, countContainer) => {
+                    if (countContainer.lastElementChild.innerText === 'Followers') {
+                        countContainer.firstElementChild.innerHTML = response.data.followers.length;
+                    }
+                });
+            }
+        });
+
     }, [URL_PARAMETERS, redirectTo]);
 
     return (
