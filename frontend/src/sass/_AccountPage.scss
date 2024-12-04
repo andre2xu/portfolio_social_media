@@ -47,6 +47,14 @@
                     div {
                         display: flex;
                         flex-direction: row;
+
+                        .profile-counts {
+                            cursor: pointer;
+
+                            &:hover {
+                                transform: scale(1.1);
+                            }
+                        }
                     }
                 }
             }
