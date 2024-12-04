@@ -905,16 +905,22 @@ backend.post('/follow', async (req, res) => {
     if (AUTHENTICATION_RESULT.isAuthenticated) {
         const USERS_COLLECTION = req.app.locals.db.collection('Users');
         const USER_INFO = await USERS_COLLECTION.findOne({username: req.body.username});
+        const LOGGED_IN_USER_INFO = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
 
-        if (USER_INFO !== null && USER_INFO.uid !== AUTHENTICATION_RESULT.tokenData.uid) {
+        if (USER_INFO !== null && USER_INFO.uid !== LOGGED_IN_USER_INFO.uid) {
             const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
 
             await FOLLOWERS_COLLECTION.insertOne({
                 uid: USER_INFO.uid, // user being followed by logged in user
-                fid: AUTHENTICATION_RESULT.tokenData.uid // logged in user
+                fid: LOGGED_IN_USER_INFO.uid // logged in user
             });
 
             RESPONSE.status = 'success';
+
+            RESPONSE.followerAdded = {
+                username: LOGGED_IN_USER_INFO.username,
+                pfp: LOGGED_IN_USER_INFO.pfp
+            };
         }
     }
 
@@ -928,16 +934,22 @@ backend.delete('/follow/:username', async (req, res) => {
     if (AUTHENTICATION_RESULT.isAuthenticated) {
         const USERS_COLLECTION = req.app.locals.db.collection('Users');
         const USER_INFO = await USERS_COLLECTION.findOne({username: req.params.username});
+        const LOGGED_IN_USER_INFO = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
 
         if (USER_INFO !== null) {
             const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
 
             await FOLLOWERS_COLLECTION.deleteOne({
                 uid: USER_INFO.uid, // user being unfollowed by logged in user
-                fid: AUTHENTICATION_RESULT.tokenData.uid // logged in user
+                fid: LOGGED_IN_USER_INFO.uid // logged in user
             });
 
             RESPONSE.status = 'success';
+
+            RESPONSE.followerRemoved = {
+                username: LOGGED_IN_USER_INFO.username,
+                pfp: LOGGED_IN_USER_INFO.pfp
+            };
         }
     }
 
