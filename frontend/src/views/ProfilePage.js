@@ -156,6 +156,10 @@ function ProfilePage() {
                                 <span>Followers</span>
                             </div>
                         </div>
+
+                        <div>
+                            <button>Follow</button>
+                        </div>
                     </div>
                 </div>
 
