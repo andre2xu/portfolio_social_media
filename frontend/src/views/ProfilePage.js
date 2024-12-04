@@ -268,7 +268,7 @@ function ProfilePage() {
                             </div>
                         </div>
 
-                        <button className='account-page-lists-show-more'>Show more</button>
+                        <button className='account-page-lists-show-more hide'>Show more</button>
                     </section>
 
                     <section id='account-page-followers-list' className='hide'>
@@ -300,7 +300,7 @@ function ProfilePage() {
                             </div>
                         </div>
 
-                        <button className='account-page-lists-show-more'>Show more</button>
+                        <button className='account-page-lists-show-more hide'>Show more</button>
                     </section>
 
                     <div id='account-page-posts-list' className='' onClick={onClickPost}>
