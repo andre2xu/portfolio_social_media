@@ -944,6 +944,46 @@ backend.delete('/follow/:username', async (req, res) => {
     return res.json(RESPONSE);
 });
 
+backend.get('/following/:username', async (req, res) => {
+    const RESPONSE = {};
+    const AUTHENTICATION_RESULT = authenticateUser(req);
+
+    if (AUTHENTICATION_RESULT.isAuthenticated) {
+        const USERS_COLLECTION = req.app.locals.db.collection('Users');
+        const USER_INFO = await USERS_COLLECTION.findOne({username: req.params.username});
+
+        if (USER_INFO !== null) {
+            const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
+
+            const FOLLOWING = await FOLLOWERS_COLLECTION.aggregate([
+                {$match: {fid: USER_INFO.uid}}, // get all the documents where the given user is the follower
+                {
+                    // find all the accounts of the users being followed
+                    $lookup: {
+                        from: 'Users',
+                        localField: 'uid',
+                        foreignField: 'uid',
+                        as: 'user'
+                    }
+                },
+                {$unwind: '$user'}, // store each result of the lookup in an object
+                {
+                    // include only the following fields in the final result
+                    $project: {
+                        username: '$user.username',
+                        pfp: '$user.pfp'
+                    }
+                },
+                {$unset: '_id'} // exclude this from the final result
+            ]).toArray();
+
+            RESPONSE.following = FOLLOWING;
+        }
+    }
+
+    return res.json(RESPONSE);
+});
+
 // INITIALIZATION
 backend.listen(8010, async () => {
     // connect to database & store the connection in a shared variable
