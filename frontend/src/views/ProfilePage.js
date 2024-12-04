@@ -183,11 +183,7 @@ function ProfilePage() {
         .then((response) => {
             if (response.status === 200 && 'followers' in response.data) {
                 // update followers count
-                $('#account-page-profile-info .profile-counts').each((_, countContainer) => {
-                    if (countContainer.lastElementChild.innerText === 'Followers') {
-                        countContainer.firstElementChild.innerHTML = response.data.followers.length;
-                    }
-                });
+                $('#account-page-profile-info .followers-count span').first().text(response.data.followers.length);
 
                 if ('followedByUser' in response.data) {
                     // change the follow button to an unfollow button
