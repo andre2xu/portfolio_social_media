@@ -83,6 +83,29 @@ function ProfilePage() {
         }
     };
 
+    function onClickFollowOrUnfollow(event) {
+        const BUTTON = event.target;
+
+        if (BUTTON.innerText === 'Follow') {
+            axios.post(shared.resolveBackendRoute('/follow'), {username: PROFILE_DATA.current.username}, {withCredentials: true})
+            .then((response) => {
+                if (response.status === 200 && 'status' in response.data && response.data.status === 'success') {
+                    // change the follow button to an unfollow button
+                    BUTTON.innerText = 'Unfollow';
+                }
+            });
+        }
+        else if (BUTTON.innerText === 'Unfollow') {
+            axios.delete(shared.resolveBackendRoute(`/follow/${PROFILE_DATA.current.username}`), {withCredentials: true})
+            .then((response) => {
+                if (response.status === 200 && 'status' in response.data && response.data.status === 'success') {
+                    // change the unfollow button to a follow button
+                    BUTTON.innerText = 'Follow';
+                }
+            });
+        }
+    };
+
     function updateProfile(newData) {
         if (typeof newData !== 'object' || ('username' in newData && 'cover' in newData && 'pfp' in newData) === false || (typeof newData.username === 'string' && typeof newData.cover === 'string' && typeof newData.pfp === 'string') === false) {
             throw TypeError("Invalid profile data");
@@ -185,7 +208,7 @@ function ProfilePage() {
                             </div>
                         </div>
 
-                        <div>
+                        <div onClick={onClickFollowOrUnfollow}>
                             <button>Follow</button>
                         </div>
                     </div>
