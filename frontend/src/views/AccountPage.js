@@ -14,6 +14,7 @@ function AccountPage({displayConfirmationDialog}) {
     const SETTINGS_FORM_MESSAGE_TIMEOUT_FUNCTION = React.useRef(null);
     const LIKED_POSTS = React.useRef([]);
     const [posts, loadPosts] = React.useState([]);
+    const [followers, loadFollowers] = React.useState([]);
     const PROFILE_DATA = React.useRef({
         username: 'User',
         pfp: '/pfp/Default_Profile_Picture.png'
@@ -401,9 +402,11 @@ function AccountPage({displayConfirmationDialog}) {
                     axios.get(shared.resolveBackendRoute(`/followers/${PROFILE_DATA.current.username}`), {withCredentials: true})
                     .then((response) => {
                         if (response.status === 200 && 'followers' in response.data) {
-
                             // update followers count
                             $('#account-page-profile-info .followers-count span').first().text(response.data.followers.length);
+
+                            // update followers list
+                            loadFollowers(response.data.followers);
                         }
                     });
                 }
@@ -492,29 +495,25 @@ function AccountPage({displayConfirmationDialog}) {
                         <h1>Followers</h1>
 
                         <div className='users-list'>
-                            <div className='user'>
-                                <img src='/pfp/Default_Profile_Picture.png' alt='User' />
+                            {
+                                followers.map((followerData, index) => {
+                                    let pfp = '/pfp/Default_Profile_Picture.png';
 
-                                <span>@Username</span>
+                                    if (followerData.pfp.length > 0) {
+                                        pfp = shared.resolveBackendRoute(`/static/users/profile/${followerData.pfp}`);
+                                    }
 
-                                <button>Follow</button>
-                            </div>
+                                    return (
+                                        <div className='user' key={index}>
+                                            <img src={pfp} alt='User' />
 
-                            <div className='user'>
-                                <img src='/pfp/Default_Profile_Picture.png' alt='User' />
+                                            <span>@{followerData.username}</span>
 
-                                <span>@Username</span>
-
-                                <button>Unfollow</button>
-                            </div>
-
-                            <div className='user'>
-                                <img src='/pfp/Default_Profile_Picture.png' alt='User' />
-
-                                <span>@Username</span>
-
-                                <button>Follow</button>
-                            </div>
+                                            <button>Follow</button>
+                                        </div>
+                                    );
+                                })
+                            }
                         </div>
 
                         <button className='account-page-lists-show-more hide'>Show more</button>
