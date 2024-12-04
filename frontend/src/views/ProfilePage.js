@@ -12,6 +12,7 @@ import Post from '../components/Post';
 function ProfilePage() {
     const LIKED_POSTS = React.useRef([]);
     const [posts, loadPosts] = React.useState([]);
+    const [followers, loadFollowers] = React.useState([]);
     const PROFILE_DATA = React.useRef({
         username: 'User',
         pfp: '/pfp/Default_Profile_Picture.png'
@@ -199,6 +200,9 @@ function ProfilePage() {
                     // change the follow button to an unfollow button
                     $('#account-page-profile-info > div button').text('Unfollow');
                 }
+
+                // update followers list
+                loadFollowers(response.data.followers);
             }
         });
 
@@ -275,29 +279,25 @@ function ProfilePage() {
                         <h1>Followers</h1>
 
                         <div className='users-list'>
-                            <div className='user'>
-                                <img src='/pfp/Default_Profile_Picture.png' alt='User' />
+                            {
+                                followers.map((followerData, index) => {
+                                    let pfp = '/pfp/Default_Profile_Picture.png';
 
-                                <span>@Username</span>
+                                    if (followerData.pfp.length > 0) {
+                                        pfp = shared.resolveBackendRoute(`/static/users/profile/${followerData.pfp}`);
+                                    }
 
-                                <button>Follow</button>
-                            </div>
+                                    return (
+                                        <div className='user' key={index}>
+                                            <img src={pfp} alt='User' />
 
-                            <div className='user'>
-                                <img src='/pfp/Default_Profile_Picture.png' alt='User' />
+                                            <span>@{followerData.username}</span>
 
-                                <span>@Username</span>
-
-                                <button>Unfollow</button>
-                            </div>
-
-                            <div className='user'>
-                                <img src='/pfp/Default_Profile_Picture.png' alt='User' />
-
-                                <span>@Username</span>
-
-                                <button>Follow</button>
-                            </div>
+                                            <button>Follow</button>
+                                        </div>
+                                    );
+                                })
+                            }
                         </div>
 
                         <button className='account-page-lists-show-more hide'>Show more</button>
