@@ -396,6 +396,20 @@ function AccountPage({displayConfirmationDialog}) {
             if (response.status === 200) {
                 if (response.data.username.length > 0) {
                     PROFILE_DATA.current.username = response.data.username;
+
+                    // retrieve followers
+                    axios.get(shared.resolveBackendRoute(`/followers/${PROFILE_DATA.current.username}`), {withCredentials: true})
+                    .then((response) => {
+                        if (response.status === 200 && 'followers' in response.data) {
+
+                            // update followers count
+                            $('#account-page-profile-info .profile-counts').each((_, countContainer) => {
+                                if (countContainer.lastElementChild.innerText === 'Followers') {
+                                    countContainer.firstElementChild.innerHTML = response.data.followers.length;
+                                }
+                            });
+                        }
+                    });
                 }
 
                 if (response.data.pfp.length > 0) {
