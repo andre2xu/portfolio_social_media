@@ -61,6 +61,10 @@
                             color: #fff;
                             border: none;
                             cursor: pointer;
+
+                            &:hover {
+                                color: $theme_color;
+                            }
                         }
                     }
                 }
