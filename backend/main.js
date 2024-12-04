@@ -888,6 +888,29 @@ backend.post('/follow', async (req, res) => {
     return res.json(RESPONSE);
 });
 
+backend.delete('/follow/:username', async (req, res) => {
+    const RESPONSE = {status: 'failed'};
+    const AUTHENTICATION_RESULT = authenticateUser(req);
+
+    if (AUTHENTICATION_RESULT.isAuthenticated) {
+        const USERS_COLLECTION = req.app.locals.db.collection('Users');
+        const USER_INFO = await USERS_COLLECTION.findOne({username: req.params.username});
+
+        if (USER_INFO !== null) {
+            const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
+
+            await FOLLOWERS_COLLECTION.deleteOne({
+                uid: USER_INFO.uid, // user being unfollowed by logged in user
+                fid: AUTHENTICATION_RESULT.tokenData.uid // logged in user
+            });
+
+            RESPONSE.status = 'success';
+        }
+    }
+
+    return res.json(RESPONSE);
+});
+
 // INITIALIZATION
 backend.listen(8010, async () => {
     // connect to database & store the connection in a shared variable
