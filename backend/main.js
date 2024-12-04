@@ -865,6 +865,29 @@ backend.put('/comments/dislike', async (req, res) => {
     return res.json(RESPONSE);
 });
 
+backend.post('/follow', async (req, res) => {
+    const RESPONSE = {status: 'failed'};
+    const AUTHENTICATION_RESULT = authenticateUser(req);
+
+    if (AUTHENTICATION_RESULT.isAuthenticated) {
+        const USERS_COLLECTION = req.app.locals.db.collection('Users');
+        const USER_INFO = await USERS_COLLECTION.findOne({username: req.body.username});
+
+        if (USER_INFO !== null && USER_INFO.uid !== AUTHENTICATION_RESULT.tokenData.uid) {
+            const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
+
+            await FOLLOWERS_COLLECTION.insertOne({
+                uid: USER_INFO.uid, // user being followed by logged in user
+                fid: AUTHENTICATION_RESULT.tokenData.uid // logged in user
+            });
+
+            RESPONSE.status = 'success';
+        }
+    }
+
+    return res.json(RESPONSE);
+});
+
 // INITIALIZATION
 backend.listen(8010, async () => {
     // connect to database & store the connection in a shared variable
