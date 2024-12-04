@@ -55,6 +55,34 @@ function ProfilePage() {
         }
     };
 
+    function changeSection(event) {
+        // this handles changing between posts, following, or followers
+
+        let element_clicked = $(event.target);
+
+        if (element_clicked.hasClass('profile-counts') === false) {
+            element_clicked = element_clicked.parent();
+        }
+
+        const SECTION = element_clicked.children('span').last().text();
+        const SECTIONS = $('#account-page-profile-lists');
+
+        SECTIONS.children().addClass('hide');
+
+        switch (SECTION) {
+            case 'Posts':
+                SECTIONS.children('#account-page-posts-list').removeClass('hide');
+                break;
+            case 'Following':
+                SECTIONS.children('#account-page-following-list').removeClass('hide');
+                break;
+            case 'Followers':
+                SECTIONS.children('#account-page-followers-list').removeClass('hide');
+                break;
+            default:
+        }
+    };
+
     function updateProfile(newData) {
         if (typeof newData !== 'object' || ('username' in newData && 'cover' in newData && 'pfp' in newData) === false || (typeof newData.username === 'string' && typeof newData.cover === 'string' && typeof newData.pfp === 'string') === false) {
             throw TypeError("Invalid profile data");
@@ -140,7 +168,7 @@ function ProfilePage() {
                     <div id='account-page-profile-info'>
                         <span>@</span>
 
-                        <div>
+                        <div onClick={changeSection}>
                             <div className='profile-counts'>
                                 <span>{posts.length}</span>
                                 <span>Posts</span>
