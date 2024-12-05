@@ -120,8 +120,8 @@ function ProfilePage() {
                     FOLLOWERS_COUNT.text(parseInt(FOLLOWERS_COUNT.text()) - 1);
 
                     // update followers list
-                    loadFollowers((oldFollowingList) => {
-                        return oldFollowingList.filter((userInfo) => {
+                    loadFollowers((oldFollowersList) => {
+                        return oldFollowersList.filter((userInfo) => {
                             return userInfo.username !== response.data.followerRemoved.username;
                         });
                     });
