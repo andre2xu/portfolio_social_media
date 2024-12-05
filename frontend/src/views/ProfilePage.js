@@ -130,6 +130,17 @@ function ProfilePage() {
         }
     };
 
+    function onClickUser(event) {
+        const ELEMENT_CLICKED = event.target;
+
+        if ((ELEMENT_CLICKED instanceof HTMLImageElement && ELEMENT_CLICKED.alt === 'User') || (ELEMENT_CLICKED instanceof HTMLSpanElement && ELEMENT_CLICKED.innerText[0] === '@')) {
+            const USERNAME = $(ELEMENT_CLICKED.parentElement).children('span').first().text().substring(1);
+
+            // redirect to the profile page of the user that was clicked
+            redirectTo(`/profile/${USERNAME}`);
+        }
+    };
+
     function updateProfile(newData) {
         if (typeof newData !== 'object' || ('username' in newData && 'cover' in newData && 'pfp' in newData) === false || (typeof newData.username === 'string' && typeof newData.cover === 'string' && typeof newData.pfp === 'string') === false) {
             throw TypeError("Invalid profile data");
@@ -268,7 +279,7 @@ function ProfilePage() {
                 </div>
 
                 <div id='account-page-profile-lists'>
-                    <section id='account-page-following-list' className='hide'>
+                    <section id='account-page-following-list' className='hide' onClick={onClickUser}>
                         <h1>Following</h1>
 
                         <div className='users-list'>
@@ -296,7 +307,7 @@ function ProfilePage() {
                         <button className='account-page-lists-show-more hide'>Show more</button>
                     </section>
 
-                    <section id='account-page-followers-list' className='hide'>
+                    <section id='account-page-followers-list' className='hide' onClick={onClickUser}>
                         <h1>Followers</h1>
 
                         <div className='users-list'>
