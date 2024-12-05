@@ -296,8 +296,6 @@ function ProfilePage() {
                                             <img src={pfp} alt='User' />
 
                                             <span>@{followingData.username}</span>
-
-                                            <button>Unfollow</button>
                                         </div>
                                     );
                                 })
@@ -324,8 +322,6 @@ function ProfilePage() {
                                             <img src={pfp} alt='User' />
 
                                             <span>@{followerData.username}</span>
-
-                                            <button>Follow</button>
                                         </div>
                                     );
                                 })
