@@ -528,8 +528,6 @@ function AccountPage({displayConfirmationDialog}) {
                                             <img src={pfp} alt='User' />
 
                                             <span>@{followerData.username}</span>
-
-                                            <button>Follow</button>
                                         </div>
                                     );
                                 })
