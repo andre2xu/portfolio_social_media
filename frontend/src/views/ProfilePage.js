@@ -138,6 +138,7 @@ function ProfilePage() {
 
             // redirect to the profile page of the user that was clicked
             redirectTo(`/profile/${USERNAME}`);
+            redirectTo(0); // force re-render
         }
     };
 

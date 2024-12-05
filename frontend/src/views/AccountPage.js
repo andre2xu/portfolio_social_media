@@ -337,6 +337,7 @@ function AccountPage({displayConfirmationDialog}) {
 
             // redirect to the profile page of the user that was clicked
             redirectTo(`/profile/${USERNAME}`);
+            redirectTo(0); // force re-render
         }
         else if (ELEMENT_CLICKED instanceof HTMLButtonElement && ELEMENT_CLICKED.innerText === 'Unfollow') {
             // unfollow a user
