@@ -338,6 +338,28 @@ function AccountPage({displayConfirmationDialog}) {
             // redirect to the profile page of the user that was clicked
             redirectTo(`/profile/${USERNAME}`);
         }
+        else if (ELEMENT_CLICKED instanceof HTMLButtonElement && ELEMENT_CLICKED.innerText === 'Unfollow') {
+            // unfollow a user
+
+            const USERNAME = $(ELEMENT_CLICKED).siblings('span').first().text().substring(1);
+
+            axios.delete(shared.resolveBackendRoute(`/follow/${USERNAME}`), {withCredentials: true})
+            .then((response) => {
+                if (response.status === 200 && 'status' in response.data && response.data.status === 'success') {
+                    // decrement following count
+                    const FOLLOWING_COUNT = $('#account-page-profile-info .following-count span').first();
+
+                    FOLLOWING_COUNT.text(parseInt(FOLLOWING_COUNT.text()) - 1);
+
+                    // update following list
+                    loadFollowing((oldFollowingList) => {
+                        return oldFollowingList.filter((userInfo) => {
+                            return userInfo.username !== USERNAME;
+                        });
+                    });
+                }
+            });
+        }
     };
 
     function updateProfile(newData) {
