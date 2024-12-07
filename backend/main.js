@@ -1001,7 +1001,36 @@ backend.get('/explore', async (req, res) => {
     const RESPONSE = {};
 
     const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
-    const LATEST_POSTS = await POSTS_COLLECTION.find({tags: 'explore'}, {projection: {_id: 0, uid: 0, pid: 0, timestamp: 0}}).sort({timestamp: -1}).limit(2000).toArray();
+
+    const LATEST_POSTS = await POSTS_COLLECTION.aggregate([
+        {$match: {tags: 'explore'}}, // get only the posts that have the 'explore' tag
+        {$sort: {timestamp: -1}}, // put the latest posts at the start
+        {$limit: 2000}, // reduce data set
+        {
+            // get the account data of every poster
+            $lookup: {
+                from: 'Users',
+                localField: 'uid',
+                foreignField: 'uid',
+                as: 'user'
+            }
+        },
+        {$unwind: '$user'}, // store each result of the lookup in an object
+        {
+            // include only the following fields in the final result
+            $project: {
+                pid: 1,
+                body: 1,
+                tags: 1,
+                media: 1,
+                date: 1,
+                likes: 1,
+                username: '$user.username',
+                pfp: '$user.pfp'
+            }
+        },
+        {$unset: '_id'} // exclude this from the final result
+    ]).toArray();
 
     // check if a logged-in user is making the request and find which posts they've liked
     let uid_of_user_logged_in = undefined;
