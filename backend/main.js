@@ -332,6 +332,7 @@ backend.delete('/account/delete', async (req, res) => {
         const USERS_COLLECTION = req.app.locals.db.collection('Users');
         const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
         const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
+        const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
 
         const FILTER = {uid: AUTHENTICATION_RESULT.tokenData.uid};
 
@@ -343,6 +344,9 @@ backend.delete('/account/delete', async (req, res) => {
 
         // delete the user's comments in posts (if any)
         await COMMENTS_COLLECTION.deleteMany(FILTER);
+
+        // delete followers & following
+        await FOLLOWERS_COLLECTION.deleteMany({$or: [FILTER, {fid: AUTHENTICATION_RESULT.tokenData.uid}]});
 
         // get static files linked to user & remove them from the server
         const USER_INFO = await USERS_COLLECTION.findOne(FILTER);
