@@ -1019,7 +1019,16 @@ backend.get('/explore', async (req, res) => {
                 as: 'user'
             }
         },
-        {$unwind: '$user'}, // store each result of the lookup in an object
+        {$unwind: '$user'}, // store each result of the account lookup in an object
+        {
+            // get the comments of every post (NOTE: don't unwind so that the total count can be calculated with '$size')
+            $lookup: {
+                from: 'Comments',
+                localField: 'uid',
+                foreignField: 'uid',
+                as: 'comments'
+            }
+        },
         {
             // include only the following fields in the final result
             $project: {
@@ -1029,6 +1038,7 @@ backend.get('/explore', async (req, res) => {
                 media: 1,
                 date: 1,
                 likes: 1,
+                comments: {$size: '$comments'},
                 username: '$user.username',
                 pfp: '$user.pfp'
             }
