@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import $ from 'jquery';
+import { Link, useNavigate } from 'react-router-dom';
 import shared from '../shared';
 
 // static
@@ -14,8 +15,22 @@ import Post from '../components/Post';
 function ExplorePage({isLoggedIn}) {
     const [posts, loadPosts] = React.useState([]);
 
+    const redirectTo = useNavigate();
+
     function search(event) {
         event.preventDefault();
+    };
+
+    function onClickPost(event) {
+        const ELEMENT_CLICKED = event.target;
+
+        if (ELEMENT_CLICKED instanceof HTMLImageElement) {
+            if (ELEMENT_CLICKED.alt === 'User') {
+                const POSTER_USERNAME = $(ELEMENT_CLICKED).closest('.post').find('.user-info span').text();
+
+                redirectTo(`/profile/${POSTER_USERNAME}`);
+            }
+        }
     };
 
     React.useEffect(() => {
@@ -53,7 +68,7 @@ function ExplorePage({isLoggedIn}) {
                 </div>
             }
 
-            <div id='explore-page-posts'>
+            <div id='explore-page-posts' onClick={onClickPost}>
                 {
                     posts.map((postData, index) => {
                         const USER_INFO = {
