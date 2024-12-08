@@ -1058,7 +1058,7 @@ backend.get('/explore', async (req, res) => {
         let i = 0;
         let j = LATEST_POSTS.length - 1;
 
-        while (i < j) {
+        while (i <= j) {
             const USER_LIKED_LPOST = LATEST_POSTS[i].likes.includes(uid_of_user_logged_in);
 
             if (USER_LIKED_LPOST) {
