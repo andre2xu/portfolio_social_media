@@ -30,6 +30,11 @@ function ExplorePage({isLoggedIn}) {
 
                 redirectTo(`/profile/${POSTER_USERNAME}`);
             }
+            else if (ELEMENT_CLICKED.alt === 'Comment Icon') {
+                const POST_ID = $(ELEMENT_CLICKED).closest('.post').data('pid');
+
+                redirectTo(`/post/${POST_ID}`);
+            }
         }
     };
 
