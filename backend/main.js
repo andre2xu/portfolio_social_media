@@ -1119,10 +1119,20 @@ backend.get('/search/:query', async (req, res) => {
                     {$sort: {timestamp: -1}},
                     {$limit: 5},
                     {
+                        $lookup: {
+                            from: 'Users',
+                            localField: 'uid',
+                            foreignField: 'uid',
+                            as: 'user'
+                        }
+                    },
+                    {$unwind: '$user'},
+                    {
                         $project: {
                             _id: 0,
                             pid: 1,
-                            body: 1
+                            body: 1,
+                            username: '$user.username'
                         }
                     }
                 ]).toArray();
@@ -1171,10 +1181,20 @@ backend.get('/search/:query', async (req, res) => {
                 {$sort: {timestamp: -1}},
                 {$limit: 5},
                 {
+                    $lookup: {
+                        from: 'Users',
+                        localField: 'uid',
+                        foreignField: 'uid',
+                        as: 'user'
+                    }
+                },
+                {$unwind: '$user'},
+                {
                     $project: {
                         _id: 0,
                         pid: 1,
-                        body: 1
+                        body: 1,
+                        username: '$user.username'
                     }
                 }
             ]).toArray();
