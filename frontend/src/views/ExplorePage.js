@@ -76,14 +76,42 @@ function ExplorePage({isLoggedIn}) {
     }, []);
 
     React.useEffect(() => {
+        const SEARCH_RESULTS_LIST = $('#explore-page-searchbar-results');
+
         $('#explore-page-searchbar-input').on('keyup', debounce((event) => {
+            // hide and reset the list
+            SEARCH_RESULTS_LIST.addClass('hide');
+            SEARCH_RESULTS_LIST.empty();
+
             const SEARCH_QUERY = event.target.value;
 
             if (SEARCH_QUERY.length > 0) {
                 axios.get(shared.resolveBackendRoute(`/search/${encodeURIComponent(SEARCH_QUERY)}`))
                 .then((response) => {
-                    if (response.status === 200) {
-                        console.log(response.data);
+                    if (response.status === 200 && 'type' in response.data && 'result' in response.data) {
+                        if (response.data.result.length > 0) {
+                            // populate the list
+                            switch (response.data.type) {
+                                case 'user':
+                                    break;
+                                case 'tag':
+                                case 'content':
+                                    $(response.data.result).each((_, result) => {
+                                        const LIST_ITEM = document.createElement('li');
+                                        LIST_ITEM.setAttribute('data-pid', result.pid);
+                                        LIST_ITEM.innerHTML = `<b>@${result.username}:</b> ${result.body}`;
+
+                                        SEARCH_RESULTS_LIST.append(LIST_ITEM);
+                                    });
+
+                                    SEARCH_RESULTS_LIST.removeClass('hide');
+                                    break;
+                                default:
+                                    // hide and reset the list
+                                    SEARCH_RESULTS_LIST.addClass('hide');
+                                    SEARCH_RESULTS_LIST.empty();
+                            }
+                        }
                     }
                 });
             }
@@ -100,11 +128,7 @@ function ExplorePage({isLoggedIn}) {
                         <img src={Fill_Icon_MagnifyingGlass} alt='Search'></img>
                     </button>
 
-                    <ul id='explore-page-searchbar-results' className='hide'>
-                        <li>Search result 1</li>
-                        <li>Search result 2</li>
-                        <li>Search result 3</li>
-                    </ul>
+                    <ul id='explore-page-searchbar-results' className='hide'></ul>
                 </div>
             </form>
 
