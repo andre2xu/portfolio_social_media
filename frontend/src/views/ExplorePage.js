@@ -66,6 +66,24 @@ function ExplorePage({isLoggedIn}) {
         }
     };
 
+    function onClickSearchResult(event) {
+        let element_clicked = event.target;
+
+        if (element_clicked instanceof HTMLLIElement === false) {
+            element_clicked = element_clicked.parentElement;
+        }
+
+        const POST_ID = element_clicked.getAttribute('data-pid');
+        const USERNAME = element_clicked.getAttribute('data-user');
+
+        if (POST_ID !== null) {
+            redirectTo(`/post/${POST_ID}`);
+        }
+        else if (USERNAME !== null) {
+            redirectTo(`/profile/${USERNAME}`);
+        }
+    };
+
     React.useEffect(() => {
         axios.get(shared.resolveBackendRoute('/explore'), {withCredentials: true})
         .then((response) => {
@@ -143,7 +161,7 @@ function ExplorePage({isLoggedIn}) {
                         <img src={Fill_Icon_MagnifyingGlass} alt='Search'></img>
                     </button>
 
-                    <ul id='explore-page-searchbar-results' className='hide'></ul>
+                    <ul id='explore-page-searchbar-results' className='hide' onClick={onClickSearchResult}></ul>
                 </div>
             </form>
 
