@@ -1087,12 +1087,19 @@ backend.get('/search/:query', async (req, res) => {
     const RESPONSE = {};
     const SEARCH_QUERY = req.params.query;
 
+    let search_found = false;
+
     /*
     ALGORITHM:
     For tag and user searches, only the first token of the search query is used.
     The algorithm checks if it has a # or @ symbol as its first character and
-    then it uses that symbol to determine what type of search to perform. The
-    search strategies for both are given below.
+    then it uses that symbol to determine what type of search to perform.
+
+    If the search is neither for a tag or a user, then the algorithm will
+    use the entire search query (i.e. all tokens) to find the post(s) that
+    contains it.
+
+    The search strategies are given below.
     */
     const TOKENS = SEARCH_QUERY.split(/\s/);
 
@@ -1123,6 +1130,8 @@ backend.get('/search/:query', async (req, res) => {
                 if (RESULT.length > 0) {
                     RESPONSE.type = 'tag';
                     RESPONSE.result = RESULT;
+
+                    search_found = true;
                 }
             }
             else if (FIRST_TOKEN[0] === '@') {
@@ -1146,7 +1155,35 @@ backend.get('/search/:query', async (req, res) => {
                 if (RESULT.length > 0) {
                     RESPONSE.type = 'user';
                     RESPONSE.result = RESULT;
+
+                    search_found = true;
                 }
+            }
+        }
+
+        if (search_found === false) {
+            // SEARCH STRATEGY: get 5 of the most recent posts with bodies that have the entire search query as a substring
+
+            const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
+
+            const RESULT = await POSTS_COLLECTION.aggregate([
+                {$match: {body: new RegExp(SEARCH_QUERY)}},
+                {$sort: {timestamp: -1}},
+                {$limit: 5},
+                {
+                    $project: {
+                        _id: 0,
+                        pid: 1,
+                        body: 1
+                    }
+                }
+            ]).toArray();
+
+            if (RESULT.length > 0) {
+                RESPONSE.type = 'content';
+                RESPONSE.result = RESULT;
+
+                search_found = true;
             }
         }
     }
