@@ -1083,6 +1083,77 @@ backend.get('/explore', async (req, res) => {
     return res.json(RESPONSE);
 });
 
+backend.get('/search/:query', async (req, res) => {
+    const RESPONSE = {};
+    const SEARCH_QUERY = req.params.query;
+
+    /*
+    ALGORITHM:
+    For tag and user searches, only the first token of the search query is used.
+    The algorithm checks if it has a # or @ symbol as its first character and
+    then it uses that symbol to determine what type of search to perform. The
+    search strategies for both are given below.
+    */
+    const TOKENS = SEARCH_QUERY.split(/\s/);
+
+    if (TOKENS.length > 0) {
+        const FIRST_TOKEN = TOKENS[0];
+
+        if (FIRST_TOKEN.length > 1) {
+            const KEYWORD = FIRST_TOKEN.substring(1);
+
+            if (FIRST_TOKEN[0] === '#') {
+                // SEARCH STRATEGY: get 5 of the most recent posts with tags that have the first token's keyword as a substring
+
+                const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
+
+                const RESULT = await POSTS_COLLECTION.aggregate([
+                    {$match: {tags: new RegExp(KEYWORD)}},
+                    {$sort: {timestamp: -1}},
+                    {$limit: 5},
+                    {
+                        $project: {
+                            _id: 0,
+                            pid: 1,
+                            body: 1
+                        }
+                    }
+                ]).toArray();
+
+                if (RESULT.length > 0) {
+                    RESPONSE.type = 'tag';
+                    RESPONSE.result = RESULT;
+                }
+            }
+            else if (FIRST_TOKEN[0] === '@') {
+                // SEARCH STRATEGY: get 5 users whose usernames have the first token's keyword as a substring. The users are sorted alphabetically starting from A
+
+                const USERS_COLLECTION = req.app.locals.db.collection('Users');
+
+                const RESULT = await USERS_COLLECTION.aggregate([
+                    {$match: {username: new RegExp(KEYWORD)}},
+                    {$sort: {username: 1}},
+                    {$limit: 5},
+                    {
+                        $project: {
+                            _id: 0,
+                            username: 1,
+                            pfp: 1
+                        }
+                    }
+                ]).toArray();
+
+                if (RESULT.length > 0) {
+                    RESPONSE.type = 'user';
+                    RESPONSE.result = RESULT;
+                }
+            }
+        }
+    }
+
+    return res.json(RESPONSE);
+});
+
 // INITIALIZATION
 backend.listen(8010, async () => {
     // connect to database & store the connection in a shared variable
