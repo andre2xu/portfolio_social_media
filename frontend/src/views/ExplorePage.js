@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import $ from 'jquery';
+import debounce from 'lodash.debounce';
 import { Link, useNavigate } from 'react-router-dom';
 import shared from '../shared';
 
@@ -74,11 +75,26 @@ function ExplorePage({isLoggedIn}) {
         });
     }, []);
 
+    React.useEffect(() => {
+        $('#explore-page-searchbar-input').on('keyup', debounce((event) => {
+            const SEARCH_QUERY = event.target.value;
+
+            if (SEARCH_QUERY.length > 0) {
+                axios.get(shared.resolveBackendRoute(`/search/${encodeURIComponent(SEARCH_QUERY)}`))
+                .then((response) => {
+                    if (response.status === 200) {
+                        console.log(response.data);
+                    }
+                });
+            }
+        }, 700));
+    }, []);
+
     return (
         <div id='explore-page' className=''>
             <form id='explore-page-searchbar' onSubmit={search}>
                 <div>
-                    <input type='text' placeholder='#topic, @username, content' />
+                    <input id='explore-page-searchbar-input' type='text' placeholder='#topic, @username, content' />
 
                     <button type='submit'>
                         <img src={Fill_Icon_MagnifyingGlass} alt='Search'></img>
