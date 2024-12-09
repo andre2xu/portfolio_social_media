@@ -155,7 +155,7 @@ function ExplorePage({isLoggedIn}) {
         <div id='explore-page' className=''>
             <form id='explore-page-searchbar' onSubmit={search}>
                 <div>
-                    <input id='explore-page-searchbar-input' type='text' placeholder='#topic, @username, content' />
+                    <input id='explore-page-searchbar-input' type='text' placeholder='#topic, @username, content' autoComplete='off' />
 
                     <button type='submit'>
                         <img src={Fill_Icon_MagnifyingGlass} alt='Search'></img>
