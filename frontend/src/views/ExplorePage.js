@@ -93,6 +93,21 @@ function ExplorePage({isLoggedIn}) {
                             // populate the list
                             switch (response.data.type) {
                                 case 'user':
+                                    $(response.data.result).each((_, result) => {
+                                        let pfp_src = '/pfp/Default_Profile_Picture.png';
+
+                                        if (result.pfp.length > 0) {
+                                            pfp_src = shared.resolveBackendRoute(`/static/users/profile/${result.pfp}`);
+                                        }
+
+                                        const LIST_ITEM = document.createElement('li');
+                                        LIST_ITEM.setAttribute('data-user', result.username);
+                                        LIST_ITEM.innerHTML = `<img src="${pfp_src}" alt="User"></img> @${result.username}`;
+
+                                        SEARCH_RESULTS_LIST.append(LIST_ITEM);
+                                    });
+
+                                    SEARCH_RESULTS_LIST.removeClass('hide');
                                     break;
                                 case 'tag':
                                 case 'content':
