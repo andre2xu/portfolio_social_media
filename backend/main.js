@@ -1168,6 +1168,38 @@ backend.get('/explore/:query', async (req, res) => {
         ]).toArray();
 
         if (RESULT.length > 0) {
+            // check if a logged-in user is making the request and find which posts they've liked
+            let uid_of_user_logged_in = undefined;
+
+            if (req.cookies.LT !== undefined) {
+                uid_of_user_logged_in = authenticateUser(req).tokenData.uid;
+            }
+
+            if (uid_of_user_logged_in !== undefined) {
+                // use a two pointer loop to quickly find the posts that were liked by the logged-in user
+                let i = 0;
+                let j = RESULT.length - 1;
+
+                while (i <= j) {
+                    const USER_LIKED_LPOST = RESULT[i].likes.includes(uid_of_user_logged_in);
+
+                    if (USER_LIKED_LPOST) {
+                        RESULT[i].likedByUser = true;
+                    }
+
+                    if (i != j) {
+                        const USER_LIKED_RPOST = RESULT[j].likes.includes(uid_of_user_logged_in);
+
+                        if (USER_LIKED_RPOST) {
+                            RESULT[j].likedByUser = true;
+                        }
+                    }
+
+                    i++;
+                    j--;
+                }
+            }
+
             RESPONSE.result = RESULT;
         }
     }
