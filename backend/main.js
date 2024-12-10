@@ -1065,12 +1065,16 @@ backend.get('/explore', async (req, res) => {
                 LATEST_POSTS[i].likedByUser = true;
             }
 
+            LATEST_POSTS[i].likes = LATEST_POSTS[i].likes.length;
+
             if (i != j) {
                 const USER_LIKED_RPOST = LATEST_POSTS[j].likes.includes(uid_of_user_logged_in);
 
                 if (USER_LIKED_RPOST) {
                     LATEST_POSTS[j].likedByUser = true;
                 }
+
+                LATEST_POSTS[j].likes = LATEST_POSTS[j].likes.length;
             }
 
             i++;
@@ -1187,12 +1191,16 @@ backend.get('/explore/:query', async (req, res) => {
                         RESULT[i].likedByUser = true;
                     }
 
+                    RESULT[i].likes = RESULT[i].likes.length;
+
                     if (i != j) {
                         const USER_LIKED_RPOST = RESULT[j].likes.includes(uid_of_user_logged_in);
 
                         if (USER_LIKED_RPOST) {
                             RESULT[j].likedByUser = true;
                         }
+
+                        RESULT[j].likes = RESULT[j].likes.length;
                     }
 
                     i++;
