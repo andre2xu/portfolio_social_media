@@ -36,8 +36,8 @@ function ExplorePage({isLoggedIn}) {
                 // search query is either a tag or a post's content. Let the backend handle the processing
                 axios.get(shared.resolveBackendRoute(`/explore/${encodeURIComponent(SEARCH_BAR.value)}`), {withCredentials: true})
                 .then((response) => {
-                    if (response.status === 200) {
-                        console.log(response.data);
+                    if (response.status === 200 && 'result' in response.data) {
+                        loadPosts(response.data.result);
                     }
                 });
             }
