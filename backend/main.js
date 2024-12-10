@@ -1118,7 +1118,7 @@ backend.get('/explore/:query', async (req, res) => {
 
         // save remaining sequence of words (if any)
         if (sequence_of_words.length > 0) {
-            WORD_SEQUENCES.push(sequence_of_words);
+            WORD_SEQUENCES.push(new RegExp(sequence_of_words));
         }
 
         // find the latest posts that either have the tags (or tag substrings) given, or contain the word sequences given
