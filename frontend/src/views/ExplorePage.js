@@ -20,6 +20,28 @@ function ExplorePage({isLoggedIn}) {
 
     function search(event) {
         event.preventDefault();
+
+        const SEARCH_BAR = document.getElementById('explore-page-searchbar-input');
+
+        if (SEARCH_BAR.value.length > 0) {
+            const TOKENS = SEARCH_BAR.value.split(/\s/);
+
+            if (TOKENS.length === 1 && TOKENS[0].length > 1 && TOKENS[0][0] === '@') {
+                // search query is a user so redirect to their profile page
+                const USERNAME = TOKENS[0].substring(1);
+
+                redirectTo(`/profile/${USERNAME}`);
+            }
+            else {
+                // search query is either a tag or a post's content. Let the backend handle the processing
+                axios.get(shared.resolveBackendRoute(`/explore/${encodeURIComponent(SEARCH_BAR.value)}`))
+                .then((response) => {
+                    if (response.status === 200) {
+                        console.log(response.data);
+                    }
+                });
+            }
+        }
     };
 
     function onClickPost(event) {
