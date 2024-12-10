@@ -1083,6 +1083,98 @@ backend.get('/explore', async (req, res) => {
     return res.json(RESPONSE);
 });
 
+backend.get('/explore/:query', async (req, res) => {
+    const RESPONSE = {};
+    let search_query = req.params.query;
+
+    const TOKENS = search_query.split(/\s/);
+
+    if (TOKENS.length > 0) {
+        const TAGS = [];
+        const WORD_SEQUENCES = [];
+
+        let sequence_of_words = '';
+
+        for (let i=0; i < TOKENS.length; i++) {
+            const TOKEN = TOKENS[i];
+
+            if (TOKEN[0] === '#') {
+                // save tag or tag substring
+                TAGS.push(new RegExp(TOKEN.substring(1)));
+
+                // a tag or tag substring has been found so save the current sequence of words
+                if (sequence_of_words.length > 0) {
+                    WORD_SEQUENCES.push(new RegExp(sequence_of_words));
+
+                    // reset sequence
+                    sequence_of_words = '';
+                }
+            }
+            else {
+                // build sequence of words
+                sequence_of_words += TOKEN;
+            }
+        }
+
+        // save remaining sequence of words (if any)
+        if (sequence_of_words.length > 0) {
+            WORD_SEQUENCES.push(sequence_of_words);
+        }
+
+        // find the latest posts that either have the tags (or tag substrings) given, or contain the word sequences given
+        const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
+        const RESULT = await POSTS_COLLECTION.aggregate([
+            {
+                $match: {
+                    $or: [
+                        {tags: {$in: TAGS}},
+                        {body: {$in: WORD_SEQUENCES}}
+                    ]
+                }
+            },
+            {$sort: {timestamp: -1}},
+            {$limit: 2000},
+            {
+                $lookup: {
+                    from: 'Users',
+                    localField: 'uid',
+                    foreignField: 'uid',
+                    as: 'user'
+                }
+            },
+            {$unwind: '$user'},
+            {
+                $lookup: {
+                    from: 'Comments',
+                    localField: 'uid',
+                    foreignField: 'uid',
+                    as: 'comments'
+                }
+            },
+            {
+                $project: {
+                    pid: 1,
+                    body: 1,
+                    tags: 1,
+                    media: 1,
+                    date: 1,
+                    likes: 1,
+                    comments: {$size: '$comments'},
+                    username: '$user.username',
+                    pfp: '$user.pfp'
+                }
+            },
+            {$unset: '_id'}
+        ]).toArray();
+
+        if (RESULT.length > 0) {
+            RESPONSE.result = RESULT;
+        }
+    }
+
+    return res.json(RESPONSE);
+});
+
 backend.get('/search/:query', async (req, res) => {
     const RESPONSE = {};
     const SEARCH_QUERY = req.params.query;
