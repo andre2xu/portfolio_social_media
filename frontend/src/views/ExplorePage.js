@@ -171,6 +171,22 @@ function ExplorePage({isLoggedIn}) {
                 });
             }
         }, 700));
+
+        $(document.body).on('click', (event) => {
+            const ELEMENT_CLICKED = event.target;
+
+            if (ELEMENT_CLICKED.id !== 'explore-page-searchbar-results' && ELEMENT_CLICKED.id !== 'explore-page-searchbar-input' && $.contains(SEARCH_RESULTS_LIST, ELEMENT_CLICKED) === false) {
+                // hide and reset the list
+                SEARCH_RESULTS_LIST.addClass('hide');
+                SEARCH_RESULTS_LIST.empty();
+            }
+        });
+
+        return () => {
+            // remove event listeners when the component is destroyed
+            $('#explore-page-searchbar-input').off();
+            $(document.body).off();
+        }
     }, []);
 
     return (
