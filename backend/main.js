@@ -1349,7 +1349,8 @@ backend.get('/chats', async (req, res) => {
 
     if (AUTHENTICATION_RESULT.isAuthenticated) {
         const CHATS_COLLECTION = req.app.locals.db.collection('Chats');
-        const CHATS = await CHATS_COLLECTION.aggregate([
+
+        const CHATS_STARTED_BY_USER = await CHATS_COLLECTION.aggregate([
             {$match: {uid: AUTHENTICATION_RESULT.tokenData.uid}}, // get only the chats started by the logged-in user
             {
                 // get the account data of recipient
@@ -1388,8 +1389,48 @@ backend.get('/chats', async (req, res) => {
             {$unset: '_id'} // exclude this from the final result
         ]).toArray();
 
-        if (CHATS !== null) {
-            RESPONSE.chats = CHATS;
+        const CHATS_STARTED_BY_OTHERS = await CHATS_COLLECTION.aggregate([
+            {$match: {rid: AUTHENTICATION_RESULT.tokenData.uid}}, // get only the chats in which the logged-in user is the recipient
+            {
+                // get the account data of the other user who started the chat
+                $lookup: {
+                    from: 'Users',
+                    localField: 'uid',
+                    foreignField: 'uid',
+                    as: 'user'
+                }
+            },
+            {$unwind: '$user'}, // store each result of the account lookup in an object
+            {
+                // get the messages of each chat
+                $lookup: {
+                    from: 'Messages',
+                    localField: 'cid',
+                    foreignField: 'cid',
+                    as: 'messages',
+                    pipeline: [
+                        // get the most recent message of each chat
+                        {$sort: {timestamp: -1}},
+                        {$limit: 1}
+                    ]
+                }
+            },
+            {
+                // include only the following fields in the final result
+                $project: {
+                    cid: 1,
+                    chatName: '$name',
+                    recipientUsername: '$user.username',
+                    recipientPfp: '$user.pfp',
+                    recentMessage: '$messages.message'
+                }
+            },
+            {$unset: '_id'} // exclude this from the final result
+        ]).toArray();
+
+        if (CHATS_STARTED_BY_USER !== null && CHATS_STARTED_BY_OTHERS !== null) {
+            RESPONSE.chatsStartedByUser = CHATS_STARTED_BY_USER;
+            RESPONSE.chatsStartedByOthers = CHATS_STARTED_BY_OTHERS;
         }
     }
 
