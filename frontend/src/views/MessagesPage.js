@@ -1,7 +1,31 @@
+import axios from 'axios';
+import $ from 'jquery';
+import shared from '../shared';
+
+
+
 function MessagesPage() {
+    function onSubmit(event) {
+        event.preventDefault();
+
+        const FORM = $(event.target);
+        const FORM_DATA = {};
+
+        FORM.children('input').each((_, input) => {
+            FORM_DATA[input.name] = input.value;
+        });
+
+        axios.post(shared.resolveBackendRoute('/chats'), FORM_DATA, {withCredentials: true})
+        .then((response) => {
+            if (response.status === 200) {
+                console.log(response.data);
+            }
+        });
+    };
+
     return (
         <div id='messages-page' className=''>
-            <form id='messages-page-chat-start-form' action='' method='post' encType='multipart/form-data'>
+            <form id='messages-page-chat-start-form' action='' method='post' encType='multipart/form-data' onSubmit={onSubmit}>
                 <input type='text' name='chatName' placeholder='Chat Name' />
                 <input type='text' name='username' placeholder='@Username' />
                 <input type='text' name='message' placeholder='Enter message' />
