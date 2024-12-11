@@ -1343,6 +1343,67 @@ backend.get('/search/:query', async (req, res) => {
     return res.json(RESPONSE);
 });
 
+backend.post('/chats', async (req, res) => {
+    const RESPONSE = {};
+    const AUTHENTICATION_RESULT = authenticateUser(req);
+
+    if (AUTHENTICATION_RESULT.isAuthenticated) {
+        const CHAT_NAME = req.body.chatName;
+        const RECIPIENT = req.body.username;
+        const MESSAGE = req.body.message;
+
+        if (CHAT_NAME === undefined || CHAT_NAME.length === 0) {
+            RESPONSE.errorMessage = "Chat name is missing";
+        }
+        else if (RECIPIENT === undefined || RECIPIENT.length === 0) {
+            RESPONSE.errorMessage = "Username is missing";
+        }
+        else if (MESSAGE === undefined || MESSAGE.length === 0) {
+            RESPONSE.errorMessage = "Message is missing";
+        }
+        else {
+            if (RECIPIENT[0] !== '@' || RECIPIENT.length < 2 || RECIPIENT.length > 20) {
+                RESPONSE.errorMessage = "Invalid username";
+            }
+            else {
+                // verify that the recipient exists
+                const USERS_COLLECTION = req.app.locals.db.collection('Users');
+                const RECIPIENT_ACCOUNT = await USERS_COLLECTION.findOne({username: RECIPIENT.substring(1)});
+
+                if (RECIPIENT_ACCOUNT !== null) {
+                    // create a chat
+                    const CHATS_COLLECTION = req.app.locals.db.collection('Chats');
+                    const CURRENT_DATE = new Date().toISOString();
+                    const CHAT_ID = createHash('sha256').update(`${CHAT_NAME}${AUTHENTICATION_RESULT.tokenData.uid}${RECIPIENT_ACCOUNT.uid}${CURRENT_DATE}`).digest('hex');
+
+                    await CHATS_COLLECTION.insertOne({
+                        cid: CHAT_ID,
+                        uid: AUTHENTICATION_RESULT.tokenData.uid,
+                        rid: RECIPIENT_ACCOUNT.uid, // recipient's uid
+                        name: CHAT_NAME,
+                        timestamp: CURRENT_DATE
+                    });
+
+                    // add a message in the chat
+                    const MESSAGES_COLLECTION = req.app.locals.db.collection('Messages');
+
+                    await MESSAGES_COLLECTION.insertOne({
+                        cid: CHAT_ID,
+                        sid: AUTHENTICATION_RESULT.tokenData.uid, // sender's uid
+                        message: MESSAGE,
+                        timestamp: CURRENT_DATE
+                    });
+                }
+                else {
+                    RESPONSE.errorMessage = "That user does not exist";
+                }
+            }
+        }
+    }
+
+    return res.json(RESPONSE);
+});
+
 // INITIALIZATION
 backend.listen(8010, async () => {
     // connect to database & store the connection in a shared variable
