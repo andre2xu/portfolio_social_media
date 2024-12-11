@@ -47,8 +47,8 @@ function MessagesPage() {
     React.useEffect(() => {
         axios.get(shared.resolveBackendRoute('/chats'), {withCredentials: true})
         .then((response) => {
-            if (response.status === 200 && 'chats' in response.data) {
-                loadChats(response.data.chats);
+            if (response.status === 200 && 'chatsStartedByUser' in response.data && 'chatsStartedByOthers' in response.data) {
+                loadChats([...response.data.chatsStartedByUser, ...response.data.chatsStartedByOthers]);
             }
         });
     }, []);
