@@ -7,6 +7,7 @@ import shared from '../shared';
 
 function MessagesPage() {
     const FORM_MESSAGE_TIMEOUT_FUNCTION = React.useRef(null);
+    const [chats, loadChats] = React.useState([]);
 
     function onSubmit(event) {
         event.preventDefault();
@@ -33,6 +34,12 @@ function MessagesPage() {
                         MESSAGE.addClass('hide');
                     }, 4000);
                 }
+                else if ('chatData' in response.data) {
+                    // update chats list
+                    loadChats((oldChats) => {
+                        return [...oldChats, response.data.chatData];
+                    });
+                }
             }
         });
     };
@@ -50,31 +57,30 @@ function MessagesPage() {
             </form>
 
             <div id='messages-page-chats'>
-                <div className='chat'>
-                    <img id='account-page-profile-picture' src='/pfp/Default_Profile_Picture.png' alt='User' />
+                {
+                    chats.map((chatData, index) => {
+                        let recipient_pfp = '/pfp/Default_Profile_Picture.png';
 
-                    <div>
-                        <span className='chat-info-username'>@Username</span>
-                        <span className='chat-info-chat-name'>Chat Name</span>
+                        if (chatData.recipientPfp.length > 0) {
+                            recipient_pfp = shared.resolveBackendRoute(`/static/users/profile/${chatData.recipientPfp}`);
+                        }
 
-                        <p>Hi, this is a message</p>
-                    </div>
+                        return (
+                            <div className='chat' key={index} data-cid={chatData.cid}>
+                                <img id='account-page-profile-picture' src={recipient_pfp} alt='User' />
 
-                    <button>X</button>
-                </div>
+                                <div>
+                                    <span className='chat-info-username'>@{chatData.recipientUsername}</span>
+                                    <span className='chat-info-chat-name'>{chatData.chatName}</span>
 
-                <div className='chat'>
-                    <img id='account-page-profile-picture' src='/pfp/Default_Profile_Picture.png' alt='User' />
+                                    <p>{chatData.recentMessage}</p>
+                                </div>
 
-                    <div>
-                        <span className='chat-info-username'>@Username</span>
-                        <span className='chat-info-chat-name'>Chat Name</span>
-
-                        <p>iwjdijq0ijdq0wjd0qwjd0qwjd0q8wdj8qww0juwqd8w08qdd8jwq8dh08wq08hdhqw0h8dh80qwd</p>
-                    </div>
-
-                    <button>X</button>
-                </div>
+                                <button>X</button>
+                            </div>
+                        );
+                    })
+                }
             </div>
         </div>
     );
