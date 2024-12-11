@@ -1393,6 +1393,14 @@ backend.post('/chats', async (req, res) => {
                         message: MESSAGE,
                         timestamp: CURRENT_DATE
                     });
+
+                    RESPONSE.chatData = {
+                        cid: CHAT_ID,
+                        recipientUsername: RECIPIENT_ACCOUNT.username,
+                        recipientPfp: RECIPIENT_ACCOUNT.pfp,
+                        chatName: CHAT_NAME,
+                        recentMessage: MESSAGE
+                    };
                 }
                 else {
                     RESPONSE.errorMessage = "That user does not exist";
