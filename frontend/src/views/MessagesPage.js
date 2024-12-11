@@ -1,3 +1,4 @@
+import React from 'react';
 import axios from 'axios';
 import $ from 'jquery';
 import shared from '../shared';
@@ -5,6 +6,8 @@ import shared from '../shared';
 
 
 function MessagesPage() {
+    const FORM_MESSAGE_TIMEOUT_FUNCTION = React.useRef(null);
+
     function onSubmit(event) {
         event.preventDefault();
 
@@ -18,7 +21,18 @@ function MessagesPage() {
         axios.post(shared.resolveBackendRoute('/chats'), FORM_DATA, {withCredentials: true})
         .then((response) => {
             if (response.status === 200) {
-                console.log(response.data);
+                if ('errorMessage' in response.data) {
+                    const MESSAGE = FORM.children('span').first();
+
+                    MESSAGE.text(response.data.errorMessage);
+                    MESSAGE.removeClass('hide');
+
+                    clearTimeout(FORM_MESSAGE_TIMEOUT_FUNCTION.current);
+
+                    FORM_MESSAGE_TIMEOUT_FUNCTION.current = setTimeout(() => {
+                        MESSAGE.addClass('hide');
+                    }, 4000);
+                }
             }
         });
     };
@@ -30,7 +44,7 @@ function MessagesPage() {
                 <input type='text' name='username' placeholder='@Username' />
                 <input type='text' name='message' placeholder='Enter message' />
 
-                <span>That user doesn't exist</span>
+                <span className='hide'>Error</span>
 
                 <button type='submit'>Start Chat</button>
             </form>
