@@ -44,6 +44,15 @@ function MessagesPage() {
         });
     };
 
+    React.useEffect(() => {
+        axios.get(shared.resolveBackendRoute('/chats'), {withCredentials: true})
+        .then((response) => {
+            if (response.status === 200 && 'chats' in response.data) {
+                loadChats(response.data.chats);
+            }
+        });
+    }, []);
+
     return (
         <div id='messages-page' className=''>
             <form id='messages-page-chat-start-form' action='' method='post' encType='multipart/form-data' onSubmit={onSubmit}>
