@@ -1371,36 +1371,41 @@ backend.post('/chats', async (req, res) => {
                 const RECIPIENT_ACCOUNT = await USERS_COLLECTION.findOne({username: RECIPIENT.substring(1)});
 
                 if (RECIPIENT_ACCOUNT !== null) {
-                    // create a chat
-                    const CHATS_COLLECTION = req.app.locals.db.collection('Chats');
-                    const CURRENT_DATE = new Date().toISOString();
-                    const CHAT_ID = createHash('sha256').update(`${CHAT_NAME}${AUTHENTICATION_RESULT.tokenData.uid}${RECIPIENT_ACCOUNT.uid}${CURRENT_DATE}`).digest('hex');
+                    if (AUTHENTICATION_RESULT.tokenData.uid === RECIPIENT_ACCOUNT.uid) {
+                        RESPONSE.errorMessage = "You cannot start a chat with yourself";
+                    }
+                    else {
+                        // create a chat
+                        const CHATS_COLLECTION = req.app.locals.db.collection('Chats');
+                        const CURRENT_DATE = new Date().toISOString();
+                        const CHAT_ID = createHash('sha256').update(`${CHAT_NAME}${AUTHENTICATION_RESULT.tokenData.uid}${RECIPIENT_ACCOUNT.uid}${CURRENT_DATE}`).digest('hex');
 
-                    await CHATS_COLLECTION.insertOne({
-                        cid: CHAT_ID,
-                        uid: AUTHENTICATION_RESULT.tokenData.uid,
-                        rid: RECIPIENT_ACCOUNT.uid, // recipient's uid
-                        name: CHAT_NAME,
-                        timestamp: CURRENT_DATE
-                    });
+                        await CHATS_COLLECTION.insertOne({
+                            cid: CHAT_ID,
+                            uid: AUTHENTICATION_RESULT.tokenData.uid,
+                            rid: RECIPIENT_ACCOUNT.uid, // recipient's uid
+                            name: CHAT_NAME,
+                            timestamp: CURRENT_DATE
+                        });
 
-                    // add a message in the chat
-                    const MESSAGES_COLLECTION = req.app.locals.db.collection('Messages');
+                        // add a message in the chat
+                        const MESSAGES_COLLECTION = req.app.locals.db.collection('Messages');
 
-                    await MESSAGES_COLLECTION.insertOne({
-                        cid: CHAT_ID,
-                        sid: AUTHENTICATION_RESULT.tokenData.uid, // sender's uid
-                        message: MESSAGE,
-                        timestamp: CURRENT_DATE
-                    });
+                        await MESSAGES_COLLECTION.insertOne({
+                            cid: CHAT_ID,
+                            sid: AUTHENTICATION_RESULT.tokenData.uid, // sender's uid
+                            message: MESSAGE,
+                            timestamp: CURRENT_DATE
+                        });
 
-                    RESPONSE.chatData = {
-                        cid: CHAT_ID,
-                        recipientUsername: RECIPIENT_ACCOUNT.username,
-                        recipientPfp: RECIPIENT_ACCOUNT.pfp,
-                        chatName: CHAT_NAME,
-                        recentMessage: MESSAGE
-                    };
+                        RESPONSE.chatData = {
+                            cid: CHAT_ID,
+                            recipientUsername: RECIPIENT_ACCOUNT.username,
+                            recipientPfp: RECIPIENT_ACCOUNT.pfp,
+                            chatName: CHAT_NAME,
+                            recentMessage: MESSAGE
+                        };
+                    }
                 }
                 else {
                     RESPONSE.errorMessage = "That user does not exist";
