@@ -40,9 +40,9 @@ function MessagesPage() {
     return (
         <div id='messages-page' className=''>
             <form id='messages-page-chat-start-form' action='' method='post' encType='multipart/form-data' onSubmit={onSubmit}>
-                <input type='text' name='chatName' placeholder='Chat Name' />
-                <input type='text' name='username' placeholder='@Username' />
-                <input type='text' name='message' placeholder='Enter message' />
+                <input type='text' name='chatName' placeholder='Chat Name' autoComplete='off' />
+                <input type='text' name='username' placeholder='@Username' autoComplete='off' />
+                <input type='text' name='message' placeholder='Enter message' autoComplete='off' />
 
                 <span className='hide'>Error</span>
 
