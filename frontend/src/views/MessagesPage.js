@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import $ from 'jquery';
+import { useNavigate } from 'react-router-dom';
 import shared from '../shared';
 
 
@@ -8,6 +9,8 @@ import shared from '../shared';
 function MessagesPage({displayConfirmationDialog}) {
     const FORM_MESSAGE_TIMEOUT_FUNCTION = React.useRef(null);
     const [chats, loadChats] = React.useState([]);
+
+    const redirectTo = useNavigate();
 
     function onSubmit(event) {
         event.preventDefault();
@@ -65,6 +68,11 @@ function MessagesPage({displayConfirmationDialog}) {
                 () => {},
                 "Are you sure you want to delete this chat? If you do, it will no longer be available for you and the recipient."
             );
+        }
+        else if (ELEMENT_CLICKED instanceof HTMLImageElement && ELEMENT_CLICKED.alt === 'User') {
+            const OTHER_USER_USERNAME = $(ELEMENT_CLICKED).closest('.chat').find('.chat-info-username').first().text().substring(1);
+
+            redirectTo(`/profile/${OTHER_USER_USERNAME}`);
         }
     };
 
