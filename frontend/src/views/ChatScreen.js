@@ -1,8 +1,18 @@
+import { useNavigate } from 'react-router-dom';
+
+
+
 function ChatScreen() {
+    const redirectTo = useNavigate();
+
+    function goBack() {
+        redirectTo(-1);
+    };
+
     return (
         <div id='chat-screen' className=''>
             <div id='chat-screen-chat-info'>
-                <button>&larr;</button>
+                <button onClick={goBack}>&larr;</button>
 
                 <h1>Chat Name</h1>
                 <h2>@Username</h2>
