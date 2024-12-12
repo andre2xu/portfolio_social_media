@@ -463,6 +463,19 @@ function AccountPage({displayConfirmationDialog}) {
                 }
 
                 updateProfile(response.data);
+
+                // add user to the collection of web socket clients
+                const WS = new WebSocket(shared.getWebSocketServerURI());
+
+                WS.addEventListener('open', () => {
+                    const DATA = JSON.stringify({
+                        type: 'user',
+                        username: PROFILE_DATA.current.username // this will help identify which connection belongs to the user
+                    });
+
+                    WS.send(DATA);
+                    WS.close();
+                });
             }
         });
 
