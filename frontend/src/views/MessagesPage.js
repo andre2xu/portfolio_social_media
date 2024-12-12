@@ -74,6 +74,16 @@ function MessagesPage({displayConfirmationDialog}) {
 
             redirectTo(`/profile/${OTHER_USER_USERNAME}`);
         }
+        else {
+            let chat = $(ELEMENT_CLICKED);
+
+            if (chat.hasClass('chat') === false) {
+                chat = chat.closest('.chat');
+            }
+
+            // enter chat
+            redirectTo(`/chat/${chat.data('cid')}`);
+        }
     };
 
     React.useEffect(() => {
