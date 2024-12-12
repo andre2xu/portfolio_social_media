@@ -333,6 +333,8 @@ backend.delete('/account/delete', async (req, res) => {
         const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
         const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
         const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
+        const CHATS_COLLECTION = req.app.locals.db.collection('Chats');
+        const MESSAGES_COLLECTION = req.app.locals.db.collection('Messages');
 
         const FILTER = {uid: AUTHENTICATION_RESULT.tokenData.uid};
 
@@ -347,6 +349,16 @@ backend.delete('/account/delete', async (req, res) => {
 
         // delete followers & following
         await FOLLOWERS_COLLECTION.deleteMany({$or: [FILTER, {fid: AUTHENTICATION_RESULT.tokenData.uid}]});
+
+        // delete chats & messages
+        const CHATS = await CHATS_COLLECTION.find({$or: [FILTER, {rid: AUTHENTICATION_RESULT.tokenData.uid}]}, {projection: {_id: 0, cid: 1}}).toArray();
+
+        if (CHATS !== null) {
+            const CHAT_IDS = CHATS.map((chatData) => { return chatData.cid; });
+
+            await MESSAGES_COLLECTION.deleteMany({cid: {$in: CHAT_IDS}});
+            await CHATS_COLLECTION.deleteMany({cid: {$in: CHAT_IDS}});
+        }
 
         // get static files linked to user & remove them from the server
         const USER_INFO = await USERS_COLLECTION.findOne(FILTER);
