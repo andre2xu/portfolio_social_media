@@ -18,6 +18,7 @@ import ProfilePage from './views/ProfilePage';
 import MessagesPage from './views/MessagesPage';
 import NotificationsPage from './views/NotificationsPage';
 import CommentsScreen from './views/CommentsScreen';
+import ChatScreen from './views/ChatScreen';
 
 
 
@@ -48,6 +49,10 @@ const ROUTER = createBrowserRouter([
       {
         path: '/account/messages',
         element: <MainScreen component={<MessagesPage />} />
+      },
+      {
+        path: '/chat/:cid',
+        element: <MainScreen component={<ChatScreen />} />
       },
       {
         path: '/account/notifications',
