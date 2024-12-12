@@ -5,7 +5,7 @@ import shared from '../shared';
 
 
 
-function MessagesPage() {
+function MessagesPage({displayConfirmationDialog}) {
     const FORM_MESSAGE_TIMEOUT_FUNCTION = React.useRef(null);
     const [chats, loadChats] = React.useState([]);
 
@@ -44,6 +44,30 @@ function MessagesPage() {
         });
     };
 
+    function onClickChat(event) {
+        const ELEMENT_CLICKED = event.target;
+
+        if (ELEMENT_CLICKED instanceof HTMLButtonElement && ELEMENT_CLICKED.innerText.toLowerCase() === 'x') {
+            displayConfirmationDialog(
+                () => {
+                    const CHAT = $(ELEMENT_CLICKED).closest('.chat');
+
+                    axios.delete(shared.resolveBackendRoute(`/chats/${CHAT.data('cid')}`), {withCredentials: true})
+                    .then((response) => {
+                        if (response.status === 200 && 'status' in response.data) {
+                            if (response.data.status === 'success') {
+                                // remove chat from chats list
+                                CHAT.remove();
+                            }
+                        }
+                    });
+                },
+                () => {},
+                "Are you sure you want to delete this chat? If you do, it will no longer be available for you and the recipient."
+            );
+        }
+    };
+
     React.useEffect(() => {
         axios.get(shared.resolveBackendRoute('/chats'), {withCredentials: true})
         .then((response) => {
@@ -65,7 +89,7 @@ function MessagesPage() {
                 <button type='submit'>Start Chat</button>
             </form>
 
-            <div id='messages-page-chats'>
+            <div id='messages-page-chats' onClick={onClickChat}>
                 {
                     chats.map((chatData, index) => {
                         let recipient_pfp = '/pfp/Default_Profile_Picture.png';
