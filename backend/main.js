@@ -1563,6 +1563,7 @@ backend.listen(8010, async () => {
         ws.isAlive = true;
 
         ws.on('pong', () => {
+            // clients that are still connected to the web socket server will send a pong and this callback will mark the connection with them as still alive
             ws.isAlive = true;
         });
 
@@ -1583,8 +1584,10 @@ backend.listen(8010, async () => {
                 return connection.terminate();
             }
 
+            // mark connection with the current client as not alive (if they pong back it will be marked as alive again)
             connection.isAlive = false;
 
+            // ping the frontend web socket of the current client to see if they respond with a pong to the backend
             connection.ping();
         });
     }, 1000 * 60 * 2);
