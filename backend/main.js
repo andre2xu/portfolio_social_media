@@ -1,5 +1,6 @@
 const { MongoClient } = require('mongodb');
 const { createHash } = require('crypto');
+const { WebSocketServer } = require('ws');
 const jwt = require('jsonwebtoken');
 const body_parser = require('body-parser');
 const multer = require('multer');
@@ -1554,4 +1555,41 @@ backend.listen(8010, async () => {
     await MONGO_CLIENT.connect();
 
     backend.locals.db = MONGO_CLIENT.db('socialmedia'); // accessible in routes via `req.app.locals.db`
+
+    // WEB SOCKET SERVER
+    const wss = new WebSocketServer({port: 8011});
+
+    wss.on('connection', (ws) => {
+        ws.isAlive = true;
+
+        ws.on('pong', () => {
+            ws.isAlive = true;
+        });
+
+        ws.on('error', console.error);
+
+        ws.on('message', (message) => {
+            const DATA = JSON.parse(`${message}`);
+
+            if (DATA.type === 'user') {
+                ws.username = DATA.username;
+            }
+        });
+    });
+
+    const PERIODIC_WS_CONNECTION_CHECK = setInterval(() => {
+        wss.clients.forEach((connection) => {
+            if (connection.isAlive === false) {
+                return connection.terminate();
+            }
+
+            connection.isAlive = false;
+
+            connection.ping();
+        });
+    }, 1000 * 60 * 2);
+
+    wss.on('close', () => {
+        clearInterval(PERIODIC_WS_CONNECTION_CHECK);
+    });
 });

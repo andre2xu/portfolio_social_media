@@ -6,8 +6,13 @@ function resolveBackendRoute(path) {
     return `${window.location.protocol}//${window.location.hostname}:8010${path}`;
 };
 
+function getWebSocketServerURI() {
+    return 'ws://localhost:8011';
+};
+
 const shared = {
-    resolveBackendRoute
+    resolveBackendRoute,
+    getWebSocketServerURI
 };
 
 export default shared;
