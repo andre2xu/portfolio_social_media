@@ -1511,6 +1511,29 @@ backend.post('/chats', async (req, res) => {
     return res.json(RESPONSE);
 });
 
+backend.delete('/chats/:cid', async (req, res) => {
+    const RESPONSE = {status: 'failed'};
+    const AUTHENTICATION_RESULT = authenticateUser(req);
+
+    if (AUTHENTICATION_RESULT.isAuthenticated) {
+        const CHAT_ID = req.params.cid;
+
+        // delete all messages in the chat
+        const MESSAGES_COLLECTION = req.app.locals.db.collection('Messages');
+
+        await MESSAGES_COLLECTION.deleteMany({cid: CHAT_ID});
+
+        // delete the chat itself
+        const CHATS_COLLECTION = req.app.locals.db.collection('Chats');
+
+        await CHATS_COLLECTION.deleteOne({cid: CHAT_ID});
+
+        RESPONSE.status = 'success';
+    }
+
+    return res.json(RESPONSE);
+});
+
 // INITIALIZATION
 backend.listen(8010, async () => {
     // connect to database & store the connection in a shared variable
