@@ -7,6 +7,8 @@ import shared from '../shared';
 
 
 function ChatScreen() {
+    const [messages, loadMessages] = React.useState([]);
+
     const URL_PARAMETERS = useParams();
     const redirectTo = useNavigate();
 
@@ -31,6 +33,9 @@ function ChatScreen() {
                 else if ('userIsRecipient' in CHAT_DATA) {
                     CHAT_INFO.children('h2').text(`@${CHAT_DATA.owner}`);
                 }
+
+                // load messages
+                loadMessages(response.data.messages);
             }
         });
     }, [URL_PARAMETERS.cid]);
@@ -45,13 +50,19 @@ function ChatScreen() {
             </div>
 
             <div id='chat-screen-conversation'>
-                <div className='message sender'>
-                    Hey I'm sending this message to you
-                </div>
+                {
+                    messages.map((messageData, index) => {
+                        if ('sentByUser' in messageData) {
+                            return (
+                                <div key={index} className='message sender'>{messageData.message}</div>
+                            );
+                        }
 
-                <div className='message recipient'>
-                    Ok, I received it
-                </div>
+                        return (
+                            <div key={index} className='message recipient'>{messageData.message}</div>
+                        );
+                    })
+                }
             </div>
 
             <form id='chat-screen-message-form' action='' method='post'>
