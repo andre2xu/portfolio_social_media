@@ -17,27 +17,49 @@ function ChatScreen() {
     };
 
     React.useEffect(() => {
-        axios.get(shared.resolveBackendRoute(`/messages/${URL_PARAMETERS.cid}`), {withCredentials: true})
-        .then((response) => {
-            if (response.status === 200 && 'chatData' in response.data && 'messages' in response.data) {
-                const CHAT_DATA = response.data.chatData;
-                const CHAT_INFO = $('#chat-screen-chat-info');
+        // add user to the collection of backend web socket clients (i.e. make them available to receive live messages from other client web sockets)
+        const CLIENT_WEB_SOCKET = new WebSocket(shared.getWebSocketServerURI());
 
-                // display the chat's name
-                CHAT_INFO.children('h1').text(CHAT_DATA.chatName);
+        CLIENT_WEB_SOCKET.addEventListener('open', () => {
+            // retrieve existing chat data
+            axios.get(shared.resolveBackendRoute(`/messages/${URL_PARAMETERS.cid}`), {withCredentials: true})
+            .then((response) => {
+                if (response.status === 200 && 'chatData' in response.data && 'messages' in response.data) {
+                    const CHAT_DATA = response.data.chatData;
+                    const CHAT_INFO = $('#chat-screen-chat-info');
 
-                // display the username of the other user
-                if ('userIsChatOwner' in CHAT_DATA) {
-                    CHAT_INFO.children('h2').text(`@${CHAT_DATA.recipient}`);
+                    const WEB_SOCKET_USER_DATA = {
+                        type: 'user',
+                        username: ''
+                    };
+
+                    // display the chat's name
+                    CHAT_INFO.children('h1').text(CHAT_DATA.chatName);
+
+                    // display the username of the other user
+                    if ('userIsChatOwner' in CHAT_DATA) {
+                        CHAT_INFO.children('h2').text(`@${CHAT_DATA.recipient}`);
+
+                        WEB_SOCKET_USER_DATA.username = CHAT_DATA.owner;
+                    }
+                    else if ('userIsRecipient' in CHAT_DATA) {
+                        CHAT_INFO.children('h2').text(`@${CHAT_DATA.owner}`);
+
+                        WEB_SOCKET_USER_DATA.username = CHAT_DATA.recipient;
+                    }
+
+                    // pass the user's username to the web socket server so that it can be binded to their web socket client instance
+                    CLIENT_WEB_SOCKET.send(JSON.stringify(WEB_SOCKET_USER_DATA));
+
+                    // load messages
+                    loadMessages(response.data.messages);
                 }
-                else if ('userIsRecipient' in CHAT_DATA) {
-                    CHAT_INFO.children('h2').text(`@${CHAT_DATA.owner}`);
-                }
-
-                // load messages
-                loadMessages(response.data.messages);
-            }
+            });
         });
+
+        return () => {
+            CLIENT_WEB_SOCKET.close();
+        }
     }, [URL_PARAMETERS.cid]);
 
     return (
