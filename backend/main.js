@@ -1652,7 +1652,7 @@ backend.listen(8010, async () => {
     // WEB SOCKET SERVER
     const wss = new WebSocketServer({port: 8011});
 
-    wss.on('connection', (ws) => {
+    wss.on('connection', (ws, req) => {
         ws.isAlive = true;
 
         ws.on('pong', () => {
@@ -1667,6 +1667,26 @@ backend.listen(8010, async () => {
 
             if (DATA.type === 'user') {
                 ws.username = DATA.username;
+            }
+            else if (DATA.type === 'chatMessage') {
+                // check if the web socket request was made by a user logged in
+                const COOKIES = req.headers.cookie;
+
+                if (COOKIES.length > 0) {
+                    const LOGIN_TOKEN = COOKIES.match(/LT=.*;?/);
+
+                    if (LOGIN_TOKEN !== null) {
+                        // create an object that mimics the request object of Express (except it only contains the cookies field)
+                        const REQUEST = {
+                            cookies: {
+                                LT: LOGIN_TOKEN[0].substring(3)
+                            }
+                        };
+
+                        // authenticate the user who made the request
+                        const AUTHENTICATION_RESULT = authenticateUser(REQUEST);
+                    }
+                }
             }
         });
     });
