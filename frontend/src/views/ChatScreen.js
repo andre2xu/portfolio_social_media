@@ -19,6 +19,7 @@ function ChatScreen() {
     React.useEffect(() => {
         // add user to the collection of backend web socket clients (i.e. make them available to receive live messages from other client web sockets)
         const CLIENT_WEB_SOCKET = new WebSocket(shared.getWebSocketServerURI());
+        const MESSAGE_FORM = $('#chat-screen-message-form');
 
         CLIENT_WEB_SOCKET.addEventListener('open', () => {
             // retrieve existing chat data
@@ -33,23 +34,45 @@ function ChatScreen() {
                         username: ''
                     };
 
+                    let other_user = '';
+
                     // display the chat's name
                     CHAT_INFO.children('h1').text(CHAT_DATA.chatName);
 
                     // display the username of the other user
                     if ('userIsChatOwner' in CHAT_DATA) {
-                        CHAT_INFO.children('h2').text(`@${CHAT_DATA.recipient}`);
+                        other_user = CHAT_DATA.recipient;
 
                         WEB_SOCKET_USER_DATA.username = CHAT_DATA.owner;
                     }
                     else if ('userIsRecipient' in CHAT_DATA) {
-                        CHAT_INFO.children('h2').text(`@${CHAT_DATA.owner}`);
+                        other_user = CHAT_DATA.owner;
 
                         WEB_SOCKET_USER_DATA.username = CHAT_DATA.recipient;
                     }
 
+                    CHAT_INFO.children('h2').text(`@${other_user}`);
+
                     // pass the user's username to the web socket server so that it can be binded to their web socket client instance
                     CLIENT_WEB_SOCKET.send(JSON.stringify(WEB_SOCKET_USER_DATA));
+
+                    // initialize the message form
+                    MESSAGE_FORM.on('submit', (event) => {
+                        event.preventDefault();
+
+                        const MESSAGE = MESSAGE_FORM.children('input').first().val();
+
+                        // send non-empty message
+                        if (MESSAGE.length > 0 && /^\s+$/.test(MESSAGE) === false) {
+                            CLIENT_WEB_SOCKET.send(JSON.stringify({
+                                type: 'chatMessage',
+                                cid: URL_PARAMETERS.cid,
+                                message: MESSAGE,
+                                timestamp: new Date().toISOString(),
+                                to: other_user // other user's username
+                            }));
+                        }
+                    });
 
                     // load messages
                     loadMessages(response.data.messages);
@@ -58,6 +81,8 @@ function ChatScreen() {
         });
 
         return () => {
+            MESSAGE_FORM.off();
+
             CLIENT_WEB_SOCKET.close();
         }
     }, [URL_PARAMETERS.cid]);
