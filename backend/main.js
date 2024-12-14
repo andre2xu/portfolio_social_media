@@ -1662,7 +1662,7 @@ backend.listen(8010, async () => {
 
         ws.on('error', console.error);
 
-        ws.on('message', (message) => {
+        ws.on('message', async (message) => {
             const DATA = JSON.parse(`${message}`);
 
             if (DATA.type === 'user') {
@@ -1685,6 +1685,28 @@ backend.listen(8010, async () => {
 
                         // authenticate the user who made the request
                         const AUTHENTICATION_RESULT = authenticateUser(REQUEST);
+
+                        if (AUTHENTICATION_RESULT.isAuthenticated) {
+                            // save message to database
+                            const MESSAGES_COLLECTION = backend.locals.db.collection('Messages');
+
+                            await MESSAGES_COLLECTION.insertOne({
+                                cid: DATA.cid,
+                                sid: AUTHENTICATION_RESULT.tokenData.uid, // sender's uid
+                                message: DATA.message,
+                                timestamp: DATA.timestamp
+                            });
+
+                            // pass the message to the recipient
+                            wss.clients.forEach((clientWebSocket) => {
+                                if (clientWebSocket.username === DATA.to) {
+                                    clientWebSocket.send(JSON.stringify({
+                                        message: DATA.message,
+                                        timestamp: DATA.timestamp
+                                    }));
+                                }
+                            });
+                        }
                     }
                 }
             }
