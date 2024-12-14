@@ -72,6 +72,13 @@ function ChatScreen() {
                                 timestamp: new Date().toISOString(),
                                 to: other_user // other user's username
                             }));
+
+                            // update chat
+                            const NEW_USER_MESSAGE = $(document.createElement('div'));
+                            NEW_USER_MESSAGE.addClass('message sender');
+                            NEW_USER_MESSAGE.text(MESSAGE);
+
+                            CHAT.append(NEW_USER_MESSAGE);
                         }
 
                         // clear message
