@@ -56,6 +56,19 @@ function ChatScreen() {
                     // pass the user's username to the web socket server so that it can be binded to their web socket client instance
                     CLIENT_WEB_SOCKET.send(JSON.stringify(WEB_SOCKET_USER_DATA));
 
+                    // prepare to receive messages from other client web sockets
+                    const CHAT = $('#chat-screen-conversation');
+
+                    CLIENT_WEB_SOCKET.addEventListener('message', (event) => {
+                        const MESSAGE_DATA = JSON.parse(event.data);
+
+                        const NEW_OTHER_USER_MESSAGE = $(document.createElement('div'));
+                        NEW_OTHER_USER_MESSAGE.addClass('message recipient');
+                        NEW_OTHER_USER_MESSAGE.text(MESSAGE_DATA.message);
+
+                        CHAT.append(NEW_OTHER_USER_MESSAGE);
+                    });
+
                     // initialize the message form
                     MESSAGE_FORM.on('submit', (event) => {
                         event.preventDefault();
