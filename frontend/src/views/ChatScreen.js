@@ -113,7 +113,7 @@ function ChatScreen() {
             </div>
 
             <form id='chat-screen-message-form' action='' method='post'>
-                <input type='text' name='message' placeholder='Message' />
+                <input type='text' name='message' placeholder='Message' autoComplete='off' />
 
                 <button type='submit'>Send</button>
             </form>
