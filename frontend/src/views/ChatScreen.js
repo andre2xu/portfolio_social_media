@@ -60,7 +60,8 @@ function ChatScreen() {
                     MESSAGE_FORM.on('submit', (event) => {
                         event.preventDefault();
 
-                        const MESSAGE = MESSAGE_FORM.children('input').first().val();
+                        const MESSAGE_FORM_INPUT = MESSAGE_FORM.children('input').first();
+                        const MESSAGE = MESSAGE_FORM_INPUT.val();
 
                         // send non-empty message
                         if (MESSAGE.length > 0 && /^\s+$/.test(MESSAGE) === false) {
@@ -72,6 +73,9 @@ function ChatScreen() {
                                 to: other_user // other user's username
                             }));
                         }
+
+                        // clear message
+                        MESSAGE_FORM_INPUT.val('');
                     });
 
                     // load messages
