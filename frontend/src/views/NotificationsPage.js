@@ -6,6 +6,8 @@ import shared from '../shared';
 
 
 function NotificationsPage() {
+    const [notifications, loadNotifications] = React.useState([]);
+
     function changeTabs(event) {
         const NOTIFICATIONS_SECTION = document.getElementById('notifications-page-messages');
         const SETTINGS_SECTION = document.getElementById('notifications-page-settings');
@@ -115,6 +117,15 @@ function NotificationsPage() {
         });
     }, []);
 
+    React.useEffect(() => {
+        axios.get(shared.resolveBackendRoute('/notifications'), {withCredentials: true})
+        .then((response) => {
+            if (response.status === 200 && 'notifications' in response.data) {
+                loadNotifications(response.data.notifications);
+            }
+        });
+    }, []);
+
     return (
         <div id='notifications-page' className=''>
             <div id='notifications-page-tabs' onClick={changeTabs}>
@@ -123,20 +134,16 @@ function NotificationsPage() {
             </div>
 
             <div id='notifications-page-messages' className=''>
-                <div className='notification'>
-                    <h1>Notification Title</h1>
-                    <p>This is the notification body</p>
-                </div>
-
-                <div className='notification'>
-                    <h1>Notification Title</h1>
-                    <p>This is the notification body</p>
-                </div>
-
-                <div className='notification'>
-                    <h1>Notification Title</h1>
-                    <p>afdjnfiofnoinaoinfwioafawofjnaoifjwfhwfijafowioajhffhowhhfaahwhfuaanohfwohfuoah</p>
-                </div>
+                {
+                    notifications.map((notificationData, index) => {
+                        return (
+                            <div className='notification' key={index}>
+                                <h1>{notificationData.title}</h1>
+                                <p>{notificationData.body}</p>
+                            </div>
+                        );
+                    })
+                }
             </div>
 
             <div id='notifications-page-settings' className='hide' onClick={onToggleSetting}>
