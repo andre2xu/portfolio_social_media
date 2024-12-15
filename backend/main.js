@@ -1764,9 +1764,9 @@ backend.get('/notifications/settings', async (req, res) => {
     const AUTHENTICATION_RESULT = authenticateUser(req);
 
     if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
+        const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
 
-        const SETTINGS = await NOTIFICATIONS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid}, {projection: {_id: 0, uid: 0}});
+        const SETTINGS = await NOTIFICATIONS_SETTINGS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid}, {projection: {_id: 0, uid: 0}});
 
         if (SETTINGS !== null) {
             RESPONSE.settings = SETTINGS;
@@ -1781,12 +1781,12 @@ backend.put('/notifications/settings', async (req, res) => {
     const AUTHENTICATION_RESULT = authenticateUser(req);
 
     if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
+        const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
 
         const SETTING = {};
         SETTING[req.body.setting] = req.body.action === 'enable' ? 1 : 0;
 
-        await NOTIFICATIONS_COLLECTION.updateOne(
+        await NOTIFICATIONS_SETTINGS_COLLECTION.updateOne(
             {uid: AUTHENTICATION_RESULT.tokenData.uid},
             {$set: SETTING}
         );
