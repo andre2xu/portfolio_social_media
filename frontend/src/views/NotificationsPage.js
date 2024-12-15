@@ -144,18 +144,18 @@ function NotificationsPage() {
                     <h1>Chats</h1>
 
                     <div className='setting'>
-                        <p>Tell me if someone I follow messaged me.</p>
+                        <p>Tell me if a follower started a chat with me.</p>
 
-                        <div className='toggle-button' data-enabled='0' data-setting='followerSentMessage'>
+                        <div className='toggle-button' data-enabled='0' data-setting='followerStartedChat'>
                             <div className='bar'></div>
                             <div className='thumb'></div>
                         </div>
                     </div>
 
                     <div className='setting'>
-                        <p>Tell me if someone I don't follow messaged me.</p>
+                        <p>Tell me if a stranger started a chat with me.</p>
 
-                        <div className='toggle-button' data-enabled='0' data-setting='strangerSentMessage'>
+                        <div className='toggle-button' data-enabled='0' data-setting='strangerStartedChat'>
                             <div className='bar'></div>
                             <div className='thumb'></div>
                         </div>
