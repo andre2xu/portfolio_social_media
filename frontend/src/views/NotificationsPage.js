@@ -110,7 +110,7 @@ function NotificationsPage() {
                     <div className='setting'>
                         <p>Tell me if someone I follow messaged me.</p>
 
-                        <div className='toggle-button' data-enabled='0'>
+                        <div className='toggle-button' data-enabled='0' data-setting='followerSentMessage'>
                             <div className='bar'></div>
                             <div className='thumb'></div>
                         </div>
@@ -119,7 +119,7 @@ function NotificationsPage() {
                     <div className='setting'>
                         <p>Tell me if someone I don't follow messaged me.</p>
 
-                        <div className='toggle-button' data-enabled='0'>
+                        <div className='toggle-button' data-enabled='0' data-setting='strangerSentMessage'>
                             <div className='bar'></div>
                             <div className='thumb'></div>
                         </div>
@@ -132,7 +132,7 @@ function NotificationsPage() {
                     <div className='setting'>
                         <p>Notify me when someone liked one of my posts.</p>
 
-                        <div className='toggle-button' data-enabled='0'>
+                        <div className='toggle-button' data-enabled='0' data-setting='newPostLike'>
                             <div className='bar'></div>
                             <div className='thumb'></div>
                         </div>
@@ -141,7 +141,7 @@ function NotificationsPage() {
                     <div className='setting'>
                         <p>Notify me when there's a new comment in one of my posts.</p>
 
-                        <div className='toggle-button' data-enabled='0'>
+                        <div className='toggle-button' data-enabled='0' data-setting='newPostComment'>
                             <div className='bar'></div>
                             <div className='thumb'></div>
                         </div>
@@ -154,7 +154,7 @@ function NotificationsPage() {
                     <div className='setting'>
                         <p>Let me know if someone followed me.</p>
 
-                        <div className='toggle-button' data-enabled='0'>
+                        <div className='toggle-button' data-enabled='0' data-setting='newFollower'>
                             <div className='bar'></div>
                             <div className='thumb'></div>
                         </div>
