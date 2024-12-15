@@ -51,7 +51,7 @@ function NotificationsPage() {
                         complete: () => {
                             TOGGLE_BUTTON.attr('data-enabled', '1');
 
-                            axios.put(shared.resolveBackendRoute('/notifications'), {setting: TOGGLE_BUTTON.data('setting'), action: 'enable'}, {withCredentials: true});
+                            axios.put(shared.resolveBackendRoute('/notifications/settings'), {setting: TOGGLE_BUTTON.data('setting'), action: 'enable'}, {withCredentials: true});
                         }
                     }
                 );
@@ -78,7 +78,7 @@ function NotificationsPage() {
                         complete: () => {
                             TOGGLE_BUTTON.attr('data-enabled', '0');
 
-                            axios.put(shared.resolveBackendRoute('/notifications'), {setting: TOGGLE_BUTTON.data('setting'), action: 'disable'}, {withCredentials: true});
+                            axios.put(shared.resolveBackendRoute('/notifications/settings'), {setting: TOGGLE_BUTTON.data('setting'), action: 'disable'}, {withCredentials: true});
                         }
                     }
                 );
@@ -87,7 +87,7 @@ function NotificationsPage() {
     };
 
     React.useEffect(() => {
-        axios.get(shared.resolveBackendRoute('/notifications'), {withCredentials: true})
+        axios.get(shared.resolveBackendRoute('/notifications/settings'), {withCredentials: true})
         .then((response) => {
             if (response.status === 200 && 'settings' in response.data) {
                 const USER_SETTINGS = response.data.settings;
