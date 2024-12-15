@@ -1590,6 +1590,47 @@ backend.post('/chats', async (req, res) => {
                             chatName: CHAT_NAME,
                             recentMessage: MESSAGE
                         };
+
+                        // send notification to the recipient
+                        const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
+                        const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
+                        const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
+
+                        const SENDER_FOLLOWS_RECIPIENT = await FOLLOWERS_COLLECTION.findOne({
+                            uid: RECIPIENT_ACCOUNT.uid,
+                            fid: AUTHENTICATION_RESULT.tokenData.uid
+                        }) !== null;
+
+                        if (SENDER_FOLLOWS_RECIPIENT) {
+                            const NOTIFY_FOR_NEW_MESSAGE = await NOTIFICATIONS_SETTINGS_COLLECTION.findOne({
+                                uid: RECIPIENT_ACCOUNT.uid,
+                                followerSentMessage: 1
+                            });
+
+                            if (NOTIFY_FOR_NEW_MESSAGE !== null) {
+                                await NOTIFICATIONS_COLLECTION.insertOne({
+                                    uid: RECIPIENT_ACCOUNT.uid,
+                                    title: `New Chat`,
+                                    body: `A follower started a new chat called "${CHAT_NAME}" with you.`,
+                                    timestamp: new Date().toISOString()
+                                });
+                            }
+                        }
+                        else {
+                            const NOTIFY_FOR_NEW_MESSAGE = await NOTIFICATIONS_SETTINGS_COLLECTION.findOne({
+                                uid: RECIPIENT_ACCOUNT.uid,
+                                strangerSentMessage: 1
+                            });
+
+                            if (NOTIFY_FOR_NEW_MESSAGE !== null) {
+                                await NOTIFICATIONS_COLLECTION.insertOne({
+                                    uid: RECIPIENT_ACCOUNT.uid,
+                                    title: `New Chat`,
+                                    body: `Someone started a new chat called "${CHAT_NAME}" with you.`,
+                                    timestamp: new Date().toISOString()
+                                });
+                            }
+                        }
                     }
                 }
                 else {
