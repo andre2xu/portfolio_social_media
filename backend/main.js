@@ -111,6 +111,18 @@ backend.post('/signup', async (req, res) => {
             });
 
             generateLoginToken(res, UID);
+
+            // generate notifications settings
+            const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
+
+            await NOTIFICATIONS_COLLECTION.insertOne({
+                uid: UID,
+                followerSentMessage: 0,
+                strangerSentMessage: 0,
+                newPostLike: 0,
+                newPostComment: 0,
+                newFollower: 0
+            });
         }
         else {
             RESPONSE.errorMessage = "That username is already taken";
