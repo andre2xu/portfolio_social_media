@@ -1,3 +1,7 @@
+import $ from 'jquery';
+
+
+
 function NotificationsPage() {
     function changeTabs(event) {
         const NOTIFICATIONS_SECTION = document.getElementById('notifications-page-messages');
@@ -13,6 +17,65 @@ function NotificationsPage() {
                 NOTIFICATIONS_SECTION.classList.add('hide');
                 break;
             default:
+        }
+    };
+
+    function onToggleSetting(event) {
+        let element_clicked = $(event.target);
+
+        const TOGGLE_BUTTON = element_clicked.closest('.toggle-button');
+
+        if (TOGGLE_BUTTON[0] !== undefined) {
+            const THUMB = TOGGLE_BUTTON.children('.thumb');
+            const BAR = TOGGLE_BUTTON.children('.bar');
+
+            if (TOGGLE_BUTTON.attr('data-enabled') === '0') {
+                // enable setting
+                $({pos: 0}).animate(
+                    {pos: 100},
+                    {
+                        duration: 100,
+                        step: (now) => {
+                            THUMB.css({
+                                left: `${now}%`,
+                                transform: `translateX(-${now}%)`
+                            });
+
+                            if (now >= 40) {
+                                BAR.css({width: `${now - 20}%`});
+                            }
+                        },
+                        complete: () => {
+                            TOGGLE_BUTTON.attr('data-enabled', '1');
+                        }
+                    }
+                );
+            }
+            else if (TOGGLE_BUTTON.attr('data-enabled') === '1') {
+                // disable setting
+                $({pos: 100}).animate(
+                    {pos: 0},
+                    {
+                        duration: 100,
+                        step: (now) => {
+                            THUMB.css({
+                                left: `${now}%`,
+                                transform: `translateX(-${now}%)`
+                            });
+
+                            if (now >= 40) {
+                                BAR.css({width: `${now - 20}%`});
+                            }
+                            else {
+                                BAR.css({width: '0%'});
+                            }
+                        },
+                        complete: () => {
+                            TOGGLE_BUTTON.attr('data-enabled', '0');
+                        }
+                    }
+                );
+            }
         }
     };
 
@@ -40,14 +103,14 @@ function NotificationsPage() {
                 </div>
             </div>
 
-            <div id='notifications-page-settings' className='hide'>
+            <div id='notifications-page-settings' className='hide' onClick={onToggleSetting}>
                 <div className='settings-group'>
                     <h1>Chats</h1>
 
                     <div className='setting'>
                         <p>Tell me if someone I follow messaged me.</p>
 
-                        <div className='toggle-button'>
+                        <div className='toggle-button' data-enabled='0'>
                             <div className='bar'></div>
                             <div className='thumb'></div>
                         </div>
@@ -56,7 +119,7 @@ function NotificationsPage() {
                     <div className='setting'>
                         <p>Tell me if someone I don't follow messaged me.</p>
 
-                        <div className='toggle-button'>
+                        <div className='toggle-button' data-enabled='0'>
                             <div className='bar'></div>
                             <div className='thumb'></div>
                         </div>
@@ -69,7 +132,7 @@ function NotificationsPage() {
                     <div className='setting'>
                         <p>Notify me when someone liked one of my posts.</p>
 
-                        <div className='toggle-button'>
+                        <div className='toggle-button' data-enabled='0'>
                             <div className='bar'></div>
                             <div className='thumb'></div>
                         </div>
@@ -78,7 +141,7 @@ function NotificationsPage() {
                     <div className='setting'>
                         <p>Notify me when there's a new comment in one of my posts.</p>
 
-                        <div className='toggle-button'>
+                        <div className='toggle-button' data-enabled='0'>
                             <div className='bar'></div>
                             <div className='thumb'></div>
                         </div>
@@ -91,7 +154,7 @@ function NotificationsPage() {
                     <div className='setting'>
                         <p>Let me know if someone followed me.</p>
 
-                        <div className='toggle-button'>
+                        <div className='toggle-button' data-enabled='0'>
                             <div className='bar'></div>
                             <div className='thumb'></div>
                         </div>
