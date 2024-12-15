@@ -800,6 +800,29 @@ backend.post('/comments/:pid', async (req, res) => {
                 likes: [],
                 dislikes: []
             };
+
+            // send notification to user who owns the post
+            const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
+            const POST = await POSTS_COLLECTION.findOne({pid: req.params.pid});
+
+            if (POST !== null) {
+                const NOTIFICATIONS_SETTINGS = req.app.locals.db.collection('NotificationsSettings');
+                const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
+
+                const NOTIFY_FOR_NEW_POST_COMMENT = await NOTIFICATIONS_SETTINGS.findOne({
+                    uid: POST.uid,
+                    newPostComment: 1
+                });
+
+                if (NOTIFY_FOR_NEW_POST_COMMENT !== null) {
+                    await NOTIFICATIONS_COLLECTION.insertOne({
+                        uid: POST.uid,
+                        title: 'New comment',
+                        body: `The post you created on ${POST.date} has a new comment from @${USER_INFO.username}.`,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            }
         }
     }
 
