@@ -625,10 +625,10 @@ backend.put('/post/like', async (req, res) => {
                 RESPONSE.action = 'added';
 
                 // send notification to user who owns the post
-                const NOTIFICATIONS_SETTINGS = req.app.locals.db.collection('NotificationsSettings');
+                const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
                 const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
 
-                const NOTIFY_FOR_NEW_POST_LIKE = await NOTIFICATIONS_SETTINGS.findOne({
+                const NOTIFY_FOR_NEW_POST_LIKE = await NOTIFICATIONS_SETTINGS_COLLECTION.findOne({
                     uid: POST.uid,
                     newPostLike: 1
                 });
@@ -806,10 +806,10 @@ backend.post('/comments/:pid', async (req, res) => {
             const POST = await POSTS_COLLECTION.findOne({pid: req.params.pid});
 
             if (POST !== null) {
-                const NOTIFICATIONS_SETTINGS = req.app.locals.db.collection('NotificationsSettings');
+                const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
                 const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
 
-                const NOTIFY_FOR_NEW_POST_COMMENT = await NOTIFICATIONS_SETTINGS.findOne({
+                const NOTIFY_FOR_NEW_POST_COMMENT = await NOTIFICATIONS_SETTINGS_COLLECTION.findOne({
                     uid: POST.uid,
                     newPostComment: 1
                 });
@@ -993,10 +993,10 @@ backend.post('/follow', async (req, res) => {
             });
 
             // send notification to followed user
-            const NOTIFICATIONS_SETTINGS = req.app.locals.db.collection('NotificationsSettings');
+            const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
             const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
 
-            const NOTIFY_FOR_NEW_FOLLOWER = await NOTIFICATIONS_SETTINGS.findOne({
+            const NOTIFY_FOR_NEW_FOLLOWER = await NOTIFICATIONS_SETTINGS_COLLECTION.findOne({
                 uid: USER_INFO.uid,
                 newFollower: 1
             });
