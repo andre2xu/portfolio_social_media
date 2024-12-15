@@ -601,41 +601,61 @@ backend.put('/post/like', async (req, res) => {
 
     if (AUTHENTICATION_RESULT.isAuthenticated && req.body.pid !== undefined) {
         const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
-        const ALREADY_LIKED = await POSTS_COLLECTION.findOne({pid: req.body.pid, likes: AUTHENTICATION_RESULT.tokenData.uid}) !== null;
+        const POST = await POSTS_COLLECTION.findOne({pid: req.body.pid});
 
-        if (ALREADY_LIKED) {
-            // remove like
+        if (POST !== null) {
+            if (POST.likes.includes(AUTHENTICATION_RESULT.tokenData.uid)) {
+                // remove like
 
-            await POSTS_COLLECTION.updateOne(
-                {pid: req.body.pid},
-                {$pull: {likes: AUTHENTICATION_RESULT.tokenData.uid}}
-            );
+                await POSTS_COLLECTION.updateOne(
+                    {pid: req.body.pid},
+                    {$pull: {likes: AUTHENTICATION_RESULT.tokenData.uid}}
+                );
 
-            RESPONSE.action = 'removed';
-        }
-        else {
-            // add like
+                RESPONSE.action = 'removed';
+            }
+            else {
+                // add like
 
-            await POSTS_COLLECTION.updateOne(
-                {pid: req.body.pid},
-                {$push: {likes: AUTHENTICATION_RESULT.tokenData.uid}}
-            );
+                await POSTS_COLLECTION.updateOne(
+                    {pid: req.body.pid},
+                    {$push: {likes: AUTHENTICATION_RESULT.tokenData.uid}}
+                );
 
-            RESPONSE.action = 'added';
-        }
+                RESPONSE.action = 'added';
 
-        // get number of likes
-        const LIKES_COUNT = await POSTS_COLLECTION.aggregate([
-            {$match: {pid: req.body.pid}},
-            {
-                $project: {
-                    _id: 0,
-                    likes: {$size: '$likes'}
+                // send notification to user who owns the post
+                const NOTIFICATIONS_SETTINGS = req.app.locals.db.collection('NotificationsSettings');
+                const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
+
+                const NOTIFY_FOR_NEW_POST_LIKE = await NOTIFICATIONS_SETTINGS.findOne({
+                    uid: POST.uid,
+                    newPostLike: 1
+                });
+
+                if (NOTIFY_FOR_NEW_POST_LIKE !== null) {
+                    await NOTIFICATIONS_COLLECTION.insertOne({
+                        uid: POST.uid,
+                        title: 'Someone liked your post', // likes are anonymous so no username is given
+                        body: `The post you created on ${POST.date} received a like.`,
+                        timestamp: new Date().toISOString()
+                    });
                 }
             }
-        ]).toArray();
 
-        RESPONSE.count = LIKES_COUNT[0].likes;
+            // get number of likes
+            const LIKES_COUNT = await POSTS_COLLECTION.aggregate([
+                {$match: {pid: req.body.pid}},
+                {
+                    $project: {
+                        _id: 0,
+                        likes: {$size: '$likes'}
+                    }
+                }
+            ]).toArray();
+
+            RESPONSE.count = LIKES_COUNT[0].likes;
+        }
     }
 
     res.json(RESPONSE);
