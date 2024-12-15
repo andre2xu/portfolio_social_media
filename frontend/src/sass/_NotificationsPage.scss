@@ -141,7 +141,7 @@
                             border-radius: $tb_border_radius;
 
                             .bar {
-                                width: 50%;
+                                width: 0%;
                                 height: 100%;
                                 border-top-left-radius: $tb_border_radius;
                                 border-bottom-left-radius: $tb_border_radius;
@@ -152,8 +152,8 @@
                                 width: $tb_height;
                                 border-radius: 50%;
                                 top: 0;
-                                left: 50%;
-                                transform: translateX(-50%);
+                                left: 0%;
+                                transform: translateX(-0%);
                             }
                         }
                     }
