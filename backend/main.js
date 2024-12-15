@@ -113,7 +113,7 @@ backend.post('/signup', async (req, res) => {
             generateLoginToken(res, UID);
 
             // generate notifications settings
-            const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
+            const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
 
             await NOTIFICATIONS_COLLECTION.insertOne({
                 uid: UID,
@@ -348,7 +348,7 @@ backend.delete('/account/delete', async (req, res) => {
         const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
         const CHATS_COLLECTION = req.app.locals.db.collection('Chats');
         const MESSAGES_COLLECTION = req.app.locals.db.collection('Messages');
-        const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
+        const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
 
         const FILTER = {uid: AUTHENTICATION_RESULT.tokenData.uid};
 
@@ -1661,7 +1661,7 @@ backend.get('/notifications', async (req, res) => {
     const AUTHENTICATION_RESULT = authenticateUser(req);
 
     if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
+        const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
 
         const SETTINGS = await NOTIFICATIONS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid}, {projection: {_id: 0, uid: 0}});
 
@@ -1678,7 +1678,7 @@ backend.put('/notifications', async (req, res) => {
     const AUTHENTICATION_RESULT = authenticateUser(req);
 
     if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
+        const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
 
         const SETTING = {};
         SETTING[req.body.setting] = req.body.action === 'enable' ? 1 : 0;
