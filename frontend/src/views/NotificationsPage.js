@@ -1,4 +1,6 @@
 import $ from 'jquery';
+import axios from 'axios';
+import shared from '../shared';
 
 
 
@@ -47,6 +49,8 @@ function NotificationsPage() {
                         },
                         complete: () => {
                             TOGGLE_BUTTON.attr('data-enabled', '1');
+
+                            axios.put(shared.resolveBackendRoute('/notifications'), {setting: TOGGLE_BUTTON.data('setting'), action: 'enable'}, {withCredentials: true});
                         }
                     }
                 );
@@ -72,6 +76,8 @@ function NotificationsPage() {
                         },
                         complete: () => {
                             TOGGLE_BUTTON.attr('data-enabled', '0');
+
+                            axios.put(shared.resolveBackendRoute('/notifications'), {setting: TOGGLE_BUTTON.data('setting'), action: 'disable'}, {withCredentials: true});
                         }
                     }
                 );
