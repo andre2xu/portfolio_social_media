@@ -1656,6 +1656,23 @@ backend.get('/messages/:cid', async (req, res) => {
     return res.json(RESPONSE);
 });
 
+backend.get('/notifications', async (req, res) => {
+    const RESPONSE = {};
+    const AUTHENTICATION_RESULT = authenticateUser(req);
+
+    if (AUTHENTICATION_RESULT.isAuthenticated) {
+        const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
+
+        const SETTINGS = await NOTIFICATIONS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid}, {projection: {_id: 0, uid: 0}});
+
+        if (SETTINGS !== null) {
+            RESPONSE.settings = SETTINGS;
+        }
+    }
+
+    return res.json(RESPONSE);
+});
+
 backend.put('/notifications', async (req, res) => {
     const RESPONSE = {};
     const AUTHENTICATION_RESULT = authenticateUser(req);
