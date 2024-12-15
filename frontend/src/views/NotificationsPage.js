@@ -1,3 +1,4 @@
+import React from 'react';
 import $ from 'jquery';
 import axios from 'axios';
 import shared from '../shared';
@@ -84,6 +85,35 @@ function NotificationsPage() {
             }
         }
     };
+
+    React.useEffect(() => {
+        axios.get(shared.resolveBackendRoute('/notifications'), {withCredentials: true})
+        .then((response) => {
+            if (response.status === 200 && 'settings' in response.data) {
+                const USER_SETTINGS = response.data.settings;
+
+                $('#notifications-page-settings').find('.toggle-button').each((_, toggleButton) => {
+                    const SETTING = toggleButton.getAttribute('data-setting');
+                    const ENABLED_STATUS = USER_SETTINGS[SETTING];
+
+                    if (ENABLED_STATUS !== undefined) {
+                        toggleButton.setAttribute('data-enabled', ENABLED_STATUS);
+
+                        if (ENABLED_STATUS === 1) {
+                            // toggle button bar
+                            $(toggleButton.firstElementChild).css({width: '80%'});
+
+                            // toggle button thumb
+                            $(toggleButton.lastElementChild).css({
+                                left: '100%',
+                                transform: 'translateX(-100%)'
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    }, []);
 
     return (
         <div id='notifications-page' className=''>
