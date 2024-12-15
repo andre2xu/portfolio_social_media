@@ -1759,6 +1759,22 @@ backend.get('/messages/:cid', async (req, res) => {
     return res.json(RESPONSE);
 });
 
+backend.get('/notifications', async (req, res) => {
+    const RESPONSE = {};
+    const AUTHENTICATION_RESULT = authenticateUser(req);
+
+    if (AUTHENTICATION_RESULT.isAuthenticated) {
+        const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
+        const NOTIFICATIONS = await NOTIFICATIONS_COLLECTION.find({uid: AUTHENTICATION_RESULT.tokenData.uid}, {projection: {_id: 0, uid: 0}}).sort({timestamp: -1}).toArray();
+
+        if (NOTIFICATIONS !== null) {
+            RESPONSE.notifications = NOTIFICATIONS;
+        }
+    }
+
+    return res.json(RESPONSE);
+});
+
 backend.get('/notifications/settings', async (req, res) => {
     const RESPONSE = {};
     const AUTHENTICATION_RESULT = authenticateUser(req);
