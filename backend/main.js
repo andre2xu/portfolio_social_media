@@ -1656,6 +1656,25 @@ backend.get('/messages/:cid', async (req, res) => {
     return res.json(RESPONSE);
 });
 
+backend.put('/notifications', async (req, res) => {
+    const RESPONSE = {};
+    const AUTHENTICATION_RESULT = authenticateUser(req);
+
+    if (AUTHENTICATION_RESULT.isAuthenticated) {
+        const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
+
+        const SETTING = {};
+        SETTING[req.body.setting] = req.body.action === 'enable' ? 1 : 0;
+
+        await NOTIFICATIONS_COLLECTION.updateOne(
+            {uid: AUTHENTICATION_RESULT.tokenData.uid},
+            {$set: SETTING}
+        );
+    }
+
+    return res.json(RESPONSE);
+});
+
 // INITIALIZATION
 backend.listen(8010, async () => {
     // connect to database & store the connection in a shared variable
