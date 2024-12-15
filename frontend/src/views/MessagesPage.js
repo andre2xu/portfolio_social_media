@@ -45,6 +45,11 @@ function MessagesPage({displayConfirmationDialog}) {
                 }
             }
         });
+
+        // clear form
+        FORM.children('input').each((_, input) => {
+            input.value = '';
+        });
     };
 
     function onClickChat(event) {
