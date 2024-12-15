@@ -342,7 +342,7 @@ function Comments({displayConfirmationDialog}) {
             </article>
 
             <form id='comments-screen-reply-form' action={`/comments/${URL_PARAMETERS.pid}`} method='post' onSubmit={onSubmit}>
-                <input type='text' name='replyBody' placeholder='Write your reply here' />
+                <input type='text' name='replyBody' placeholder='Write your reply here' autoComplete='off' />
 
                 <button type='submit'>Send</button>
             </form>
