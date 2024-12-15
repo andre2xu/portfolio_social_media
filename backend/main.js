@@ -1656,7 +1656,7 @@ backend.get('/messages/:cid', async (req, res) => {
     return res.json(RESPONSE);
 });
 
-backend.get('/notifications', async (req, res) => {
+backend.get('/notifications/settings', async (req, res) => {
     const RESPONSE = {};
     const AUTHENTICATION_RESULT = authenticateUser(req);
 
@@ -1673,7 +1673,7 @@ backend.get('/notifications', async (req, res) => {
     return res.json(RESPONSE);
 });
 
-backend.put('/notifications', async (req, res) => {
+backend.put('/notifications/settings', async (req, res) => {
     const RESPONSE = {};
     const AUTHENTICATION_RESULT = authenticateUser(req);
 
