@@ -1858,25 +1858,29 @@ backend.listen(8010, async () => {
                         const AUTHENTICATION_RESULT = authenticateUser(REQUEST);
 
                         if (AUTHENTICATION_RESULT.isAuthenticated) {
-                            // save message to database
-                            const MESSAGES_COLLECTION = backend.locals.db.collection('Messages');
+                            const CHATS_COLLECTION = backend.locals.db.collection('Chats');
 
-                            await MESSAGES_COLLECTION.insertOne({
-                                cid: DATA.cid,
-                                sid: AUTHENTICATION_RESULT.tokenData.uid, // sender's uid
-                                message: DATA.message,
-                                timestamp: DATA.timestamp
-                            });
+                            if (await CHATS_COLLECTION.findOne({cid: DATA.cid}) !== null) {
+                                // save message to database
+                                const MESSAGES_COLLECTION = backend.locals.db.collection('Messages');
 
-                            // pass the message to the recipient
-                            wss.clients.forEach((clientWebSocket) => {
-                                if (clientWebSocket.username === DATA.to) {
-                                    clientWebSocket.send(JSON.stringify({
-                                        message: DATA.message,
-                                        timestamp: DATA.timestamp
-                                    }));
-                                }
-                            });
+                                await MESSAGES_COLLECTION.insertOne({
+                                    cid: DATA.cid,
+                                    sid: AUTHENTICATION_RESULT.tokenData.uid, // sender's uid
+                                    message: DATA.message,
+                                    timestamp: DATA.timestamp
+                                });
+
+                                // pass the message to the recipient
+                                wss.clients.forEach((clientWebSocket) => {
+                                    if (clientWebSocket.username === DATA.to) {
+                                        clientWebSocket.send(JSON.stringify({
+                                            message: DATA.message,
+                                            timestamp: DATA.timestamp
+                                        }));
+                                    }
+                                });
+                            }
                         }
                     }
                 }
