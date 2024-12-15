@@ -117,8 +117,8 @@ backend.post('/signup', async (req, res) => {
 
             await NOTIFICATIONS_COLLECTION.insertOne({
                 uid: UID,
-                followerSentMessage: 0,
-                strangerSentMessage: 0,
+                followerStartedChat: 0,
+                strangerStartedChat: 0,
                 newPostLike: 0,
                 newPostComment: 0,
                 newFollower: 0
@@ -1604,7 +1604,7 @@ backend.post('/chats', async (req, res) => {
                         if (SENDER_FOLLOWS_RECIPIENT) {
                             const NOTIFY_FOR_NEW_MESSAGE = await NOTIFICATIONS_SETTINGS_COLLECTION.findOne({
                                 uid: RECIPIENT_ACCOUNT.uid,
-                                followerSentMessage: 1
+                                followerStartedChat: 1
                             });
 
                             if (NOTIFY_FOR_NEW_MESSAGE !== null) {
@@ -1619,7 +1619,7 @@ backend.post('/chats', async (req, res) => {
                         else {
                             const NOTIFY_FOR_NEW_MESSAGE = await NOTIFICATIONS_SETTINGS_COLLECTION.findOne({
                                 uid: RECIPIENT_ACCOUNT.uid,
-                                strangerSentMessage: 1
+                                strangerStartedChat: 1
                             });
 
                             if (NOTIFY_FOR_NEW_MESSAGE !== null) {
