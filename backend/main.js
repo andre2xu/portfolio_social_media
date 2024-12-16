@@ -1314,6 +1314,22 @@ backend.get('/explore/:query', async (req, res) => {
                     j--;
                 }
             }
+            else {
+                // change likes array to no. likes
+                let i = 0;
+                let j = RESULT.length - 1;
+
+                while (i <= j) {
+                    RESULT[i].likes = RESULT[i].likes.length;
+
+                    if (i != j) {
+                        RESULT[j].likes = RESULT[j].likes.length;
+                    }
+
+                    i++;
+                    j--;
+                }
+            }
 
             RESPONSE.result = RESULT;
         }
