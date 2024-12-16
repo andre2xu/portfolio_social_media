@@ -1884,77 +1884,74 @@ backend.get('/viralusers', async (req, res) => {
     ]).toArray();
 
     if (VIRAL_POSTS !== null) {
-        const VIRAL_USERS = {};
+        const USERS_WITH_ENGAGEMENT = {};
+        const USER_DATA = {}; // data of users with engagement
 
+        VIRAL_POSTS.forEach((postData) => {
+            // count the total engagement (no. likes & comments) each user got
+            const POINTS = postData.likes + postData.comments;
+
+            if (POINTS > 0) {
+                if (USERS_WITH_ENGAGEMENT[postData.uid] !== undefined) {
+                    USERS_WITH_ENGAGEMENT[postData.uid] += POINTS;
+                }
+                else {
+                    USERS_WITH_ENGAGEMENT[postData.uid] = POINTS;
+
+                    // keep track of data
+                    USER_DATA[postData.uid] = {
+                        username: postData.username,
+                        pfp: postData.pfp
+                    }
+                }
+            }
+        });
+
+        // put the users with the most engagement (i.e. the viral users) at the start
+        let viral_users_uids = Object.keys(USERS_WITH_ENGAGEMENT).sort((user1, user2) => {
+            const USER1_POINTS = USERS_WITH_ENGAGEMENT[user1];
+            const USER2_POINTS = USERS_WITH_ENGAGEMENT[user2];
+
+            if (USER1_POINTS > USER2_POINTS) {
+                return -1;
+            }
+            else if (USER1_POINTS < USER2_POINTS) {
+                return 1;
+            }
+
+            return 0;
+        });
+
+        // keep only the first 10 viral users
+        viral_users_uids = viral_users_uids.slice(0, 10);
+
+        // find which viral user is being followed by the logged-in user making the request (if any)
         const AUTHENTICATION_RESULT = authenticateUser(req);
 
         if (AUTHENTICATION_RESULT.isAuthenticated) {
-            // find the posters that are being followed by the user making the request (if any)
-
-            const POSTERS = new Set();
-
-            VIRAL_POSTS.forEach((postData) => {
-                POSTERS.add(postData.uid);
-            });
-
             const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
 
-            let posters_being_followed = await FOLLOWERS_COLLECTION.find(
-                {
-                    uid: {$in: Array.from(POSTERS)},
-                    fid: AUTHENTICATION_RESULT.tokenData.uid
-                },
-                {
-                    projection: {
-                        _id: 0,
-                        uid: 1 // poster uid
-                    }
-                }
+            const FOLLOWED_USERS = await FOLLOWERS_COLLECTION.find(
+                {uid: {$in: viral_users_uids}, fid: AUTHENTICATION_RESULT.tokenData.uid},
+                {projection: {_id: 0, uid: 1}}
             ).toArray();
 
-            if (posters_being_followed !== null && posters_being_followed.length > 0) {
-                posters_being_followed = new Set(posters_being_followed.map((posterData) => posterData.uid));
-
-                VIRAL_POSTS.forEach((postData) => {
-                    if (posters_being_followed.has(postData.uid)) {
-                        postData.followedByUser = true;
-                    }
-
-                    // remove sensitive info
-                    delete postData.uid;
-
-                    // count the total engagement (no. likes & comments) each user got
-                    const POINTS = postData.likes + postData.comments;
-
-                    if (POINTS > 0) {
-                        if (VIRAL_USERS[postData.username] !== undefined) {
-                            VIRAL_USERS[postData.username] += POINTS;
-                        }
-                        else {
-                            VIRAL_USERS[postData.username] = POINTS;
-                        }
-                    }
+            if (FOLLOWED_USERS !== null) {
+                FOLLOWED_USERS.forEach((user) => {
+                    // add a flag to show the user making the request is following the viral user
+                    USER_DATA[user.uid].followedByUser = true
                 });
             }
         }
-        else {
-            VIRAL_POSTS.forEach((postData) => {
-                // remove sensitive info
-                delete postData.uid;
 
-                // count the total engagement (no. likes & comments) each user got
-                const POINTS = postData.likes + postData.comments;
+        // create response
+        const VIRAL_USERS = [];
 
-                if (POINTS > 0) {
-                    if (VIRAL_USERS[postData.username] !== undefined) {
-                        VIRAL_USERS[postData.username] += POINTS;
-                    }
-                    else {
-                        VIRAL_USERS[postData.username] = POINTS;
-                    }
-                }
-            });
-        }
+        viral_users_uids.forEach((uid) => {
+            VIRAL_USERS.push(USER_DATA[uid]); // the most viral is at the start
+        });
+
+        RESPONSE.viralUsers = VIRAL_USERS;
     }
 
     return res.json(RESPONSE);
