@@ -127,6 +127,11 @@ function MainScreen({component}) {
                 default:
             }
         }
+        else if (ELEMENT_CLICKED instanceof HTMLImageElement && ELEMENT_CLICKED.alt === 'User') {
+            const USERNAME = ELEMENT_CLICKED.nextElementSibling.innerText.substring(1);
+
+            redirectTo(`/profile/${USERNAME}`);
+        }
     };
 
     React.useEffect(() => {
