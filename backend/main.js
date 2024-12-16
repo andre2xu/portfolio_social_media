@@ -429,6 +429,10 @@ backend.post('/post', userPostsMedia.fields([{name: 'postMedia', maxCount: 1}]),
             RESPONSE.errorMessage = "Post tags missing";
             valid_post = false;
         }
+        else if (/^[a-zA-Z0-9 ,]+$/.test(TAGS) === false) {
+            RESPONSE.errorMessage = "Only letters, numbers, spaces, and commas are allowed for tags";
+            valid_post = false;
+        }
 
         if (valid_post) {
             let tags = TAGS.trim();
