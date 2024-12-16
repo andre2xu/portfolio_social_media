@@ -1843,6 +1843,123 @@ backend.put('/notifications/settings', async (req, res) => {
     return res.json(RESPONSE);
 });
 
+backend.get('/viralusers', async (req, res) => {
+    const RESPONSE = {};
+
+    const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
+
+    const VIRAL_POSTS = await POSTS_COLLECTION.aggregate([
+        {$sort: {timestamp: -1}}, // put most recent posts at the start
+        {$limit: 50}, // first 50
+        {
+            // get data of users who made the posts
+            $lookup: {
+                from: 'Users',
+                localField: 'uid',
+                foreignField: 'uid',
+                as: 'user'
+            }
+        },
+        {$unwind: '$user'},
+        {
+            // get the comments of the posts
+            $lookup: {
+                from: 'Comments',
+                localField: 'pid',
+                foreignField: 'pid',
+                as: 'comments'
+            }
+        },
+        {
+            // include only the following fields in the final result
+            $project: {
+                uid: 1,
+                likes: {$size: '$likes'},
+                comments: {$size: '$comments'},
+                username: '$user.username',
+                pfp: '$user.pfp'
+            }
+        },
+        {$unset: '_id'} // exclude this from the final result
+    ]).toArray();
+
+    if (VIRAL_POSTS !== null) {
+        const VIRAL_USERS = {};
+
+        const AUTHENTICATION_RESULT = authenticateUser(req);
+
+        if (AUTHENTICATION_RESULT.isAuthenticated) {
+            // find the posters that are being followed by the user making the request (if any)
+
+            const POSTERS = new Set();
+
+            VIRAL_POSTS.forEach((postData) => {
+                POSTERS.add(postData.uid);
+            });
+
+            const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
+
+            let posters_being_followed = await FOLLOWERS_COLLECTION.find(
+                {
+                    uid: {$in: Array.from(POSTERS)},
+                    fid: AUTHENTICATION_RESULT.tokenData.uid
+                },
+                {
+                    projection: {
+                        _id: 0,
+                        uid: 1 // poster uid
+                    }
+                }
+            ).toArray();
+
+            if (posters_being_followed !== null && posters_being_followed.length > 0) {
+                posters_being_followed = new Set(posters_being_followed.map((posterData) => posterData.uid));
+
+                VIRAL_POSTS.forEach((postData) => {
+                    if (posters_being_followed.has(postData.uid)) {
+                        postData.followedByUser = true;
+                    }
+
+                    // remove sensitive info
+                    delete postData.uid;
+
+                    // count the total engagement (no. likes & comments) each user got
+                    const POINTS = postData.likes + postData.comments;
+
+                    if (POINTS > 0) {
+                        if (VIRAL_USERS[postData.username] !== undefined) {
+                            VIRAL_USERS[postData.username] += POINTS;
+                        }
+                        else {
+                            VIRAL_USERS[postData.username] = POINTS;
+                        }
+                    }
+                });
+            }
+        }
+        else {
+            VIRAL_POSTS.forEach((postData) => {
+                // remove sensitive info
+                delete postData.uid;
+
+                // count the total engagement (no. likes & comments) each user got
+                const POINTS = postData.likes + postData.comments;
+
+                if (POINTS > 0) {
+                    if (VIRAL_USERS[postData.username] !== undefined) {
+                        VIRAL_USERS[postData.username] += POINTS;
+                    }
+                    else {
+                        VIRAL_USERS[postData.username] = POINTS;
+                    }
+                }
+            });
+        }
+    }
+
+    return res.json(RESPONSE);
+});
+
 // INITIALIZATION
 backend.listen(8010, async () => {
     // connect to database & store the connection in a shared variable
