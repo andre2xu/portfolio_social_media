@@ -229,7 +229,7 @@ function ExplorePage({isLoggedIn}) {
                                 <Post
                                     key={index}
                                     userInfo={USER_INFO}
-                                    postInfo={{pid: postData.pid, body: postData.body, tags: postData.tags, date: postData.date, likes: postData.likes.length, comments: postData.comments}}
+                                    postInfo={{pid: postData.pid, body: postData.body, tags: postData.tags, date: postData.date, likes: postData.likes, comments: postData.comments}}
                                     media={{src: shared.resolveBackendRoute(`/static/users/posts/${postData.media[0].src}`), type: postData.media[0].type}}
                                     isLiked={postData.likedByUser}
                                     isDeletable={false}
@@ -242,7 +242,7 @@ function ExplorePage({isLoggedIn}) {
                                 <Post
                                     key={index}
                                     userInfo={USER_INFO}
-                                    postInfo={{pid: postData.pid, body: postData.body, tags: postData.tags, date: postData.date, likes: postData.likes.length, comments: postData.comments}}
+                                    postInfo={{pid: postData.pid, body: postData.body, tags: postData.tags, date: postData.date, likes: postData.likes, comments: postData.comments}}
                                     isLiked={postData.likedByUser}
                                     isDeletable={false}
                                 />

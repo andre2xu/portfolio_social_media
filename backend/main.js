@@ -1172,6 +1172,22 @@ backend.get('/explore', async (req, res) => {
             j--;
         }
     }
+    else {
+        // change likes array to no. likes
+        let i = 0;
+        let j = LATEST_POSTS.length - 1;
+
+        while (i <= j) {
+            LATEST_POSTS[i].likes = LATEST_POSTS[i].likes.length;
+
+            if (i != j) {
+                LATEST_POSTS[j].likes = LATEST_POSTS[j].likes.length;
+            }
+
+            i++;
+            j--;
+        }
+    }
 
     RESPONSE.posts = LATEST_POSTS;
 
