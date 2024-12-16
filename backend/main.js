@@ -1119,8 +1119,8 @@ backend.get('/explore', async (req, res) => {
             // get the comments of every post (NOTE: don't unwind so that the total count can be calculated with '$size')
             $lookup: {
                 from: 'Comments',
-                localField: 'uid',
-                foreignField: 'uid',
+                localField: 'pid',
+                foreignField: 'pid',
                 as: 'comments'
             }
         },
@@ -1261,8 +1261,8 @@ backend.get('/explore/:query', async (req, res) => {
             {
                 $lookup: {
                     from: 'Comments',
-                    localField: 'uid',
-                    foreignField: 'uid',
+                    localField: 'pid',
+                    foreignField: 'pid',
                     as: 'comments'
                 }
             },
