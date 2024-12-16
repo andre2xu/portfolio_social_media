@@ -20,6 +20,7 @@ import Icon_Exit from '../static/icons/Icon_Exit.svg';
 
 function MainScreen({component}) {
     const [is_logged_in, setIsLoggedInFlag] = React.useState(false);
+    const [viral_users, loadViralUsers] = React.useState([]);
     const redirectTo = useNavigate();
 
     function displayConfirmationDialog(confirmCallback, denyCallback, message="Are you sure you want to proceed with this action?", confirmText="Yes", denyText="Cancel") {
@@ -133,7 +134,14 @@ function MainScreen({component}) {
                 setIsLoggedInFlag(true);
             }
         });
-    });
+
+        axios.get(shared.resolveBackendRoute('/viralusers'), {withCredentials: true})
+        .then((response) => {
+            if (response.status === 200 && 'viralUsers' in response.data) {
+                loadViralUsers(response.data.viralUsers);
+            }
+        });
+    }, []);
 
     React.useEffect(() => {
         // cleanup
@@ -186,15 +194,31 @@ function MainScreen({component}) {
                 <h1>Who's viral? &#x1f525;</h1>
 
                 <div id='viral-users-list'>
-                    <div className='viral-user'>
-                        <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
+                    {
+                        viral_users.map((userData, index) => {
+                            let pfp = '/pfp/Default_Profile_Picture.png';
 
-                        <span>@Username</span>
+                            if (userData.pfp.length > 0) {
+                                pfp = shared.resolveBackendRoute(`/static/users/profile/${userData.pfp}`);
+                            }
 
-                        {
-                            is_logged_in ? <button>Follow</button> : null
-                        }
-                    </div>
+                            return (
+                                <div className='viral-user' key={index}>
+                                    <img src={pfp} alt='User'></img>
+
+                                    <span>@{userData.username}</span>
+
+                                    {
+                                        is_logged_in && userData.followedByUser !== true ? <button>Follow</button> : null
+                                    }
+
+                                    {
+                                        is_logged_in && userData.followedByUser === true ? <button>Unfollow</button> : null
+                                    }
+                                </div>
+                            );
+                        })
+                    }
                 </div>
             </aside>
 
