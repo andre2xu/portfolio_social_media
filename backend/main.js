@@ -348,7 +348,8 @@ backend.delete('/account/delete', async (req, res) => {
         const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
         const CHATS_COLLECTION = req.app.locals.db.collection('Chats');
         const MESSAGES_COLLECTION = req.app.locals.db.collection('Messages');
-        const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
+        const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
+        const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
 
         const FILTER = {uid: AUTHENTICATION_RESULT.tokenData.uid};
 
@@ -375,7 +376,10 @@ backend.delete('/account/delete', async (req, res) => {
         }
 
         // delete notifications settings
-        await NOTIFICATIONS_COLLECTION.deleteOne(FILTER);
+        await NOTIFICATIONS_SETTINGS_COLLECTION.deleteOne(FILTER);
+
+        // delete notifications
+        await NOTIFICATIONS_COLLECTION.deleteMany(FILTER);
 
         // get static files linked to user & remove them from the server
         const USER_INFO = await USERS_COLLECTION.findOne(FILTER);
