@@ -566,7 +566,7 @@ function AccountPage({displayConfirmationDialog}) {
                         <form id='account-page-post-form' action='/post' method='post' encType='multipart/form-data' onSubmit={onSubmitPostsForm}>
                             <textarea name='postBody' placeholder='Enter post body'></textarea>
 
-                            <input type='text' name='postTags' placeholder='tag1, tag2, tag3, ...' />
+                            <input type='text' name='postTags' placeholder='tag1, tag2, tag3, ...' autoComplete='off' />
 
                             <div>
                                 <input type='file' name='postMedia' accept='image/png, image/jpg, image/jpeg, image/gif, video/mp4' />
