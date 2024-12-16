@@ -191,23 +191,9 @@ function MainScreen({component}) {
 
                         <span>@Username</span>
 
-                        <button>Follow</button>
-                    </div>
-
-                    <div className='viral-user'>
-                        <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
-
-                        <span>@Username</span>
-
-                        <button>Unfollow</button>
-                    </div>
-
-                    <div className='viral-user'>
-                        <img src='/pfp/Default_Profile_Picture.png' alt='User'></img>
-
-                        <span>@Username</span>
-
-                        <button>Follow</button>
+                        {
+                            is_logged_in ? <button>Follow</button> : null
+                        }
                     </div>
                 </div>
             </aside>
