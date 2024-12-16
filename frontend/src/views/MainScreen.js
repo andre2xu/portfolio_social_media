@@ -99,6 +99,36 @@ function MainScreen({component}) {
         });
     };
 
+    function onClickViralUser(event) {
+        const ELEMENT_CLICKED = event.target;
+
+        if (ELEMENT_CLICKED instanceof HTMLButtonElement) {
+            const USERNAME = ELEMENT_CLICKED.previousElementSibling.innerText.substring(1);
+
+            switch (ELEMENT_CLICKED.innerText) {
+                case 'Follow':
+                    axios.post(shared.resolveBackendRoute('/follow'), {username: USERNAME}, {withCredentials: true})
+                    .then((response) => {
+                        if (response.status === 200 && 'status' in response.data && 'followerAdded' in response.data && response.data.status === 'success') {
+                            // change the follow button to an unfollow button
+                            ELEMENT_CLICKED.innerText = 'Unfollow';
+                        }
+                    });
+                    break;
+                case 'Unfollow':
+                    axios.delete(shared.resolveBackendRoute(`/follow/${USERNAME}`), {withCredentials: true})
+                    .then((response) => {
+                        if (response.status === 200 && 'status' in response.data && 'followerRemoved' in response.data && response.data.status === 'success') {
+                            // change the unfollow button to a follow button
+                            ELEMENT_CLICKED.innerText = 'Follow';
+                        }
+                    });
+                    break;
+                default:
+            }
+        }
+    };
+
     React.useEffect(() => {
         // highlight the navbar button of the current page
 
@@ -193,7 +223,7 @@ function MainScreen({component}) {
             <aside>
                 <h1>Who's viral? &#x1f525;</h1>
 
-                <div id='viral-users-list'>
+                <div id='viral-users-list' onClick={onClickViralUser}>
                     {
                         viral_users.map((userData, index) => {
                             let pfp = '/pfp/Default_Profile_Picture.png';
