@@ -43,6 +43,9 @@ function LoginPage() {
                     redirectTo('/account', {replace: true});
                 }
             }
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
     };
 
@@ -53,6 +56,9 @@ function LoginPage() {
             if (response.status === 200 && typeof response.data === 'object' && response.data.isAuthenticated) {
                 redirectTo('/account', {replace: true});
             }
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
     });
 
