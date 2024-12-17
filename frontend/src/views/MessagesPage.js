@@ -44,6 +44,9 @@ function MessagesPage({displayConfirmationDialog}) {
                     });
                 }
             }
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
 
         // clear form
@@ -68,6 +71,9 @@ function MessagesPage({displayConfirmationDialog}) {
                                 CHAT.remove();
                             }
                         }
+                    })
+                    .catch(() => {
+                        redirectTo('/error/500');
                     });
                 },
                 () => {},
@@ -97,8 +103,11 @@ function MessagesPage({displayConfirmationDialog}) {
             if (response.status === 200 && 'chatsStartedByUser' in response.data && 'chatsStartedByOthers' in response.data) {
                 loadChats([...response.data.chatsStartedByUser, ...response.data.chatsStartedByOthers]);
             }
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
-    }, []);
+    }, [redirectTo]);
 
     return (
         <div id='messages-page' className=''>
