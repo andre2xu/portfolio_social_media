@@ -16,13 +16,17 @@ function ErrorPage() {
                 break;
             case '404':
             default:
+                if (URL_PARAMETERS.code !== '404') {
+                    $('#error-page-code').text('Error 404');
+                }
+
                 ERROR_MESSAGE.text("The page you were looking for does not exist.");
         }
     }, [URL_PARAMETERS]);
 
     return (
         <div id='error-page'>
-            <h1>Error {URL_PARAMETERS.code}</h1>
+            <h1 id='error-page-code'>Error {URL_PARAMETERS.code}</h1>
 
             <p id='error-page-message'></p> 
         </div>
