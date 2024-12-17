@@ -590,7 +590,7 @@ function AccountPage({displayConfirmationDialog}) {
                                             key={index}
                                             userInfo={{pfp: PROFILE_DATA.current.pfp, username: PROFILE_DATA.current.username}}
                                             postInfo={{pid: postData.pid, body: postData.body, tags: postData.tags, date: postData.date, likes: postData.likes.length, comments: postData.comments}}
-                                            media={{src: shared.resolveBackendRoute(`/static/users/posts/${postData.media[0].src}`), type: postData.media[0].type}}
+                                            media={{src: shared.getUserPostMediaURI(postData.media[0].src), type: postData.media[0].type}}
                                             isLiked={is_liked_by_poster}
                                         />
                                     );
