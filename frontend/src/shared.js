@@ -6,12 +6,17 @@ function resolveBackendRoute(path) {
     return `${window.location.protocol}//${window.location.hostname}:8010${path}`;
 };
 
+function getUserProfileStaticFileURI(filename) {
+    return resolveBackendRoute(`/static/users/profile/${filename}`);
+};
+
 function getWebSocketServerURI() {
     return 'ws://localhost:8011';
 };
 
 const shared = {
     resolveBackendRoute,
+    getUserProfileStaticFileURI,
     getWebSocketServerURI
 };
 
