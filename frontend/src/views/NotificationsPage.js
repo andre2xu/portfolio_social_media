@@ -1,12 +1,15 @@
 import React from 'react';
 import $ from 'jquery';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import shared from '../shared';
 
 
 
 function NotificationsPage() {
     const [notifications, loadNotifications] = React.useState([]);
+
+    const redirectTo = useNavigate();
 
     function changeTabs(event) {
         const NOTIFICATIONS_SECTION = document.getElementById('notifications-page-messages');
@@ -53,7 +56,10 @@ function NotificationsPage() {
                         complete: () => {
                             TOGGLE_BUTTON.attr('data-enabled', '1');
 
-                            axios.put(shared.resolveBackendRoute('/notifications/settings'), {setting: TOGGLE_BUTTON.data('setting'), action: 'enable'}, {withCredentials: true});
+                            axios.put(shared.resolveBackendRoute('/notifications/settings'), {setting: TOGGLE_BUTTON.data('setting'), action: 'enable'}, {withCredentials: true})
+                            .catch(() => {
+                                redirectTo('/error/500');
+                            });
                         }
                     }
                 );
@@ -80,7 +86,10 @@ function NotificationsPage() {
                         complete: () => {
                             TOGGLE_BUTTON.attr('data-enabled', '0');
 
-                            axios.put(shared.resolveBackendRoute('/notifications/settings'), {setting: TOGGLE_BUTTON.data('setting'), action: 'disable'}, {withCredentials: true});
+                            axios.put(shared.resolveBackendRoute('/notifications/settings'), {setting: TOGGLE_BUTTON.data('setting'), action: 'disable'}, {withCredentials: true})
+                            .catch(() => {
+                                redirectTo('/error/500');
+                            });
                         }
                     }
                 );
@@ -114,8 +123,11 @@ function NotificationsPage() {
                     }
                 });
             }
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
-    }, []);
+    }, [redirectTo]);
 
     React.useEffect(() => {
         axios.get(shared.resolveBackendRoute('/notifications'), {withCredentials: true})
@@ -123,8 +135,11 @@ function NotificationsPage() {
             if (response.status === 200 && 'notifications' in response.data) {
                 loadNotifications(response.data.notifications);
             }
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
-    }, []);
+    }, [redirectTo]);
 
     return (
         <div id='notifications-page' className=''>
