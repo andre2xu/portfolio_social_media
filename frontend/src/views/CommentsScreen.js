@@ -227,7 +227,7 @@ function Comments({displayConfirmationDialog}) {
                         case 'image':
                             const IMAGE = $(document.createElement('img'));
 
-                            IMAGE.attr('src', shared.resolveBackendRoute(`/static/users/posts/${MEDIA_DATA.src}`));
+                            IMAGE.attr('src', shared.getUserPostMediaURI(MEDIA_DATA.src));
                             IMAGE.attr('alt', 'Post');
 
                             IMAGE.insertAfter(POST_BODY);
@@ -240,7 +240,7 @@ function Comments({displayConfirmationDialog}) {
                             VIDEO[0].disablePictureInPicture = true;
 
                             VIDEO.attr('controlsList', 'nodownload');
-                            VIDEO.attr('src', shared.resolveBackendRoute(`/static/users/posts/${MEDIA_DATA.src}`));
+                            VIDEO.attr('src', shared.getUserPostMediaURI(MEDIA_DATA.src));
 
                             VIDEO.insertAfter(POST_BODY);
                             break;
