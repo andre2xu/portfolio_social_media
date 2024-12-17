@@ -10,6 +10,10 @@ function getUserProfileStaticFileURI(filename) {
     return resolveBackendRoute(`/static/users/profile/${filename}`);
 };
 
+function getUserPostMediaURI(filename) {
+    return resolveBackendRoute(`/static/users/posts/${filename}`);
+};
+
 function getWebSocketServerURI() {
     return 'ws://localhost:8011';
 };
@@ -17,6 +21,7 @@ function getWebSocketServerURI() {
 const shared = {
     resolveBackendRoute,
     getUserProfileStaticFileURI,
+    getUserPostMediaURI,
     getWebSocketServerURI
 };
 
