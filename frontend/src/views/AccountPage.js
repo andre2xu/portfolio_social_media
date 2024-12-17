@@ -377,14 +377,12 @@ function AccountPage({displayConfirmationDialog}) {
             });
         }
 
-        const PROFILE_STATIC_ASSETS_PATH = shared.resolveBackendRoute('/static/users/profile/');
-
         if (newData.cover.length > 0) {
-            $('#account-page-profile-cover').css({backgroundImage: `url("${PROFILE_STATIC_ASSETS_PATH}/${newData.cover}")`});
+            $('#account-page-profile-cover').css({backgroundImage: `url("${shared.getUserProfileStaticFileURI(newData.cover)}")`});
         }
 
         if (newData.pfp.length > 0) {
-            const PROFILE_PICTURE_SRC = `${PROFILE_STATIC_ASSETS_PATH}/${newData.pfp}`;
+            const PROFILE_PICTURE_SRC = `${shared.getUserProfileStaticFileURI(newData.pfp)}`;
 
             PROFILE_DATA.current.pfp = PROFILE_PICTURE_SRC;
 
@@ -459,7 +457,7 @@ function AccountPage({displayConfirmationDialog}) {
                 }
 
                 if (response.data.pfp.length > 0) {
-                    PROFILE_DATA.current.pfp = shared.resolveBackendRoute(`/static/users/profile/${response.data.pfp}`);
+                    PROFILE_DATA.current.pfp = shared.getUserProfileStaticFileURI(response.data.pfp);
                 }
 
                 updateProfile(response.data);
@@ -515,7 +513,7 @@ function AccountPage({displayConfirmationDialog}) {
                                     let pfp = '/pfp/Default_Profile_Picture.png';
 
                                     if (followingData.pfp.length > 0) {
-                                        pfp = shared.resolveBackendRoute(`/static/users/profile/${followingData.pfp}`);
+                                        pfp = shared.getUserProfileStaticFileURI(followingData.pfp);
                                     }
 
                                     return (
@@ -543,7 +541,7 @@ function AccountPage({displayConfirmationDialog}) {
                                     let pfp = '/pfp/Default_Profile_Picture.png';
 
                                     if (followerData.pfp.length > 0) {
-                                        pfp = shared.resolveBackendRoute(`/static/users/profile/${followerData.pfp}`);
+                                        pfp = shared.getUserProfileStaticFileURI(followerData.pfp);
                                     }
 
                                     return (
