@@ -48,6 +48,9 @@ function ProfilePage() {
 
                         LIKE_COUNTER.text(response.data.count);
                     }
+                })
+                .catch(() => {
+                    redirectTo('/error/500');
                 });
             }
             else if (ELEMENT_CLICKED.alt === 'Comment Icon') {
@@ -105,6 +108,9 @@ function ProfilePage() {
                         return [...oldFollowersList, response.data.followerAdded];
                     });
                 }
+            })
+            .catch(() => {
+                redirectTo('/error/500');
             });
         }
         else if (BUTTON.innerText === 'Unfollow') {
@@ -126,6 +132,9 @@ function ProfilePage() {
                         });
                     });
                 }
+            })
+            .catch(() => {
+                redirectTo('/error/500');
             });
         }
     };
@@ -198,6 +207,9 @@ function ProfilePage() {
                     redirectTo('/');
                 }
             }
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
 
         // retrieve & load posts
@@ -210,6 +222,9 @@ function ProfilePage() {
 
                 loadPosts(response.data.posts);
             }
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
 
         // retrieve followers
@@ -227,6 +242,9 @@ function ProfilePage() {
                 // update followers list
                 loadFollowers(response.data.followers);
             }
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
 
         // retrieve following
@@ -239,6 +257,9 @@ function ProfilePage() {
                 // update following list
                 loadFollowing(response.data.following);
             }
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
 
     }, [URL_PARAMETERS, redirectTo]);
