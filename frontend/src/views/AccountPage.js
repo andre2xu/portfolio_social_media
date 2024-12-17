@@ -104,6 +104,9 @@ function AccountPage({displayConfirmationDialog}) {
                             SETTINGS_FORM_MESSAGE_TIMEOUT_FUNCTION.current = setTimeout(() => {
                                 MESSAGE.addClass('hide');
                             }, 4000);
+                        })
+                        .catch(() => {
+                            redirectTo('/error/500');
                         });
                     },
                     () => {},
@@ -159,6 +162,9 @@ function AccountPage({displayConfirmationDialog}) {
                             SETTINGS_FORM_MESSAGE_TIMEOUT_FUNCTION.current = setTimeout(() => {
                                 MESSAGE.addClass('hide');
                             }, 4000);
+                        })
+                        .catch(() => {
+                            redirectTo('/error/500');
                         });
                     },
                     () => {},
@@ -225,6 +231,9 @@ function AccountPage({displayConfirmationDialog}) {
             SETTINGS_FORM_MESSAGE_TIMEOUT_FUNCTION.current = setTimeout(() => {
                 MESSAGE.addClass('hide');
             }, 4000);
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
     };
 
@@ -267,6 +276,9 @@ function AccountPage({displayConfirmationDialog}) {
             else {
                 displayError("Server error");
             }
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
     };
 
@@ -290,6 +302,9 @@ function AccountPage({displayConfirmationDialog}) {
 
                             POST_COUNT.text(CURRENT_COUNT - 1);
                         }
+                    })
+                    .catch(() => {
+                        redirectTo('/error/500');
                     });
                 },
                 () => {},
@@ -320,6 +335,9 @@ function AccountPage({displayConfirmationDialog}) {
 
                         LIKE_COUNTER.text(response.data.count);
                     }
+                })
+                .catch(() => {
+                    redirectTo('/error/500');
                 });
             }
             else if (ELEMENT_CLICKED.alt === 'Comment Icon') {
@@ -359,6 +377,9 @@ function AccountPage({displayConfirmationDialog}) {
                         });
                     });
                 }
+            })
+            .catch(() => {
+                redirectTo('/error/500');
             });
         }
     };
@@ -405,6 +426,9 @@ function AccountPage({displayConfirmationDialog}) {
 
                 loadPosts(response.data.posts);
             }
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
     };
 
@@ -417,6 +441,9 @@ function AccountPage({displayConfirmationDialog}) {
                         // redirect user to login page
                         redirectTo('/login', {replace: true});
                     }
+                })
+                .catch(() => {
+                    redirectTo('/error/500');
                 });
             },
             () => {}
@@ -462,11 +489,14 @@ function AccountPage({displayConfirmationDialog}) {
 
                 updateProfile(response.data);
             }
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
 
         // load posts
         updatePostsList();
-    }, []);
+    }, [redirectTo]);
 
     return (
         <div id='account-page' className=''>
