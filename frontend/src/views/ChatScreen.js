@@ -101,6 +101,9 @@ function ChatScreen() {
                     // load messages
                     loadMessages(response.data.messages);
                 }
+            })
+            .catch(() => {
+                redirectTo('/error/500');
             });
         });
 
@@ -109,7 +112,7 @@ function ChatScreen() {
 
             CLIENT_WEB_SOCKET.close();
         }
-    }, [URL_PARAMETERS.cid]);
+    }, [URL_PARAMETERS, redirectTo]);
 
     return (
         <div id='chat-screen' className=''>
