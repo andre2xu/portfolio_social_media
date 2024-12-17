@@ -39,6 +39,9 @@ function ExplorePage({isLoggedIn}) {
                     if (response.status === 200 && 'result' in response.data) {
                         loadPosts(response.data.result);
                     }
+                })
+                .catch(() => {
+                    redirectTo('/error/500');
                 });
             }
         }
@@ -83,6 +86,9 @@ function ExplorePage({isLoggedIn}) {
 
                         LIKE_COUNTER.text(response.data.count);
                     }
+                })
+                .catch(() => {
+                    redirectTo('/error/500');
                 });
             }
         }
@@ -112,8 +118,11 @@ function ExplorePage({isLoggedIn}) {
             if (response.status === 200 && 'posts' in response.data) {
                 loadPosts(response.data.posts);
             }
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
-    }, []);
+    }, [redirectTo]);
 
     React.useEffect(() => {
         const SEARCH_RESULTS_LIST = $('#explore-page-searchbar-results');
@@ -168,6 +177,9 @@ function ExplorePage({isLoggedIn}) {
                             }
                         }
                     }
+                })
+                .catch(() => {
+                    redirectTo('/error/500');
                 });
             }
         }, 700));
@@ -187,7 +199,7 @@ function ExplorePage({isLoggedIn}) {
             $('#explore-page-searchbar-input').off();
             $(document.body).off();
         }
-    }, []);
+    }, [redirectTo]);
 
     return (
         <div id='explore-page' className=''>
