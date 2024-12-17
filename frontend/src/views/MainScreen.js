@@ -234,7 +234,7 @@ function MainScreen({component}) {
                             let pfp = '/pfp/Default_Profile_Picture.png';
 
                             if (userData.pfp.length > 0) {
-                                pfp = shared.resolveBackendRoute(`/static/users/profile/${userData.pfp}`);
+                                pfp = shared.getUserProfileStaticFileURI(userData.pfp);
                             }
 
                             return (
