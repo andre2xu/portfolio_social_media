@@ -211,7 +211,7 @@ function Comments({displayConfirmationDialog}) {
                 USER_INFO.children('span').text(response.data.userData.username);
 
                 if (response.data.userData.pfp.length > 0) {
-                    USER_INFO.children('img').attr('src', shared.resolveBackendRoute(`/static/users/profile/${response.data.userData.pfp}`));
+                    USER_INFO.children('img').attr('src', shared.getUserProfileStaticFileURI(response.data.userData.pfp));
                 }
 
                 // load post content
