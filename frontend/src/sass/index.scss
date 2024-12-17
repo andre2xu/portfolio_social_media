@@ -1,6 +1,7 @@
 @import './LoginPage';
 @import './SignUpPage';
 @import './MainScreen';
+@import './ErrorPage';
 
 $theme_color: #6FDAB2;
 $theme_color_darkened: #6cd3ad;
@@ -16,6 +17,7 @@ body {
         @include LoginPage();
         @include SignUpPage();
         @include MainScreen();
+        @include ErrorPage();
     }
 
     @media screen and (max-width: 249px) {

@@ -1,0 +1,52 @@
+@mixin ErrorPage() {
+    #error-page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-family: Arial, Helvetica, sans-serif;
+
+        h1 {
+            margin: 0;
+            color: $theme_color;
+        }
+
+        p {
+            text-align: center;
+            line-height: 150%;
+        }
+
+        @media screen and (min-width: 250px) {
+            h1 {
+                font-size: 35px;
+            }
+
+            p {
+                font-size: 16px;
+                margin: 10px 10px 0;
+            }
+        }
+
+        @media screen and (min-width: 600px) {
+            h1 {
+                font-size: 45px;
+            }
+
+            p {
+                font-size: 20px;
+            }
+        }
+
+        @media screen and (min-width: 2000px) {
+            h1 {
+                font-size: 2.25vw;
+            }
+
+            p {
+                font-size: 1vw;
+                margin: 0.5vw 0.5vw 0;
+            }
+        }
+    }
+}
