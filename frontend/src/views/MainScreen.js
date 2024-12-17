@@ -96,6 +96,9 @@ function MainScreen({component}) {
             if (response.status === 200) {
                 redirectTo('/login');
             }
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
     };
 
@@ -113,6 +116,9 @@ function MainScreen({component}) {
                             // change the follow button to an unfollow button
                             ELEMENT_CLICKED.innerText = 'Unfollow';
                         }
+                    })
+                    .catch(() => {
+                        redirectTo('/error/500');
                     });
                     break;
                 case 'Unfollow':
@@ -122,6 +128,9 @@ function MainScreen({component}) {
                             // change the unfollow button to a follow button
                             ELEMENT_CLICKED.innerText = 'Follow';
                         }
+                    })
+                    .catch(() => {
+                        redirectTo('/error/500');
                     });
                     break;
                 default:
@@ -168,6 +177,9 @@ function MainScreen({component}) {
             if (response.status === 200 && typeof response.data === 'object' && response.data.isAuthenticated) {
                 setIsLoggedInFlag(true);
             }
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
 
         axios.get(shared.resolveBackendRoute('/viralusers'), {withCredentials: true})
@@ -175,8 +187,11 @@ function MainScreen({component}) {
             if (response.status === 200 && 'viralUsers' in response.data) {
                 loadViralUsers(response.data.viralUsers);
             }
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
-    }, []);
+    }, [redirectTo]);
 
     React.useEffect(() => {
         // cleanup
