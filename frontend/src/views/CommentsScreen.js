@@ -49,6 +49,9 @@ function Comments({displayConfirmationDialog}) {
 
                         LIKE_COUNTER.text(response.data.count);
                     }
+                })
+                .catch(() => {
+                    redirectTo('/error/500');
                 });
             }
         }
@@ -76,6 +79,9 @@ function Comments({displayConfirmationDialog}) {
 
                             COMMENT_COUNT.text(CURRENT_COUNT - 1);
                         }
+                    })
+                    .catch(() => {
+                        redirectTo('/error/500');
                     });
                 },
                 () => {},
@@ -125,6 +131,9 @@ function Comments({displayConfirmationDialog}) {
 
                         LIKE_COUNTER.text(response.data.count);
                     }
+                })
+                .catch(() => {
+                    redirectTo('/error/500');
                 });
             }
             else if (ELEMENT_CLICKED.alt === 'Dislike Icon') {
@@ -159,6 +168,9 @@ function Comments({displayConfirmationDialog}) {
 
                         DISLIKE_COUNTER.text(response.data.count);
                     }
+                })
+                .catch(() => {
+                    redirectTo('/error/500');
                 });
             }
         }
@@ -191,6 +203,9 @@ function Comments({displayConfirmationDialog}) {
 
                 loadComments(NEW_COMMENTS_LIST);
             }
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
     };
 
@@ -306,8 +321,11 @@ function Comments({displayConfirmationDialog}) {
                     });
                 }
             }
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
-    }, [URL_PARAMETERS]);
+    }, [URL_PARAMETERS, redirectTo]);
 
     return (
         <div id='comments-screen' className=''>
