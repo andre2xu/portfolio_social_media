@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom';
 
 // stylesheets
 import './index.css';
@@ -10,6 +10,7 @@ import LoginPage from './views/LoginPage';
 import SignUpPage from './views/SignUpPage';
 import ProtectedRoutes from './components/ProtectedRoutes';
 import MainScreen from './views/MainScreen';
+import ErrorPage from './views/ErrorPage';
 
 // main screen views
 import ExplorePage from './views/ExplorePage';
@@ -63,6 +64,15 @@ const ROUTER = createBrowserRouter([
         element: <MainScreen component={<CommentsScreen />} />
       }
     ]
+  },
+  {
+    // redirect user to the error 404 page for non-existent routes
+    path: '*',
+    element: <Navigate to={'/error/404'} replace={true} />
+  },
+  {
+    path: '/error/:code',
+    element: <ErrorPage />
   }
 ]);
 
