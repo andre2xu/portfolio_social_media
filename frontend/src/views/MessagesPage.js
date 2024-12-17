@@ -118,7 +118,7 @@ function MessagesPage({displayConfirmationDialog}) {
                         let recipient_pfp = '/pfp/Default_Profile_Picture.png';
 
                         if (chatData.recipientPfp.length > 0) {
-                            recipient_pfp = shared.resolveBackendRoute(`/static/users/profile/${chatData.recipientPfp}`);
+                            recipient_pfp = shared.getUserProfileStaticFileURI(chatData.recipientPfp);
                         }
 
                         return (
