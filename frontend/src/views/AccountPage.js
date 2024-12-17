@@ -416,7 +416,7 @@ function AccountPage({displayConfirmationDialog}) {
         }
     };
 
-    function updatePostsList() {
+    const updatePostsList = React.useCallback(() => {
         axios.get(shared.resolveBackendRoute('/post'), {withCredentials: true})
         .then((response) => {
             if (response.status === 200 && typeof response.data === 'object' && 'posts' in response.data) {
@@ -430,7 +430,7 @@ function AccountPage({displayConfirmationDialog}) {
         .catch(() => {
             redirectTo('/error/500');
         });
-    };
+    }, [redirectTo]);
 
     function deleteAccount() {
         displayConfirmationDialog(
@@ -496,7 +496,7 @@ function AccountPage({displayConfirmationDialog}) {
 
         // load posts
         updatePostsList();
-    }, [redirectTo]);
+    }, [updatePostsList, redirectTo]);
 
     return (
         <div id='account-page' className=''>
