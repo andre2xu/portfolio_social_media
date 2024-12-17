@@ -137,7 +137,7 @@ function ExplorePage({isLoggedIn}) {
                                         let pfp_src = '/pfp/Default_Profile_Picture.png';
 
                                         if (result.pfp.length > 0) {
-                                            pfp_src = shared.resolveBackendRoute(`/static/users/profile/${result.pfp}`);
+                                            pfp_src = shared.getUserProfileStaticFileURI(result.pfp);
                                         }
 
                                         const LIST_ITEM = document.createElement('li');
@@ -220,7 +220,7 @@ function ExplorePage({isLoggedIn}) {
                         };
 
                         if (postData.pfp.length > 0) {
-                            USER_INFO.pfp = shared.resolveBackendRoute(`/static/users/profile/${postData.pfp}`);
+                            USER_INFO.pfp = shared.getUserProfileStaticFileURI(postData.pfp);
                         }
 
                         if (postData.media.length > 0) {
