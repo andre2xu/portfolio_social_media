@@ -42,6 +42,9 @@ function SignUpPage() {
                     redirectTo('/account', {replace: true});
                 }
             }
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
     };
 
