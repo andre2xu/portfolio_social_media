@@ -528,83 +528,90 @@ backend.post('/post', userPostsMedia.fields([{name: 'postMedia', maxCount: 1}]),
 
 
 backend.get('/post/:username?', async (req, res) => {
-    // NOTE: usernames should only be passed when retrieving user posts for a public page (i.e. a page that doesn't require a login token) as this approach is costly
+    try {
+        // NOTE: usernames should only be passed when retrieving user posts for a public page (i.e. a page that doesn't require a login token) as this approach is costly
 
-    const RESPONSE = {};
-    const AUTHENTICATION_RESULT = authenticateUser(req);
+        const RESPONSE = {};
+        const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    let uid = undefined;
+        let uid = undefined;
 
-    if (req.params.username !== undefined && req.params.username.length > 0) {
-        const USERS_COLLECTION = req.app.locals.db.collection('Users');
+        if (req.params.username !== undefined && req.params.username.length > 0) {
+            const USERS_COLLECTION = req.app.locals.db.collection('Users');
 
-        const ACCOUNT = await USERS_COLLECTION.findOne({username: req.params.username});
+            const ACCOUNT = await USERS_COLLECTION.findOne({username: req.params.username});
 
-        if (ACCOUNT !== null) {
-            uid = ACCOUNT.uid;
+            if (ACCOUNT !== null) {
+                uid = ACCOUNT.uid;
+            }
         }
-    }
 
-    if (AUTHENTICATION_RESULT.isAuthenticated && uid === undefined) {
-        uid = AUTHENTICATION_RESULT.tokenData.uid;
-    }
+        if (AUTHENTICATION_RESULT.isAuthenticated && uid === undefined) {
+            uid = AUTHENTICATION_RESULT.tokenData.uid;
+        }
 
-    if (uid !== undefined) {
-        const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
-        const USER_POSTS = await POSTS_COLLECTION.aggregate([
-            {
-                $match: {uid: uid} // get only the posts of the given user
-            },
-            {
-                $lookup: {
-                    from: 'Comments',
-                    localField: 'pid',
-                    foreignField: 'pid',
-                    as: 'comments'
-                }
-            },
-            {
-                $addFields: {
-                    comments: {$size: '$comments'} // include no. comments in final result
-                }
-            },
-            {
-                $project: {
-                    pid: 1,
-                    body: 1,
-                    tags: 1,
-                    media: 1,
-                    date: 1,
-                    likes: 1,
-                    comments: 1
-                }
-            },
-            {$unset: '_id'} // exclude from final result
-        ]).toArray();
-
-        if (USER_POSTS.length > 0) {
-            RESPONSE.posts = USER_POSTS;
-
-            // get id of posts liked by the current user that's logged in
-            if (AUTHENTICATION_RESULT.isAuthenticated) {
-                const LOGGED_IN_USER = AUTHENTICATION_RESULT.tokenData.uid; // this can also be the 'uid' variable but I did it like this just to be 100% sure it's the user that's logged in
-
-                const LIKED_POSTS = [];
-
-                USER_POSTS.forEach((postData) => {
-                    if (postData.likes.includes(LOGGED_IN_USER)) {
-                        LIKED_POSTS.push(postData.pid);
+        if (uid !== undefined) {
+            const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
+            const USER_POSTS = await POSTS_COLLECTION.aggregate([
+                {
+                    $match: {uid: uid} // get only the posts of the given user
+                },
+                {
+                    $lookup: {
+                        from: 'Comments',
+                        localField: 'pid',
+                        foreignField: 'pid',
+                        as: 'comments'
                     }
-                });
+                },
+                {
+                    $addFields: {
+                        comments: {$size: '$comments'} // include no. comments in final result
+                    }
+                },
+                {
+                    $project: {
+                        pid: 1,
+                        body: 1,
+                        tags: 1,
+                        media: 1,
+                        date: 1,
+                        likes: 1,
+                        comments: 1
+                    }
+                },
+                {$unset: '_id'} // exclude from final result
+            ]).toArray();
 
-                if (LIKED_POSTS.length > 0) {
-                    RESPONSE.likedPosts = LIKED_POSTS;
+            if (USER_POSTS.length > 0) {
+                RESPONSE.posts = USER_POSTS;
+
+                // get id of posts liked by the current user that's logged in
+                if (AUTHENTICATION_RESULT.isAuthenticated) {
+                    const LOGGED_IN_USER = AUTHENTICATION_RESULT.tokenData.uid; // this can also be the 'uid' variable but I did it like this just to be 100% sure it's the user that's logged in
+
+                    const LIKED_POSTS = [];
+
+                    USER_POSTS.forEach((postData) => {
+                        if (postData.likes.includes(LOGGED_IN_USER)) {
+                            LIKED_POSTS.push(postData.pid);
+                        }
+                    });
+
+                    if (LIKED_POSTS.length > 0) {
+                        RESPONSE.likedPosts = LIKED_POSTS;
+                    }
                 }
             }
         }
-    }
 
-    return res.json(RESPONSE);
+        return res.json(RESPONSE);
+    }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
+
+        return res.status(500).send('');
+    }
 });
 
 
