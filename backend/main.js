@@ -1,7 +1,7 @@
 const { MongoClient } = require('mongodb');
 const { createHash } = require('crypto');
 const { WebSocketServer } = require('ws');
-const { authenticateUser, generateLoginToken } = require('./helpers');
+const { authenticateUser, generateLoginToken, logControllerError } = require('./helpers');
 const { Logger } = require('./logger');
 const body_parser = require('body-parser');
 const multer = require('multer');
@@ -102,7 +102,7 @@ backend.post('/signup', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -137,7 +137,7 @@ backend.post('/login', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -155,7 +155,7 @@ backend.get('/logout', async (req, res) => {
         return res.json({});
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -169,7 +169,7 @@ backend.post('/auth', async (req, res) => {
         return res.json({isAuthenticated: authenticateUser(req).isAuthenticated});
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -208,7 +208,7 @@ backend.get('/account/info/:username?', async (req, res) => {
         return res.json(response);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -295,7 +295,7 @@ backend.put('/account/update', userProfileUploads.fields([{name: 'cover', maxCou
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -351,7 +351,7 @@ backend.put('/account/remove', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -427,7 +427,7 @@ backend.delete('/account/delete', async (req, res) => {
         return res.json({});
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -520,7 +520,7 @@ backend.post('/post', userPostsMedia.fields([{name: 'postMedia', maxCount: 1}]),
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -608,7 +608,7 @@ backend.get('/post/:username?', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -648,7 +648,7 @@ backend.delete('/post/:pid', async (req, res) => {
         res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -722,7 +722,7 @@ backend.put('/post/like', async (req, res) => {
         res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -813,7 +813,7 @@ backend.get('/comments/:pid', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -906,7 +906,7 @@ backend.post('/comments/:pid', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -929,7 +929,7 @@ backend.delete('/comments/:cid', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -986,7 +986,7 @@ backend.put('/comments/like', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -1043,7 +1043,7 @@ backend.put('/comments/dislike', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -1084,7 +1084,7 @@ backend.get('/followers/:username', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -1140,7 +1140,7 @@ backend.post('/follow', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -1177,7 +1177,7 @@ backend.delete('/follow/:username', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -1225,7 +1225,7 @@ backend.get('/following/:username', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -1335,7 +1335,7 @@ backend.get('/explore', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -1487,7 +1487,7 @@ backend.get('/explore/:query', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -1623,7 +1623,7 @@ backend.get('/search/:query', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -1725,7 +1725,7 @@ backend.get('/chats', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -1848,7 +1848,7 @@ backend.post('/chats', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -1879,7 +1879,7 @@ backend.delete('/chats/:cid', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -1980,7 +1980,7 @@ backend.get('/messages/:cid', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -2004,7 +2004,7 @@ backend.get('/notifications', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -2029,7 +2029,7 @@ backend.get('/notifications/settings', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -2056,7 +2056,7 @@ backend.put('/notifications/settings', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
@@ -2178,7 +2178,7 @@ backend.get('/viralusers', async (req, res) => {
         return res.json(RESPONSE);
     }
     catch (error) {
-        Logger.error(`[${req.path}] ${error}`);
+        logControllerError(req, error);
 
         return res.status(500).send('');
     }
