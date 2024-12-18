@@ -46,54 +46,50 @@ backend.post('/signup', async (req, res) => {
         const FORM_DATA = req.body;
 
         if (FORM_DATA.username.length > 0 && FORM_DATA.password.length > 0 && FORM_DATA.confirmPassword.length > 0) {
-            // validate username
+            // validate username & password
             if (FORM_DATA.username.length > 20) {
                 RESPONSE.errorMessage = "Username cannot exceed 20 characters";
             }
-
-            // validate password
-            if (FORM_DATA.password.length < 8 || FORM_DATA.password > 30 || /[a-f]/.test(FORM_DATA.password) === false || /[A-F]/.test(FORM_DATA.password) === false || /[0-9]/.test(FORM_DATA.password) === false || /[\$\&\+\,\:\;\=\?\@\#\|\'\<\>\.\^\*\(\)\%\!\[\]\\\/]/.test(FORM_DATA.password) === false) {
+            else if (FORM_DATA.password.length < 8 || FORM_DATA.password > 30 || /[a-f]/.test(FORM_DATA.password) === false || /[A-F]/.test(FORM_DATA.password) === false || /[0-9]/.test(FORM_DATA.password) === false || /[\$\&\+\,\:\;\=\?\@\#\|\'\<\>\.\^\*\(\)\%\!\[\]\\\/]/.test(FORM_DATA.password) === false) {
                 RESPONSE.errorMessage = "Password must be 8-30 characters long and have a lowercase and uppercase letter, a digit, and a special character";
             }
-
-            if (FORM_DATA.password !== FORM_DATA.confirmPassword) {
+            else if (FORM_DATA.password !== FORM_DATA.confirmPassword) {
                 RESPONSE.errorMessage = "Both passwords must match";
             }
-
-            // create account
-            const USERS_COLLECTION = req.app.locals.db.collection('Users');
-
-            if (await USERS_COLLECTION.findOne({username: FORM_DATA.username}) === null) {
-                const HASHED_PASSWORD = createHash('sha256').update(FORM_DATA.password).digest('hex');
-                const UID = createHash('sha256').update(`${FORM_DATA.username}${HASHED_PASSWORD}${new Date().getMilliseconds()}`).digest('hex');
-
-                await USERS_COLLECTION.insertOne({
-                    uid: UID,
-                    username: FORM_DATA.username,
-                    password: HASHED_PASSWORD,
-                    cover: '', // profile background cover file name
-                    pfp: '' // profile picture file name
-                });
-
-                generateLoginToken(res, UID);
-
-                // generate notifications settings
-                const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
-
-                await NOTIFICATIONS_COLLECTION.insertOne({
-                    uid: UID,
-                    followerStartedChat: 0,
-                    strangerStartedChat: 0,
-                    newPostLike: 0,
-                    newPostComment: 0,
-                    newFollower: 0
-                });
-            }
             else {
-                RESPONSE.errorMessage = "That username is already taken";
-            }
+                // create account
+                const USERS_COLLECTION = req.app.locals.db.collection('Users');
 
-            return res.json(RESPONSE);
+                if (await USERS_COLLECTION.findOne({username: FORM_DATA.username}) === null) {
+                    const HASHED_PASSWORD = createHash('sha256').update(FORM_DATA.password).digest('hex');
+                    const UID = createHash('sha256').update(`${FORM_DATA.username}${HASHED_PASSWORD}${new Date().getMilliseconds()}`).digest('hex');
+
+                    await USERS_COLLECTION.insertOne({
+                        uid: UID,
+                        username: FORM_DATA.username,
+                        password: HASHED_PASSWORD,
+                        cover: '', // profile background cover file name
+                        pfp: '' // profile picture file name
+                    });
+
+                    generateLoginToken(res, UID);
+
+                    // generate notifications settings
+                    const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
+
+                    await NOTIFICATIONS_COLLECTION.insertOne({
+                        uid: UID,
+                        followerStartedChat: 0,
+                        strangerStartedChat: 0,
+                        newPostLike: 0,
+                        newPostComment: 0,
+                        newFollower: 0
+                    });
+                }
+                else {
+                    RESPONSE.errorMessage = "That username is already taken";
+                }
+            }
         }
         else {
             RESPONSE.errorMessage = "Fields cannot be empty";
