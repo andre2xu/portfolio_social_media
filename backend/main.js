@@ -216,82 +216,89 @@ backend.get('/account/info/:username?', async (req, res) => {
 
 
 backend.put('/account/update', userProfileUploads.fields([{name: 'cover', maxCount: 1}, {name: 'pfp', maxCount: 1}]), async (req, res) => {
-    const RESPONSE = {};
-    const AUTHENTICATION_RESULT = authenticateUser(req);
+    try {
+        const RESPONSE = {};
+        const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const FORM_TEXT_DATA = req.body;
-        const FORM_FILE_DATA = req.files;
+        if (AUTHENTICATION_RESULT.isAuthenticated) {
+            const FORM_TEXT_DATA = req.body;
+            const FORM_FILE_DATA = req.files;
 
-        // update user account data
-        const USERS_COLLECTION = req.app.locals.db.collection('Users');
-        const ACCOUNT = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
+            // update user account data
+            const USERS_COLLECTION = req.app.locals.db.collection('Users');
+            const ACCOUNT = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
 
-        if (ACCOUNT !== null) {
-            const NEW_DATA = {};
+            if (ACCOUNT !== null) {
+                const NEW_DATA = {};
 
-            // validate new username and queue for update if successful
-            if (FORM_TEXT_DATA.newUsername.length > 0) {
-                if (FORM_TEXT_DATA.newUsername.length > 20) {
-                    RESPONSE.errorMessage = "Username cannot exceed 20 characters";
-                }
-                else {
-                    NEW_DATA.username = FORM_TEXT_DATA.newUsername;
-                }
-            }
-
-            // validate new password and queue for update if successful
-            if (FORM_TEXT_DATA.newPassword.length > 0) {
-                if (FORM_TEXT_DATA.newPassword.length < 8 || FORM_TEXT_DATA.newPassword > 30 || /[a-f]/.test(FORM_TEXT_DATA.newPassword) === false || /[A-F]/.test(FORM_TEXT_DATA.newPassword) === false || /[0-9]/.test(FORM_TEXT_DATA.newPassword) === false || /[\$\&\+\,\:\;\=\?\@\#\|\'\<\>\.\^\*\(\)\%\!\[\]\\\/]/.test(FORM_TEXT_DATA.newPassword) === false) {
-                    RESPONSE.errorMessage = "Password must be 8-30 characters long and have a lowercase and uppercase letter, a digit, and a special character";
-                }
-                else {
-                    NEW_DATA.password = createHash('sha256').update(FORM_TEXT_DATA.newPassword).digest('hex');;
-                }
-            }
-
-            // queue file names of file uploads (if any)
-            const UPLOADS = Object.keys(FORM_FILE_DATA);
-
-            if (UPLOADS.length > 0) {
-                for (let i=0; i < UPLOADS.length; i++) {
-                    const FILE_DATA = FORM_FILE_DATA[UPLOADS[i]][0];
-
-                    if (FILE_DATA.fieldname === 'cover') {
-                        // delete old cover (if one exists)
-                        if (ACCOUNT.cover.length > 0) {
-                            fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${ACCOUNT.cover}`, () => {});
-                        }
-
-                        NEW_DATA.cover = FILE_DATA.filename;
+                // validate new username and queue for update if successful
+                if (FORM_TEXT_DATA.newUsername.length > 0) {
+                    if (FORM_TEXT_DATA.newUsername.length > 20) {
+                        RESPONSE.errorMessage = "Username cannot exceed 20 characters";
                     }
-                    else if (FILE_DATA.fieldname === 'pfp') {
-                        // delete old profile picture (if one exists)
-                        if (ACCOUNT.pfp.length > 0) {
-                            fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${ACCOUNT.pfp}`, () => {});
-                        }
-
-                        NEW_DATA.pfp = FILE_DATA.filename;
+                    else {
+                        NEW_DATA.username = FORM_TEXT_DATA.newUsername;
                     }
                 }
-            }
 
-            if (Object.keys(NEW_DATA).length > 0 && RESPONSE.errorMessage === undefined) {
-                // update user account data
-                await USERS_COLLECTION.updateOne(
-                    {uid: AUTHENTICATION_RESULT.tokenData.uid},
-                    {$set: NEW_DATA}
-                );
+                // validate new password and queue for update if successful
+                if (FORM_TEXT_DATA.newPassword.length > 0) {
+                    if (FORM_TEXT_DATA.newPassword.length < 8 || FORM_TEXT_DATA.newPassword > 30 || /[a-f]/.test(FORM_TEXT_DATA.newPassword) === false || /[A-F]/.test(FORM_TEXT_DATA.newPassword) === false || /[0-9]/.test(FORM_TEXT_DATA.newPassword) === false || /[\$\&\+\,\:\;\=\?\@\#\|\'\<\>\.\^\*\(\)\%\!\[\]\\\/]/.test(FORM_TEXT_DATA.newPassword) === false) {
+                        RESPONSE.errorMessage = "Password must be 8-30 characters long and have a lowercase and uppercase letter, a digit, and a special character";
+                    }
+                    else {
+                        NEW_DATA.password = createHash('sha256').update(FORM_TEXT_DATA.newPassword).digest('hex');;
+                    }
+                }
 
-                // pass relevant database info to frontend
-                delete NEW_DATA['password'];
+                // queue file names of file uploads (if any)
+                const UPLOADS = Object.keys(FORM_FILE_DATA);
 
-                RESPONSE.newData = NEW_DATA;
+                if (UPLOADS.length > 0) {
+                    for (let i=0; i < UPLOADS.length; i++) {
+                        const FILE_DATA = FORM_FILE_DATA[UPLOADS[i]][0];
+
+                        if (FILE_DATA.fieldname === 'cover') {
+                            // delete old cover (if one exists)
+                            if (ACCOUNT.cover.length > 0) {
+                                fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${ACCOUNT.cover}`, () => {});
+                            }
+
+                            NEW_DATA.cover = FILE_DATA.filename;
+                        }
+                        else if (FILE_DATA.fieldname === 'pfp') {
+                            // delete old profile picture (if one exists)
+                            if (ACCOUNT.pfp.length > 0) {
+                                fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${ACCOUNT.pfp}`, () => {});
+                            }
+
+                            NEW_DATA.pfp = FILE_DATA.filename;
+                        }
+                    }
+                }
+
+                if (Object.keys(NEW_DATA).length > 0 && RESPONSE.errorMessage === undefined) {
+                    // update user account data
+                    await USERS_COLLECTION.updateOne(
+                        {uid: AUTHENTICATION_RESULT.tokenData.uid},
+                        {$set: NEW_DATA}
+                    );
+
+                    // pass relevant database info to frontend
+                    delete NEW_DATA['password'];
+
+                    RESPONSE.newData = NEW_DATA;
+                }
             }
         }
-    }
 
-    return res.json(RESPONSE);
+        return res.json(RESPONSE);
+    }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
+
+        return res.status(500).send('');
+    }
 });
 
 
