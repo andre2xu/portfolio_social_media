@@ -1495,38 +1495,101 @@ backend.get('/explore/:query', async (req, res) => {
 
 
 backend.get('/search/:query', async (req, res) => {
-    const RESPONSE = {};
-    const SEARCH_QUERY = req.params.query;
+    try {
+        const RESPONSE = {};
+        const SEARCH_QUERY = req.params.query;
 
-    let search_found = false;
+        let search_found = false;
 
-    /*
-    ALGORITHM:
-    For tag and user searches, only the first token of the search query is used.
-    The algorithm checks if it has a # or @ symbol as its first character and
-    then it uses that symbol to determine what type of search to perform.
+        /*
+        ALGORITHM:
+        For tag and user searches, only the first token of the search query is used.
+        The algorithm checks if it has a # or @ symbol as its first character and
+        then it uses that symbol to determine what type of search to perform.
 
-    If the search is neither for a tag or a user, then the algorithm will
-    use the entire search query (i.e. all tokens) to find the post(s) that
-    contains it.
+        If the search is neither for a tag or a user, then the algorithm will
+        use the entire search query (i.e. all tokens) to find the post(s) that
+        contains it.
 
-    The search strategies are given below.
-    */
-    const TOKENS = SEARCH_QUERY.split(/\s/);
+        The search strategies are given below.
+        */
+        const TOKENS = SEARCH_QUERY.split(/\s/);
 
-    if (TOKENS.length > 0) {
-        const FIRST_TOKEN = TOKENS[0];
+        if (TOKENS.length > 0) {
+            const FIRST_TOKEN = TOKENS[0];
 
-        if (FIRST_TOKEN.length > 1) {
-            const KEYWORD = FIRST_TOKEN.substring(1);
+            if (FIRST_TOKEN.length > 1) {
+                const KEYWORD = FIRST_TOKEN.substring(1);
 
-            if (FIRST_TOKEN[0] === '#') {
-                // SEARCH STRATEGY: get 5 of the most recent posts with tags that have the first token's keyword as a substring
+                if (FIRST_TOKEN[0] === '#') {
+                    // SEARCH STRATEGY: get 5 of the most recent posts with tags that have the first token's keyword as a substring
+
+                    const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
+
+                    const RESULT = await POSTS_COLLECTION.aggregate([
+                        {$match: {tags: new RegExp(KEYWORD)}},
+                        {$sort: {timestamp: -1}},
+                        {$limit: 5},
+                        {
+                            $lookup: {
+                                from: 'Users',
+                                localField: 'uid',
+                                foreignField: 'uid',
+                                as: 'user'
+                            }
+                        },
+                        {$unwind: '$user'},
+                        {
+                            $project: {
+                                _id: 0,
+                                pid: 1,
+                                body: 1,
+                                username: '$user.username'
+                            }
+                        }
+                    ]).toArray();
+
+                    if (RESULT.length > 0) {
+                        RESPONSE.type = 'tag';
+                        RESPONSE.result = RESULT;
+
+                        search_found = true;
+                    }
+                }
+                else if (FIRST_TOKEN[0] === '@') {
+                    // SEARCH STRATEGY: get 5 users whose usernames have the first token's keyword as a substring. The users are sorted alphabetically starting from A
+
+                    const USERS_COLLECTION = req.app.locals.db.collection('Users');
+
+                    const RESULT = await USERS_COLLECTION.aggregate([
+                        {$match: {username: new RegExp(KEYWORD)}},
+                        {$sort: {username: 1}},
+                        {$limit: 5},
+                        {
+                            $project: {
+                                _id: 0,
+                                username: 1,
+                                pfp: 1
+                            }
+                        }
+                    ]).toArray();
+
+                    if (RESULT.length > 0) {
+                        RESPONSE.type = 'user';
+                        RESPONSE.result = RESULT;
+
+                        search_found = true;
+                    }
+                }
+            }
+
+            if (search_found === false) {
+                // SEARCH STRATEGY: get 5 of the most recent posts with bodies that have the entire search query as a substring
 
                 const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
 
                 const RESULT = await POSTS_COLLECTION.aggregate([
-                    {$match: {tags: new RegExp(KEYWORD)}},
+                    {$match: {body: new RegExp(SEARCH_QUERY)}},
                     {$sort: {timestamp: -1}},
                     {$limit: 5},
                     {
@@ -1549,32 +1612,7 @@ backend.get('/search/:query', async (req, res) => {
                 ]).toArray();
 
                 if (RESULT.length > 0) {
-                    RESPONSE.type = 'tag';
-                    RESPONSE.result = RESULT;
-
-                    search_found = true;
-                }
-            }
-            else if (FIRST_TOKEN[0] === '@') {
-                // SEARCH STRATEGY: get 5 users whose usernames have the first token's keyword as a substring. The users are sorted alphabetically starting from A
-
-                const USERS_COLLECTION = req.app.locals.db.collection('Users');
-
-                const RESULT = await USERS_COLLECTION.aggregate([
-                    {$match: {username: new RegExp(KEYWORD)}},
-                    {$sort: {username: 1}},
-                    {$limit: 5},
-                    {
-                        $project: {
-                            _id: 0,
-                            username: 1,
-                            pfp: 1
-                        }
-                    }
-                ]).toArray();
-
-                if (RESULT.length > 0) {
-                    RESPONSE.type = 'user';
+                    RESPONSE.type = 'content';
                     RESPONSE.result = RESULT;
 
                     search_found = true;
@@ -1582,44 +1620,13 @@ backend.get('/search/:query', async (req, res) => {
             }
         }
 
-        if (search_found === false) {
-            // SEARCH STRATEGY: get 5 of the most recent posts with bodies that have the entire search query as a substring
-
-            const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
-
-            const RESULT = await POSTS_COLLECTION.aggregate([
-                {$match: {body: new RegExp(SEARCH_QUERY)}},
-                {$sort: {timestamp: -1}},
-                {$limit: 5},
-                {
-                    $lookup: {
-                        from: 'Users',
-                        localField: 'uid',
-                        foreignField: 'uid',
-                        as: 'user'
-                    }
-                },
-                {$unwind: '$user'},
-                {
-                    $project: {
-                        _id: 0,
-                        pid: 1,
-                        body: 1,
-                        username: '$user.username'
-                    }
-                }
-            ]).toArray();
-
-            if (RESULT.length > 0) {
-                RESPONSE.type = 'content';
-                RESPONSE.result = RESULT;
-
-                search_found = true;
-            }
-        }
+        return res.json(RESPONSE);
     }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
 
-    return res.json(RESPONSE);
+        return res.status(500).send('');
+    }
 });
 
 
