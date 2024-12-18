@@ -163,9 +163,16 @@ backend.get('/logout', async (req, res) => {
 
 
 backend.post('/auth', async (req, res) => {
-    // NOTE: this route is used by React Router in the frontend to check if users are allowed to access a view. For backend authentication, just call the 'authenticateUser' helper
+    try {
+        // NOTE: this route is used by React Router in the frontend to check if users are allowed to access a view. For backend authentication, just call the 'authenticateUser' helper
 
-    return res.json({isAuthenticated: authenticateUser(req).isAuthenticated});
+        return res.json({isAuthenticated: authenticateUser(req).isAuthenticated});
+    }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
+
+        return res.status(500).send('');
+    }
 });
 
 
