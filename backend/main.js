@@ -1343,147 +1343,154 @@ backend.get('/explore', async (req, res) => {
 
 
 backend.get('/explore/:query', async (req, res) => {
-    const RESPONSE = {};
-    let search_query = req.params.query;
+    try {
+        const RESPONSE = {};
+        let search_query = req.params.query;
 
-    const TOKENS = search_query.split(/\s/);
+        const TOKENS = search_query.split(/\s/);
 
-    if (TOKENS.length > 0) {
-        const TAGS = [];
-        const WORD_SEQUENCES = [];
+        if (TOKENS.length > 0) {
+            const TAGS = [];
+            const WORD_SEQUENCES = [];
 
-        let sequence_of_words = '';
+            let sequence_of_words = '';
 
-        for (let i=0; i < TOKENS.length; i++) {
-            const TOKEN = TOKENS[i];
+            for (let i=0; i < TOKENS.length; i++) {
+                const TOKEN = TOKENS[i];
 
-            if (TOKEN[0] === '#') {
-                // save tag or tag substring
-                TAGS.push(new RegExp(TOKEN.substring(1)));
+                if (TOKEN[0] === '#') {
+                    // save tag or tag substring
+                    TAGS.push(new RegExp(TOKEN.substring(1)));
 
-                // a tag or tag substring has been found so save the current sequence of words
-                if (sequence_of_words.length > 0) {
-                    WORD_SEQUENCES.push(new RegExp(sequence_of_words));
+                    // a tag or tag substring has been found so save the current sequence of words
+                    if (sequence_of_words.length > 0) {
+                        WORD_SEQUENCES.push(new RegExp(sequence_of_words));
 
-                    // reset sequence
-                    sequence_of_words = '';
-                }
-            }
-            else {
-                // build sequence of words
-                sequence_of_words += TOKEN;
-            }
-        }
-
-        // save remaining sequence of words (if any)
-        if (sequence_of_words.length > 0) {
-            WORD_SEQUENCES.push(new RegExp(sequence_of_words));
-        }
-
-        // find the latest posts that either have the tags (or tag substrings) given, or contain the word sequences given
-        const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
-        const RESULT = await POSTS_COLLECTION.aggregate([
-            {
-                $match: {
-                    $or: [
-                        {tags: {$in: TAGS}},
-                        {body: {$in: WORD_SEQUENCES}}
-                    ]
-                }
-            },
-            {$sort: {timestamp: -1}},
-            {$limit: 2000},
-            {
-                $lookup: {
-                    from: 'Users',
-                    localField: 'uid',
-                    foreignField: 'uid',
-                    as: 'user'
-                }
-            },
-            {$unwind: '$user'},
-            {
-                $lookup: {
-                    from: 'Comments',
-                    localField: 'pid',
-                    foreignField: 'pid',
-                    as: 'comments'
-                }
-            },
-            {
-                $project: {
-                    pid: 1,
-                    body: 1,
-                    tags: 1,
-                    media: 1,
-                    date: 1,
-                    likes: 1,
-                    comments: {$size: '$comments'},
-                    username: '$user.username',
-                    pfp: '$user.pfp'
-                }
-            },
-            {$unset: '_id'}
-        ]).toArray();
-
-        if (RESULT.length > 0) {
-            // check if a logged-in user is making the request and find which posts they've liked
-            let uid_of_user_logged_in = undefined;
-
-            if (req.cookies.LT !== undefined) {
-                uid_of_user_logged_in = authenticateUser(req).tokenData.uid;
-            }
-
-            if (uid_of_user_logged_in !== undefined) {
-                // use a two pointer loop to quickly find the posts that were liked by the logged-in user
-                let i = 0;
-                let j = RESULT.length - 1;
-
-                while (i <= j) {
-                    const USER_LIKED_LPOST = RESULT[i].likes.includes(uid_of_user_logged_in);
-
-                    if (USER_LIKED_LPOST) {
-                        RESULT[i].likedByUser = true;
+                        // reset sequence
+                        sequence_of_words = '';
                     }
+                }
+                else {
+                    // build sequence of words
+                    sequence_of_words += TOKEN;
+                }
+            }
 
-                    RESULT[i].likes = RESULT[i].likes.length;
+            // save remaining sequence of words (if any)
+            if (sequence_of_words.length > 0) {
+                WORD_SEQUENCES.push(new RegExp(sequence_of_words));
+            }
 
-                    if (i != j) {
-                        const USER_LIKED_RPOST = RESULT[j].likes.includes(uid_of_user_logged_in);
+            // find the latest posts that either have the tags (or tag substrings) given, or contain the word sequences given
+            const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
+            const RESULT = await POSTS_COLLECTION.aggregate([
+                {
+                    $match: {
+                        $or: [
+                            {tags: {$in: TAGS}},
+                            {body: {$in: WORD_SEQUENCES}}
+                        ]
+                    }
+                },
+                {$sort: {timestamp: -1}},
+                {$limit: 2000},
+                {
+                    $lookup: {
+                        from: 'Users',
+                        localField: 'uid',
+                        foreignField: 'uid',
+                        as: 'user'
+                    }
+                },
+                {$unwind: '$user'},
+                {
+                    $lookup: {
+                        from: 'Comments',
+                        localField: 'pid',
+                        foreignField: 'pid',
+                        as: 'comments'
+                    }
+                },
+                {
+                    $project: {
+                        pid: 1,
+                        body: 1,
+                        tags: 1,
+                        media: 1,
+                        date: 1,
+                        likes: 1,
+                        comments: {$size: '$comments'},
+                        username: '$user.username',
+                        pfp: '$user.pfp'
+                    }
+                },
+                {$unset: '_id'}
+            ]).toArray();
 
-                        if (USER_LIKED_RPOST) {
-                            RESULT[j].likedByUser = true;
+            if (RESULT.length > 0) {
+                // check if a logged-in user is making the request and find which posts they've liked
+                let uid_of_user_logged_in = undefined;
+
+                if (req.cookies.LT !== undefined) {
+                    uid_of_user_logged_in = authenticateUser(req).tokenData.uid;
+                }
+
+                if (uid_of_user_logged_in !== undefined) {
+                    // use a two pointer loop to quickly find the posts that were liked by the logged-in user
+                    let i = 0;
+                    let j = RESULT.length - 1;
+
+                    while (i <= j) {
+                        const USER_LIKED_LPOST = RESULT[i].likes.includes(uid_of_user_logged_in);
+
+                        if (USER_LIKED_LPOST) {
+                            RESULT[i].likedByUser = true;
                         }
 
-                        RESULT[j].likes = RESULT[j].likes.length;
+                        RESULT[i].likes = RESULT[i].likes.length;
+
+                        if (i != j) {
+                            const USER_LIKED_RPOST = RESULT[j].likes.includes(uid_of_user_logged_in);
+
+                            if (USER_LIKED_RPOST) {
+                                RESULT[j].likedByUser = true;
+                            }
+
+                            RESULT[j].likes = RESULT[j].likes.length;
+                        }
+
+                        i++;
+                        j--;
                     }
-
-                    i++;
-                    j--;
                 }
-            }
-            else {
-                // change likes array to no. likes
-                let i = 0;
-                let j = RESULT.length - 1;
+                else {
+                    // change likes array to no. likes
+                    let i = 0;
+                    let j = RESULT.length - 1;
 
-                while (i <= j) {
-                    RESULT[i].likes = RESULT[i].likes.length;
+                    while (i <= j) {
+                        RESULT[i].likes = RESULT[i].likes.length;
 
-                    if (i != j) {
-                        RESULT[j].likes = RESULT[j].likes.length;
+                        if (i != j) {
+                            RESULT[j].likes = RESULT[j].likes.length;
+                        }
+
+                        i++;
+                        j--;
                     }
-
-                    i++;
-                    j--;
                 }
-            }
 
-            RESPONSE.result = RESULT;
+                RESPONSE.result = RESULT;
+            }
         }
-    }
 
-    return res.json(RESPONSE);
+        return res.json(RESPONSE);
+    }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
+
+        return res.status(500).send('');
+    }
 });
 
 
