@@ -821,88 +821,95 @@ backend.get('/comments/:pid', async (req, res) => {
 
 
 backend.post('/comments/:pid', async (req, res) => {
-    const RESPONSE = {};
-    const AUTHENTICATION_RESULT = authenticateUser(req);
+    try {
+        const RESPONSE = {};
+        const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
+        if (AUTHENTICATION_RESULT.isAuthenticated) {
+            const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
 
-        // save comment to database
-        const CURRENT_DATE = new Date();
-        let day = CURRENT_DATE.getDate();
-        let month = CURRENT_DATE.getMonth() + 1;
-        let year = CURRENT_DATE.getFullYear();
+            // save comment to database
+            const CURRENT_DATE = new Date();
+            let day = CURRENT_DATE.getDate();
+            let month = CURRENT_DATE.getMonth() + 1;
+            let year = CURRENT_DATE.getFullYear();
 
-        if (day.length === 1) {
-            day = `0${day}`;
-        }
+            if (day.length === 1) {
+                day = `0${day}`;
+            }
 
-        if (month.length === 1) {
-            month = `0${month}`;
-        }
+            if (month.length === 1) {
+                month = `0${month}`;
+            }
 
-        const FORMATTED_DATE = `${day}/${month}/${year}`;
-        const COMMENT_ID = createHash('sha256').update(`${req.params.pid}${AUTHENTICATION_RESULT.tokenData.uid}${req.body.replyBody}${FORMATTED_DATE}${CURRENT_DATE.getMilliseconds()}`).digest('hex');
+            const FORMATTED_DATE = `${day}/${month}/${year}`;
+            const COMMENT_ID = createHash('sha256').update(`${req.params.pid}${AUTHENTICATION_RESULT.tokenData.uid}${req.body.replyBody}${FORMATTED_DATE}${CURRENT_DATE.getMilliseconds()}`).digest('hex');
 
-        await COMMENTS_COLLECTION.insertOne({
-            cid: COMMENT_ID,
-            pid: req.params.pid,
-            uid: AUTHENTICATION_RESULT.tokenData.uid,
-            comment: req.body.replyBody,
-            date: FORMATTED_DATE,
-            likes: [],
-            dislikes: []
-        });
-
-        // get user data of commenter
-        const USERS_COLLECTION = req.app.locals.db.collection('Users');
-        const USER_INFO = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
-
-        // generate response data
-        if (USER_INFO !== null) {
-            Object.keys(USER_INFO).forEach((data) => {
-                if (data !== 'username' && data !== 'pfp') {
-                    delete USER_INFO[data]; // remove unnecessary or sensitive data
-                }
-            });
-
-            RESPONSE.userData = USER_INFO;
-
-            RESPONSE.commentData = {
+            await COMMENTS_COLLECTION.insertOne({
                 cid: COMMENT_ID,
+                pid: req.params.pid,
+                uid: AUTHENTICATION_RESULT.tokenData.uid,
                 comment: req.body.replyBody,
                 date: FORMATTED_DATE,
-                ownedByUser: true,
                 likes: [],
                 dislikes: []
-            };
+            });
 
-            // send notification to user who owns the post
-            const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
-            const POST = await POSTS_COLLECTION.findOne({pid: req.params.pid});
+            // get user data of commenter
+            const USERS_COLLECTION = req.app.locals.db.collection('Users');
+            const USER_INFO = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
 
-            if (POST !== null) {
-                const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
-                const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
-
-                const NOTIFY_FOR_NEW_POST_COMMENT = await NOTIFICATIONS_SETTINGS_COLLECTION.findOne({
-                    uid: POST.uid,
-                    newPostComment: 1
+            // generate response data
+            if (USER_INFO !== null) {
+                Object.keys(USER_INFO).forEach((data) => {
+                    if (data !== 'username' && data !== 'pfp') {
+                        delete USER_INFO[data]; // remove unnecessary or sensitive data
+                    }
                 });
 
-                if (NOTIFY_FOR_NEW_POST_COMMENT !== null) {
-                    await NOTIFICATIONS_COLLECTION.insertOne({
+                RESPONSE.userData = USER_INFO;
+
+                RESPONSE.commentData = {
+                    cid: COMMENT_ID,
+                    comment: req.body.replyBody,
+                    date: FORMATTED_DATE,
+                    ownedByUser: true,
+                    likes: [],
+                    dislikes: []
+                };
+
+                // send notification to user who owns the post
+                const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
+                const POST = await POSTS_COLLECTION.findOne({pid: req.params.pid});
+
+                if (POST !== null) {
+                    const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
+                    const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
+
+                    const NOTIFY_FOR_NEW_POST_COMMENT = await NOTIFICATIONS_SETTINGS_COLLECTION.findOne({
                         uid: POST.uid,
-                        title: 'New comment',
-                        body: `The post you created on ${POST.date} has a new comment from @${USER_INFO.username}.`,
-                        timestamp: new Date().toISOString()
+                        newPostComment: 1
                     });
+
+                    if (NOTIFY_FOR_NEW_POST_COMMENT !== null) {
+                        await NOTIFICATIONS_COLLECTION.insertOne({
+                            uid: POST.uid,
+                            title: 'New comment',
+                            body: `The post you created on ${POST.date} has a new comment from @${USER_INFO.username}.`,
+                            timestamp: new Date().toISOString()
+                        });
+                    }
                 }
             }
         }
-    }
 
-    return res.json(RESPONSE);
+        return res.json(RESPONSE);
+    }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
+
+        return res.status(500).send('');
+    }
 });
 
 
