@@ -616,35 +616,42 @@ backend.get('/post/:username?', async (req, res) => {
 
 
 backend.delete('/post/:pid', async (req, res) => {
-    const RESPONSE = {status: 'failed'};
-    const AUTHENTICATION_RESULT = authenticateUser(req);
+    try {
+        const RESPONSE = {status: 'failed'};
+        const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
-        const FILTER = {uid: AUTHENTICATION_RESULT.tokenData.uid, pid: req.params.pid};
+        if (AUTHENTICATION_RESULT.isAuthenticated) {
+            const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
+            const FILTER = {uid: AUTHENTICATION_RESULT.tokenData.uid, pid: req.params.pid};
 
-        const POST_DATA = await POSTS_COLLECTION.findOne(FILTER);
+            const POST_DATA = await POSTS_COLLECTION.findOne(FILTER);
 
-        if (POST_DATA !== null) {
-            // delete media stored in server (if any)
-            if (POST_DATA.media.length > 0) {
-                POST_DATA.media.forEach((file) => {
-                    fs.unlink(`${USER_POSTS_MEDIA_FOLDER}/${file.src}`, () => {});
-                });
+            if (POST_DATA !== null) {
+                // delete media stored in server (if any)
+                if (POST_DATA.media.length > 0) {
+                    POST_DATA.media.forEach((file) => {
+                        fs.unlink(`${USER_POSTS_MEDIA_FOLDER}/${file.src}`, () => {});
+                    });
+                }
+
+                // delete comments (if any)
+                const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
+                await COMMENTS_COLLECTION.deleteMany({pid: req.params.pid});
+
+                // delete the post itself
+                await POSTS_COLLECTION.deleteOne(FILTER);
+
+                RESPONSE.status = 'success';
             }
-
-            // delete comments (if any)
-            const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
-            await COMMENTS_COLLECTION.deleteMany({pid: req.params.pid});
-
-            // delete the post itself
-            await POSTS_COLLECTION.deleteOne(FILTER);
-
-            RESPONSE.status = 'success';
         }
-    }
 
-    res.json(RESPONSE);
+        res.json(RESPONSE);
+    }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
+
+        return res.status(500).send('');
+    }
 });
 
 
