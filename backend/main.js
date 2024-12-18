@@ -303,51 +303,58 @@ backend.put('/account/update', userProfileUploads.fields([{name: 'cover', maxCou
 
 
 backend.put('/account/remove', async (req, res) => {
-    const RESPONSE = {};
-    const AUTHENTICATION_RESULT = authenticateUser(req);
+    try {
+        const RESPONSE = {};
+        const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const DATA = req.body;
+        if (AUTHENTICATION_RESULT.isAuthenticated) {
+            const DATA = req.body;
 
-        if (DATA.type === 'profile') {
-            const USERS_COLLECTION = req.app.locals.db.collection('Users');
-            const ACCOUNT = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
+            if (DATA.type === 'profile') {
+                const USERS_COLLECTION = req.app.locals.db.collection('Users');
+                const ACCOUNT = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
 
-            if (ACCOUNT !== null) {
-                switch (DATA.target) {
-                    case 'cover':
-                        if (ACCOUNT.cover.length > 0) {
-                            fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${ACCOUNT.cover}`, () => {});
+                if (ACCOUNT !== null) {
+                    switch (DATA.target) {
+                        case 'cover':
+                            if (ACCOUNT.cover.length > 0) {
+                                fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${ACCOUNT.cover}`, () => {});
 
-                            await USERS_COLLECTION.updateOne(
-                                {uid: AUTHENTICATION_RESULT.tokenData.uid},
-                                {$set: {cover: ''}}
-                            );
-                        }
-                        else {
-                            RESPONSE.errorMessage = "Cover doesn't exist";
-                        }
-                        break;
-                    case 'pfp':
-                        if (ACCOUNT.pfp.length > 0) {
-                            fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${ACCOUNT.pfp}`, () => {});
+                                await USERS_COLLECTION.updateOne(
+                                    {uid: AUTHENTICATION_RESULT.tokenData.uid},
+                                    {$set: {cover: ''}}
+                                );
+                            }
+                            else {
+                                RESPONSE.errorMessage = "Cover doesn't exist";
+                            }
+                            break;
+                        case 'pfp':
+                            if (ACCOUNT.pfp.length > 0) {
+                                fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${ACCOUNT.pfp}`, () => {});
 
-                            await USERS_COLLECTION.updateOne(
-                                {uid: AUTHENTICATION_RESULT.tokenData.uid},
-                                {$set: {pfp: ''}}
-                            );
-                        }
-                        else {
-                            RESPONSE.errorMessage = "Profile picture doesn't exist";
-                        }
-                        break;
-                    default:
+                                await USERS_COLLECTION.updateOne(
+                                    {uid: AUTHENTICATION_RESULT.tokenData.uid},
+                                    {$set: {pfp: ''}}
+                                );
+                            }
+                            else {
+                                RESPONSE.errorMessage = "Profile picture doesn't exist";
+                            }
+                            break;
+                        default:
+                    }
                 }
             }
         }
-    }
 
-    return res.json(RESPONSE);
+        return res.json(RESPONSE);
+    }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
+
+        return res.status(500).send('');
+    }
 });
 
 
