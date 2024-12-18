@@ -41,64 +41,71 @@ const userPostsMedia = multer({dest: USER_POSTS_MEDIA_FOLDER});
 
 
 backend.post('/signup', async (req, res) => {
-    const RESPONSE = {};
-    const FORM_DATA = req.body;
+    try {
+        const RESPONSE = {};
+        const FORM_DATA = req.body;
 
-    if (FORM_DATA.username.length > 0 && FORM_DATA.password.length > 0 && FORM_DATA.confirmPassword.length > 0) {
-        // validate username
-        if (FORM_DATA.username.length > 20) {
-            RESPONSE.errorMessage = "Username cannot exceed 20 characters";
-        }
+        if (FORM_DATA.username.length > 0 && FORM_DATA.password.length > 0 && FORM_DATA.confirmPassword.length > 0) {
+            // validate username
+            if (FORM_DATA.username.length > 20) {
+                RESPONSE.errorMessage = "Username cannot exceed 20 characters";
+            }
 
-        // validate password
-        if (FORM_DATA.password.length < 8 || FORM_DATA.password > 30 || /[a-f]/.test(FORM_DATA.password) === false || /[A-F]/.test(FORM_DATA.password) === false || /[0-9]/.test(FORM_DATA.password) === false || /[\$\&\+\,\:\;\=\?\@\#\|\'\<\>\.\^\*\(\)\%\!\[\]\\\/]/.test(FORM_DATA.password) === false) {
-            RESPONSE.errorMessage = "Password must be 8-30 characters long and have a lowercase and uppercase letter, a digit, and a special character";
-        }
+            // validate password
+            if (FORM_DATA.password.length < 8 || FORM_DATA.password > 30 || /[a-f]/.test(FORM_DATA.password) === false || /[A-F]/.test(FORM_DATA.password) === false || /[0-9]/.test(FORM_DATA.password) === false || /[\$\&\+\,\:\;\=\?\@\#\|\'\<\>\.\^\*\(\)\%\!\[\]\\\/]/.test(FORM_DATA.password) === false) {
+                RESPONSE.errorMessage = "Password must be 8-30 characters long and have a lowercase and uppercase letter, a digit, and a special character";
+            }
 
-        if (FORM_DATA.password !== FORM_DATA.confirmPassword) {
-            RESPONSE.errorMessage = "Both passwords must match";
-        }
+            if (FORM_DATA.password !== FORM_DATA.confirmPassword) {
+                RESPONSE.errorMessage = "Both passwords must match";
+            }
 
-        // create account
-        const USERS_COLLECTION = req.app.locals.db.collection('Users');
+            // create account
+            const USERS_COLLECTION = req.app.locals.db.collection('Users');
 
-        if (await USERS_COLLECTION.findOne({username: FORM_DATA.username}) === null) {
-            const HASHED_PASSWORD = createHash('sha256').update(FORM_DATA.password).digest('hex');
-            const UID = createHash('sha256').update(`${FORM_DATA.username}${HASHED_PASSWORD}${new Date().getMilliseconds()}`).digest('hex');
+            if (await USERS_COLLECTION.findOne({username: FORM_DATA.username}) === null) {
+                const HASHED_PASSWORD = createHash('sha256').update(FORM_DATA.password).digest('hex');
+                const UID = createHash('sha256').update(`${FORM_DATA.username}${HASHED_PASSWORD}${new Date().getMilliseconds()}`).digest('hex');
 
-            await USERS_COLLECTION.insertOne({
-                uid: UID,
-                username: FORM_DATA.username,
-                password: HASHED_PASSWORD,
-                cover: '', // profile background cover file name
-                pfp: '' // profile picture file name
-            });
+                await USERS_COLLECTION.insertOne({
+                    uid: UID,
+                    username: FORM_DATA.username,
+                    password: HASHED_PASSWORD,
+                    cover: '', // profile background cover file name
+                    pfp: '' // profile picture file name
+                });
 
-            generateLoginToken(res, UID);
+                generateLoginToken(res, UID);
 
-            // generate notifications settings
-            const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
+                // generate notifications settings
+                const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
 
-            await NOTIFICATIONS_COLLECTION.insertOne({
-                uid: UID,
-                followerStartedChat: 0,
-                strangerStartedChat: 0,
-                newPostLike: 0,
-                newPostComment: 0,
-                newFollower: 0
-            });
+                await NOTIFICATIONS_COLLECTION.insertOne({
+                    uid: UID,
+                    followerStartedChat: 0,
+                    strangerStartedChat: 0,
+                    newPostLike: 0,
+                    newPostComment: 0,
+                    newFollower: 0
+                });
+            }
+            else {
+                RESPONSE.errorMessage = "That username is already taken";
+            }
+
+            return res.json(RESPONSE);
         }
         else {
-            RESPONSE.errorMessage = "That username is already taken";
+            RESPONSE.errorMessage = "Fields cannot be empty";
         }
 
         return res.json(RESPONSE);
     }
-    else {
-        RESPONSE.errorMessage = "Fields cannot be empty";
-    }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
 
-    return res.json(RESPONSE);
+        return res.status(500).send('');
+    }
 });
 
 
