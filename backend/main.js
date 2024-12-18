@@ -914,18 +914,25 @@ backend.post('/comments/:pid', async (req, res) => {
 
 
 backend.delete('/comments/:cid', async (req, res) => {
-    const RESPONSE = {status: 'failed'};
-    const AUTHENTICATION_RESULT = authenticateUser(req);
+    try {
+        const RESPONSE = {status: 'failed'};
+        const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
+        if (AUTHENTICATION_RESULT.isAuthenticated) {
+            const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
 
-        await COMMENTS_COLLECTION.deleteOne({cid: req.params.cid});
+            await COMMENTS_COLLECTION.deleteOne({cid: req.params.cid});
 
-        RESPONSE.status = 'success';
+            RESPONSE.status = 'success';
+        }
+
+        return res.json(RESPONSE);
     }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
 
-    return res.json(RESPONSE);
+        return res.status(500).send('');
+    }
 });
 
 
