@@ -1092,51 +1092,58 @@ backend.get('/followers/:username', async (req, res) => {
 
 
 backend.post('/follow', async (req, res) => {
-    const RESPONSE = {status: 'failed'};
-    const AUTHENTICATION_RESULT = authenticateUser(req);
+    try {
+        const RESPONSE = {status: 'failed'};
+        const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const USERS_COLLECTION = req.app.locals.db.collection('Users');
-        const USER_INFO = await USERS_COLLECTION.findOne({username: req.body.username});
-        const LOGGED_IN_USER_INFO = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
+        if (AUTHENTICATION_RESULT.isAuthenticated) {
+            const USERS_COLLECTION = req.app.locals.db.collection('Users');
+            const USER_INFO = await USERS_COLLECTION.findOne({username: req.body.username});
+            const LOGGED_IN_USER_INFO = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
 
-        if (USER_INFO !== null && USER_INFO.uid !== LOGGED_IN_USER_INFO.uid) {
-            const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
+            if (USER_INFO !== null && USER_INFO.uid !== LOGGED_IN_USER_INFO.uid) {
+                const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
 
-            await FOLLOWERS_COLLECTION.insertOne({
-                uid: USER_INFO.uid, // user being followed by logged in user
-                fid: LOGGED_IN_USER_INFO.uid // logged in user
-            });
-
-            // send notification to followed user
-            const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
-            const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
-
-            const NOTIFY_FOR_NEW_FOLLOWER = await NOTIFICATIONS_SETTINGS_COLLECTION.findOne({
-                uid: USER_INFO.uid,
-                newFollower: 1
-            });
-
-            if (NOTIFY_FOR_NEW_FOLLOWER !== null) {
-                await NOTIFICATIONS_COLLECTION.insertOne({
-                    uid: USER_INFO.uid,
-                    title: 'New Follower',
-                    body: `[${new Date().toDateString()}] @${LOGGED_IN_USER_INFO.username} has followed you.`,
-                    timestamp: new Date().toISOString()
+                await FOLLOWERS_COLLECTION.insertOne({
+                    uid: USER_INFO.uid, // user being followed by logged in user
+                    fid: LOGGED_IN_USER_INFO.uid // logged in user
                 });
+
+                // send notification to followed user
+                const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
+                const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
+
+                const NOTIFY_FOR_NEW_FOLLOWER = await NOTIFICATIONS_SETTINGS_COLLECTION.findOne({
+                    uid: USER_INFO.uid,
+                    newFollower: 1
+                });
+
+                if (NOTIFY_FOR_NEW_FOLLOWER !== null) {
+                    await NOTIFICATIONS_COLLECTION.insertOne({
+                        uid: USER_INFO.uid,
+                        title: 'New Follower',
+                        body: `[${new Date().toDateString()}] @${LOGGED_IN_USER_INFO.username} has followed you.`,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+
+                // create response
+                RESPONSE.status = 'success';
+
+                RESPONSE.followerAdded = {
+                    username: LOGGED_IN_USER_INFO.username,
+                    pfp: LOGGED_IN_USER_INFO.pfp
+                };
             }
-
-            // create response
-            RESPONSE.status = 'success';
-
-            RESPONSE.followerAdded = {
-                username: LOGGED_IN_USER_INFO.username,
-                pfp: LOGGED_IN_USER_INFO.pfp
-            };
         }
-    }
 
-    return res.json(RESPONSE);
+        return res.json(RESPONSE);
+    }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
+
+        return res.status(500).send('');
+    }
 });
 
 
