@@ -1988,19 +1988,26 @@ backend.get('/messages/:cid', async (req, res) => {
 
 
 backend.get('/notifications', async (req, res) => {
-    const RESPONSE = {};
-    const AUTHENTICATION_RESULT = authenticateUser(req);
+    try {
+        const RESPONSE = {};
+        const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
-        const NOTIFICATIONS = await NOTIFICATIONS_COLLECTION.find({uid: AUTHENTICATION_RESULT.tokenData.uid}, {projection: {_id: 0, uid: 0}}).sort({timestamp: -1}).toArray();
+        if (AUTHENTICATION_RESULT.isAuthenticated) {
+            const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
+            const NOTIFICATIONS = await NOTIFICATIONS_COLLECTION.find({uid: AUTHENTICATION_RESULT.tokenData.uid}, {projection: {_id: 0, uid: 0}}).sort({timestamp: -1}).toArray();
 
-        if (NOTIFICATIONS !== null) {
-            RESPONSE.notifications = NOTIFICATIONS;
+            if (NOTIFICATIONS !== null) {
+                RESPONSE.notifications = NOTIFICATIONS;
+            }
         }
-    }
 
-    return res.json(RESPONSE);
+        return res.json(RESPONSE);
+    }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
+
+        return res.status(500).send('');
+    }
 });
 
 
