@@ -1,11 +1,13 @@
 import React from 'react';
 import axios from 'axios';
-import { Outlet, Navigate } from 'react-router-dom';
+import { Outlet, Navigate, useNavigate } from 'react-router-dom';
 
 
 
 function ProtectedRoutes() {
     const [is_authenticated, setAuthenticationFlag] = React.useState();
+
+    const redirectTo = useNavigate();
 
     React.useEffect(() => {
         axios.post('http://localhost:8010/auth', {}, {withCredentials: true})
@@ -16,8 +18,11 @@ function ProtectedRoutes() {
             else {
                 setAuthenticationFlag(false);
             }
+        })
+        .catch(() => {
+            redirectTo('/error/500');
         });
-    }, []);
+    }, [redirectTo]);
 
     if (is_authenticated === undefined) {
         // show a blank page if something went wrong during authentication
