@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { Logger } = require('./logger');
 
 
 
@@ -43,9 +44,21 @@ function generateLoginToken(res, uid) {
     );
 };
 
+function logControllerError(req, error) {
+    try {
+        const IP = (req.headers['x-forwarded-for'] || req.connection.remoteAddress || '').split(',')[0].trim();
+
+        Logger.error(`[${req.path}] ${error} [data: ${JSON.stringify({ip: IP, params: req.params, body: req.body})}]`);
+    }
+    catch (error) {
+        Logger.error(`[helpers.logControllerError] ${error}`);
+    }
+};
+
 
 
 module.exports = {
     authenticateUser,
-    generateLoginToken
+    generateLoginToken,
+    logControllerError
 };
