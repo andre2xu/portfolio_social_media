@@ -1,7 +1,7 @@
 const { MongoClient } = require('mongodb');
 const { createHash } = require('crypto');
 const { WebSocketServer } = require('ws');
-const jwt = require('jsonwebtoken');
+const { authenticateUser, generateLoginToken } = require('./helpers');
 const body_parser = require('body-parser');
 const multer = require('multer');
 const cookie_parser = require('cookie-parser');
@@ -34,46 +34,7 @@ const userProfileUploads = multer({dest: USER_PROFILE_UPLOADS_FOLDER});
 const USER_POSTS_MEDIA_FOLDER = './public/users/posts';
 const userPostsMedia = multer({dest: USER_POSTS_MEDIA_FOLDER});
 
-function authenticateUser(req) {
-    const RESULT = {
-        isAuthenticated: false,
-        tokenData: {}
-    };
 
-    const LOGIN_TOKEN = req.cookies.LT;
-
-    try {
-        if (LOGIN_TOKEN !== undefined) {
-            RESULT.tokenData = jwt.verify(LOGIN_TOKEN, process.env.LTS);
-
-            RESULT.isAuthenticated = true;
-        }
-    }
-    catch {}
-
-    return RESULT;
-};
-
-function generateLoginToken(res, uid) {
-    const TOKEN_EXPIRATION = 60 * 60 * 2;
-
-    const LOGIN_TOKEN = jwt.sign(
-        {uid: uid},
-        process.env.LTS,
-        {expiresIn: TOKEN_EXPIRATION}
-    );
-
-    res.cookie(
-        'LT',
-        LOGIN_TOKEN,
-        {
-            maxAge: TOKEN_EXPIRATION * 1000,
-            httpOnly: true,
-            sameSite: true,
-            secure: true
-        }
-    );
-};
 
 // ROUTES
 backend.post('/signup', async (req, res) => {
