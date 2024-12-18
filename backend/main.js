@@ -110,30 +110,37 @@ backend.post('/signup', async (req, res) => {
 
 
 backend.post('/login', async (req, res) => {
-    const RESPONSE = {};
-    const FORM_DATA = req.body;
+    try {
+        const RESPONSE = {};
+        const FORM_DATA = req.body;
 
-    if (FORM_DATA.username.length > 0 && FORM_DATA.password.length > 0) {
-        const USERS_COLLECTION = req.app.locals.db.collection('Users');
-        const ACCOUNT = await USERS_COLLECTION.findOne({username: FORM_DATA.username});
+        if (FORM_DATA.username.length > 0 && FORM_DATA.password.length > 0) {
+            const USERS_COLLECTION = req.app.locals.db.collection('Users');
+            const ACCOUNT = await USERS_COLLECTION.findOne({username: FORM_DATA.username});
 
-        if (ACCOUNT !== null) {
-            const HASHED_PASSWORD = createHash('sha256').update(FORM_DATA.password).digest('hex');
+            if (ACCOUNT !== null) {
+                const HASHED_PASSWORD = createHash('sha256').update(FORM_DATA.password).digest('hex');
 
-            if (HASHED_PASSWORD === ACCOUNT.password) {
-                generateLoginToken(res, ACCOUNT.uid);
+                if (HASHED_PASSWORD === ACCOUNT.password) {
+                    generateLoginToken(res, ACCOUNT.uid);
 
-                return res.json(RESPONSE);
+                    return res.json(RESPONSE);
+                }
             }
+
+            RESPONSE.errorMessage = "Invalid credentials";
+        }
+        else {
+            RESPONSE.errorMessage = "Fields cannot be empty";
         }
 
-        RESPONSE.errorMessage = "Invalid credentials";
+        return res.json(RESPONSE);
     }
-    else {
-        RESPONSE.errorMessage = "Fields cannot be empty";
-    }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
 
-    return res.json(RESPONSE);
+        return res.status(500).send('');
+    }
 });
 
 
