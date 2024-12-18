@@ -730,86 +730,93 @@ backend.put('/post/like', async (req, res) => {
 
 
 backend.get('/comments/:pid', async (req, res) => {
-    const RESPONSE = {};
-    const AUTHENTICATION_RESULT = authenticateUser(req);
+    try {
+        const RESPONSE = {};
+        const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
-        const POST_DATA = await POSTS_COLLECTION.findOne({pid: req.params.pid}, {projection: {_id: 0}});
+        if (AUTHENTICATION_RESULT.isAuthenticated) {
+            const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
+            const POST_DATA = await POSTS_COLLECTION.findOne({pid: req.params.pid}, {projection: {_id: 0}});
 
-        if (POST_DATA !== null) {
-            const USERS_COLLECTION = req.app.locals.db.collection('Users');
-            const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
+            if (POST_DATA !== null) {
+                const USERS_COLLECTION = req.app.locals.db.collection('Users');
+                const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
 
-            // retrieve data about poster
-            const USER_INFO = await USERS_COLLECTION.findOne({uid: POST_DATA.uid}, {projection: {_id: 0, uid: 0, password: 0}});
+                // retrieve data about poster
+                const USER_INFO = await USERS_COLLECTION.findOne({uid: POST_DATA.uid}, {projection: {_id: 0, uid: 0, password: 0}});
 
-            if (USER_INFO !== null) {
-                delete POST_DATA['uid']; // remove sensitive information
+                if (USER_INFO !== null) {
+                    delete POST_DATA['uid']; // remove sensitive information
 
-                RESPONSE.postData = POST_DATA;
-                RESPONSE.userData = USER_INFO;
+                    RESPONSE.postData = POST_DATA;
+                    RESPONSE.userData = USER_INFO;
 
-                // check if the user that's logged in has liked the post
-                if (POST_DATA.likes.includes(AUTHENTICATION_RESULT.tokenData.uid)) {
-                    RESPONSE.postData.likedByUser = true;
+                    // check if the user that's logged in has liked the post
+                    if (POST_DATA.likes.includes(AUTHENTICATION_RESULT.tokenData.uid)) {
+                        RESPONSE.postData.likedByUser = true;
+                    }
+                }
+
+                // retrieve comments data
+                const COMMENTS = await COMMENTS_COLLECTION.aggregate([
+                    {
+                        $match: {pid: req.params.pid} // get only the comments for the given post
+                    },
+                    {
+                        // find the user account data of each commenter
+                        $lookup: {
+                            from: 'Users',
+                            localField: 'uid',
+                            foreignField: 'uid',
+                            as: 'user'
+                        }
+                    },
+                    {$unwind: '$user'}, // store lookup result in the '$user' object
+                    {
+                        // ensure that all the fields required by the frontend are set to 1 so that they appear in the result
+                        $project: {
+                            cid: 1,
+                            comment: 1,
+                            date: 1,
+                            likes: 1,
+                            dislikes: 1,
+                            username: '$user.username',
+                            pfp: '$user.pfp'
+                        }
+                    },
+                    {$unset: '_id'} // exclude from final result
+                ]).toArray();
+
+                RESPONSE.comments = COMMENTS;
+
+                // check which comments were sent and which ones were liked/disliked by the user that's logged in
+                const LOGGED_IN_USER_INFO = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
+
+                if (LOGGED_IN_USER_INFO !== null) {
+                    COMMENTS.forEach((comment) => {
+                        if (LOGGED_IN_USER_INFO.username === comment.username) {
+                            comment.ownedByUser = true; // add a flag to show this comment was posted by the user that's logged in
+                        }
+
+                        // add a flag to show this comment was liked/disliked by the user that's logged in
+                        if (comment.likes.includes(LOGGED_IN_USER_INFO.uid)) {
+                            comment.likedByUser = true;
+                        }
+                        else if (comment.dislikes.includes(LOGGED_IN_USER_INFO.uid)) {
+                            comment.dislikedByUser = true;
+                        }
+                    });
                 }
             }
-
-            // retrieve comments data
-            const COMMENTS = await COMMENTS_COLLECTION.aggregate([
-                {
-                    $match: {pid: req.params.pid} // get only the comments for the given post
-                },
-                {
-                    // find the user account data of each commenter
-                    $lookup: {
-                        from: 'Users',
-                        localField: 'uid',
-                        foreignField: 'uid',
-                        as: 'user'
-                    }
-                },
-                {$unwind: '$user'}, // store lookup result in the '$user' object
-                {
-                    // ensure that all the fields required by the frontend are set to 1 so that they appear in the result
-                    $project: {
-                        cid: 1,
-                        comment: 1,
-                        date: 1,
-                        likes: 1,
-                        dislikes: 1,
-                        username: '$user.username',
-                        pfp: '$user.pfp'
-                    }
-                },
-                {$unset: '_id'} // exclude from final result
-            ]).toArray();
-
-            RESPONSE.comments = COMMENTS;
-
-            // check which comments were sent and which ones were liked/disliked by the user that's logged in
-            const LOGGED_IN_USER_INFO = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
-
-            if (LOGGED_IN_USER_INFO !== null) {
-                COMMENTS.forEach((comment) => {
-                    if (LOGGED_IN_USER_INFO.username === comment.username) {
-                        comment.ownedByUser = true; // add a flag to show this comment was posted by the user that's logged in
-                    }
-
-                    // add a flag to show this comment was liked/disliked by the user that's logged in
-                    if (comment.likes.includes(LOGGED_IN_USER_INFO.uid)) {
-                        comment.likedByUser = true;
-                    }
-                    else if (comment.dislikes.includes(LOGGED_IN_USER_INFO.uid)) {
-                        comment.dislikedByUser = true;
-                    }
-                });
-            }
         }
-    }
 
-    return res.json(RESPONSE);
+        return res.json(RESPONSE);
+    }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
+
+        return res.status(500).send('');
+    }
 });
 
 
