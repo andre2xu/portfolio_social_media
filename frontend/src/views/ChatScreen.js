@@ -107,6 +107,10 @@ function ChatScreen() {
             });
         });
 
+        CLIENT_WEB_SOCKET.addEventListener('error', () => {
+            redirectTo('/error/500');
+        });
+
         return () => {
             MESSAGE_FORM.off();
 
