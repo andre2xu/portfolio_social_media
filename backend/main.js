@@ -1856,26 +1856,33 @@ backend.post('/chats', async (req, res) => {
 
 
 backend.delete('/chats/:cid', async (req, res) => {
-    const RESPONSE = {status: 'failed'};
-    const AUTHENTICATION_RESULT = authenticateUser(req);
+    try {
+        const RESPONSE = {status: 'failed'};
+        const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const CHAT_ID = req.params.cid;
+        if (AUTHENTICATION_RESULT.isAuthenticated) {
+            const CHAT_ID = req.params.cid;
 
-        // delete all messages in the chat
-        const MESSAGES_COLLECTION = req.app.locals.db.collection('Messages');
+            // delete all messages in the chat
+            const MESSAGES_COLLECTION = req.app.locals.db.collection('Messages');
 
-        await MESSAGES_COLLECTION.deleteMany({cid: CHAT_ID});
+            await MESSAGES_COLLECTION.deleteMany({cid: CHAT_ID});
 
-        // delete the chat itself
-        const CHATS_COLLECTION = req.app.locals.db.collection('Chats');
+            // delete the chat itself
+            const CHATS_COLLECTION = req.app.locals.db.collection('Chats');
 
-        await CHATS_COLLECTION.deleteOne({cid: CHAT_ID});
+            await CHATS_COLLECTION.deleteOne({cid: CHAT_ID});
 
-        RESPONSE.status = 'success';
+            RESPONSE.status = 'success';
+        }
+
+        return res.json(RESPONSE);
     }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
 
-    return res.json(RESPONSE);
+        return res.status(500).send('');
+    }
 });
 
 
