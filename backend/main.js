@@ -1631,97 +1631,104 @@ backend.get('/search/:query', async (req, res) => {
 
 
 backend.get('/chats', async (req, res) => {
-    const RESPONSE = {};
-    const AUTHENTICATION_RESULT = authenticateUser(req);
+    try {
+        const RESPONSE = {};
+        const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const CHATS_COLLECTION = req.app.locals.db.collection('Chats');
+        if (AUTHENTICATION_RESULT.isAuthenticated) {
+            const CHATS_COLLECTION = req.app.locals.db.collection('Chats');
 
-        const CHATS_STARTED_BY_USER = await CHATS_COLLECTION.aggregate([
-            {$match: {uid: AUTHENTICATION_RESULT.tokenData.uid}}, // get only the chats started by the logged-in user
-            {
-                // get the account data of recipient
-                $lookup: {
-                    from: 'Users',
-                    localField: 'rid',
-                    foreignField: 'uid',
-                    as: 'user'
-                }
-            },
-            {$unwind: '$user'}, // store each result of the account lookup in an object
-            {
-                // get the messages of each chat
-                $lookup: {
-                    from: 'Messages',
-                    localField: 'cid',
-                    foreignField: 'cid',
-                    as: 'messages',
-                    pipeline: [
-                        // get the most recent message of each chat
-                        {$sort: {timestamp: -1}},
-                        {$limit: 1}
-                    ]
-                }
-            },
-            {
-                // include only the following fields in the final result
-                $project: {
-                    cid: 1,
-                    chatName: '$name',
-                    recipientUsername: '$user.username',
-                    recipientPfp: '$user.pfp',
-                    recentMessage: '$messages.message'
-                }
-            },
-            {$unset: '_id'} // exclude this from the final result
-        ]).toArray();
+            const CHATS_STARTED_BY_USER = await CHATS_COLLECTION.aggregate([
+                {$match: {uid: AUTHENTICATION_RESULT.tokenData.uid}}, // get only the chats started by the logged-in user
+                {
+                    // get the account data of recipient
+                    $lookup: {
+                        from: 'Users',
+                        localField: 'rid',
+                        foreignField: 'uid',
+                        as: 'user'
+                    }
+                },
+                {$unwind: '$user'}, // store each result of the account lookup in an object
+                {
+                    // get the messages of each chat
+                    $lookup: {
+                        from: 'Messages',
+                        localField: 'cid',
+                        foreignField: 'cid',
+                        as: 'messages',
+                        pipeline: [
+                            // get the most recent message of each chat
+                            {$sort: {timestamp: -1}},
+                            {$limit: 1}
+                        ]
+                    }
+                },
+                {
+                    // include only the following fields in the final result
+                    $project: {
+                        cid: 1,
+                        chatName: '$name',
+                        recipientUsername: '$user.username',
+                        recipientPfp: '$user.pfp',
+                        recentMessage: '$messages.message'
+                    }
+                },
+                {$unset: '_id'} // exclude this from the final result
+            ]).toArray();
 
-        const CHATS_STARTED_BY_OTHERS = await CHATS_COLLECTION.aggregate([
-            {$match: {rid: AUTHENTICATION_RESULT.tokenData.uid}}, // get only the chats in which the logged-in user is the recipient
-            {
-                // get the account data of the other user who started the chat
-                $lookup: {
-                    from: 'Users',
-                    localField: 'uid',
-                    foreignField: 'uid',
-                    as: 'user'
-                }
-            },
-            {$unwind: '$user'}, // store each result of the account lookup in an object
-            {
-                // get the messages of each chat
-                $lookup: {
-                    from: 'Messages',
-                    localField: 'cid',
-                    foreignField: 'cid',
-                    as: 'messages',
-                    pipeline: [
-                        // get the most recent message of each chat
-                        {$sort: {timestamp: -1}},
-                        {$limit: 1}
-                    ]
-                }
-            },
-            {
-                // include only the following fields in the final result
-                $project: {
-                    cid: 1,
-                    chatName: '$name',
-                    recipientUsername: '$user.username',
-                    recipientPfp: '$user.pfp',
-                    recentMessage: '$messages.message'
-                }
-            },
-            {$unset: '_id'} // exclude this from the final result
-        ]).toArray();
+            const CHATS_STARTED_BY_OTHERS = await CHATS_COLLECTION.aggregate([
+                {$match: {rid: AUTHENTICATION_RESULT.tokenData.uid}}, // get only the chats in which the logged-in user is the recipient
+                {
+                    // get the account data of the other user who started the chat
+                    $lookup: {
+                        from: 'Users',
+                        localField: 'uid',
+                        foreignField: 'uid',
+                        as: 'user'
+                    }
+                },
+                {$unwind: '$user'}, // store each result of the account lookup in an object
+                {
+                    // get the messages of each chat
+                    $lookup: {
+                        from: 'Messages',
+                        localField: 'cid',
+                        foreignField: 'cid',
+                        as: 'messages',
+                        pipeline: [
+                            // get the most recent message of each chat
+                            {$sort: {timestamp: -1}},
+                            {$limit: 1}
+                        ]
+                    }
+                },
+                {
+                    // include only the following fields in the final result
+                    $project: {
+                        cid: 1,
+                        chatName: '$name',
+                        recipientUsername: '$user.username',
+                        recipientPfp: '$user.pfp',
+                        recentMessage: '$messages.message'
+                    }
+                },
+                {$unset: '_id'} // exclude this from the final result
+            ]).toArray();
 
-        if (CHATS_STARTED_BY_USER !== null && CHATS_STARTED_BY_OTHERS !== null) {
-            RESPONSE.chatsStartedByUser = CHATS_STARTED_BY_USER;
-            RESPONSE.chatsStartedByOthers = CHATS_STARTED_BY_OTHERS;
+            if (CHATS_STARTED_BY_USER !== null && CHATS_STARTED_BY_OTHERS !== null) {
+                RESPONSE.chatsStartedByUser = CHATS_STARTED_BY_USER;
+                RESPONSE.chatsStartedByOthers = CHATS_STARTED_BY_OTHERS;
+            }
         }
-    }
 
-    return res.json(RESPONSE);
+        return res.json(RESPONSE);
+    }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
+
+        return res.status(500).send('');
+    }
 });
 
 
