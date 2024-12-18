@@ -1051,36 +1051,43 @@ backend.put('/comments/dislike', async (req, res) => {
 
 
 backend.get('/followers/:username', async (req, res) => {
-    const RESPONSE = {};
-    const AUTHENTICATION_RESULT = authenticateUser(req);
+    try {
+        const RESPONSE = {};
+        const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const USERS_COLLECTION = req.app.locals.db.collection('Users');
-        const USER_INFO = await USERS_COLLECTION.findOne({username: req.params.username});
+        if (AUTHENTICATION_RESULT.isAuthenticated) {
+            const USERS_COLLECTION = req.app.locals.db.collection('Users');
+            const USER_INFO = await USERS_COLLECTION.findOne({username: req.params.username});
 
-        if (USER_INFO !== null) {
-            const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
-            const FOLLOWERS = await FOLLOWERS_COLLECTION.find({uid: USER_INFO.uid}, {projection: {_id: 0, uid: 0}}).toArray();
-            const FOLLOWER_IDS = [];
+            if (USER_INFO !== null) {
+                const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
+                const FOLLOWERS = await FOLLOWERS_COLLECTION.find({uid: USER_INFO.uid}, {projection: {_id: 0, uid: 0}}).toArray();
+                const FOLLOWER_IDS = [];
 
-            if (FOLLOWERS.length > 0) {
-                FOLLOWERS.forEach((followerData) => {
-                    // check if the user that's logged in is following the user being queried
-                    if (followerData.fid === AUTHENTICATION_RESULT.tokenData.uid) {
-                        RESPONSE.followedByUser = true;
-                    }
+                if (FOLLOWERS.length > 0) {
+                    FOLLOWERS.forEach((followerData) => {
+                        // check if the user that's logged in is following the user being queried
+                        if (followerData.fid === AUTHENTICATION_RESULT.tokenData.uid) {
+                            RESPONSE.followedByUser = true;
+                        }
 
-                    FOLLOWER_IDS.push(followerData.fid);
-                });
+                        FOLLOWER_IDS.push(followerData.fid);
+                    });
 
-                const FOLLOWER_ACCOUNTS = await USERS_COLLECTION.find({uid: {$in: FOLLOWER_IDS}}, {projection: {_id: 0, username: 1, pfp: 1}}).toArray();
+                    const FOLLOWER_ACCOUNTS = await USERS_COLLECTION.find({uid: {$in: FOLLOWER_IDS}}, {projection: {_id: 0, username: 1, pfp: 1}}).toArray();
 
-                RESPONSE.followers = FOLLOWER_ACCOUNTS;
+                    RESPONSE.followers = FOLLOWER_ACCOUNTS;
+                }
             }
         }
-    }
 
-    return res.json(RESPONSE);
+        return res.json(RESPONSE);
+    }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
+
+        return res.status(500).send('');
+    }
 });
 
 
