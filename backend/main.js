@@ -2206,7 +2206,9 @@ backend.listen(8010, async () => {
             ws.isAlive = true;
         });
 
-        ws.on('error', console.error);
+        ws.on('error', (error) => {
+            Logger.error(`[WS] ${error}`);
+        });
 
         ws.on('message', async (message) => {
             const DATA = JSON.parse(`${message}`);
