@@ -359,71 +359,78 @@ backend.put('/account/remove', async (req, res) => {
 
 
 backend.delete('/account/delete', async (req, res) => {
-    const AUTHENTICATION_RESULT = authenticateUser(req);
+    try {
+        const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const USERS_COLLECTION = req.app.locals.db.collection('Users');
-        const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
-        const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
-        const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
-        const CHATS_COLLECTION = req.app.locals.db.collection('Chats');
-        const MESSAGES_COLLECTION = req.app.locals.db.collection('Messages');
-        const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
-        const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
+        if (AUTHENTICATION_RESULT.isAuthenticated) {
+            const USERS_COLLECTION = req.app.locals.db.collection('Users');
+            const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
+            const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
+            const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
+            const CHATS_COLLECTION = req.app.locals.db.collection('Chats');
+            const MESSAGES_COLLECTION = req.app.locals.db.collection('Messages');
+            const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
+            const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
 
-        const FILTER = {uid: AUTHENTICATION_RESULT.tokenData.uid};
+            const FILTER = {uid: AUTHENTICATION_RESULT.tokenData.uid};
 
-        // delete the user's like from posts (if any)
-        await POSTS_COLLECTION.updateMany(
-            {},
-            {$pull: {likes: AUTHENTICATION_RESULT.tokenData.uid}}
-        );
+            // delete the user's like from posts (if any)
+            await POSTS_COLLECTION.updateMany(
+                {},
+                {$pull: {likes: AUTHENTICATION_RESULT.tokenData.uid}}
+            );
 
-        // delete the user's comments in posts (if any)
-        await COMMENTS_COLLECTION.deleteMany(FILTER);
+            // delete the user's comments in posts (if any)
+            await COMMENTS_COLLECTION.deleteMany(FILTER);
 
-        // delete followers & following
-        await FOLLOWERS_COLLECTION.deleteMany({$or: [FILTER, {fid: AUTHENTICATION_RESULT.tokenData.uid}]});
+            // delete followers & following
+            await FOLLOWERS_COLLECTION.deleteMany({$or: [FILTER, {fid: AUTHENTICATION_RESULT.tokenData.uid}]});
 
-        // delete chats & messages
-        const CHATS = await CHATS_COLLECTION.find({$or: [FILTER, {rid: AUTHENTICATION_RESULT.tokenData.uid}]}, {projection: {_id: 0, cid: 1}}).toArray();
+            // delete chats & messages
+            const CHATS = await CHATS_COLLECTION.find({$or: [FILTER, {rid: AUTHENTICATION_RESULT.tokenData.uid}]}, {projection: {_id: 0, cid: 1}}).toArray();
 
-        if (CHATS !== null) {
-            const CHAT_IDS = CHATS.map((chatData) => { return chatData.cid; });
+            if (CHATS !== null) {
+                const CHAT_IDS = CHATS.map((chatData) => { return chatData.cid; });
 
-            await MESSAGES_COLLECTION.deleteMany({cid: {$in: CHAT_IDS}});
-            await CHATS_COLLECTION.deleteMany({cid: {$in: CHAT_IDS}});
+                await MESSAGES_COLLECTION.deleteMany({cid: {$in: CHAT_IDS}});
+                await CHATS_COLLECTION.deleteMany({cid: {$in: CHAT_IDS}});
+            }
+
+            // delete notifications settings
+            await NOTIFICATIONS_SETTINGS_COLLECTION.deleteOne(FILTER);
+
+            // delete notifications
+            await NOTIFICATIONS_COLLECTION.deleteMany(FILTER);
+
+            // get static files linked to user & remove them from the server
+            const USER_INFO = await USERS_COLLECTION.findOne(FILTER);
+            const USER_POSTS = await POSTS_COLLECTION.find(FILTER).toArray();
+
+            fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${USER_INFO.pfp}`, () => {});
+            fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${USER_INFO.cover}`, () => {});
+
+            if (USER_POSTS.length > 0) {
+                USER_POSTS.forEach((postData) => {
+                    if (postData.media.length > 0) {
+                        fs.unlink(`${USER_POSTS_MEDIA_FOLDER}/${postData.media[0].src}`, () => {});
+                    }
+                });
+            }
+
+            // delete user data
+            await USERS_COLLECTION.deleteOne(FILTER);
+            await POSTS_COLLECTION.deleteMany(FILTER);
+
+            res.clearCookie('LT');
         }
 
-        // delete notifications settings
-        await NOTIFICATIONS_SETTINGS_COLLECTION.deleteOne(FILTER);
-
-        // delete notifications
-        await NOTIFICATIONS_COLLECTION.deleteMany(FILTER);
-
-        // get static files linked to user & remove them from the server
-        const USER_INFO = await USERS_COLLECTION.findOne(FILTER);
-        const USER_POSTS = await POSTS_COLLECTION.find(FILTER).toArray();
-
-        fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${USER_INFO.pfp}`, () => {});
-        fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${USER_INFO.cover}`, () => {});
-
-        if (USER_POSTS.length > 0) {
-            USER_POSTS.forEach((postData) => {
-                if (postData.media.length > 0) {
-                    fs.unlink(`${USER_POSTS_MEDIA_FOLDER}/${postData.media[0].src}`, () => {});
-                }
-            });
-        }
-
-        // delete user data
-        await USERS_COLLECTION.deleteOne(FILTER);
-        await POSTS_COLLECTION.deleteMany(FILTER);
-
-        res.clearCookie('LT');
+        return res.json({});
     }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
 
-    return res.json({});
+        return res.status(500).send('');
+    }
 });
 
 
