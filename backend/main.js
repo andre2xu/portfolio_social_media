@@ -2211,56 +2211,61 @@ backend.listen(8010, async () => {
         });
 
         ws.on('message', async (message) => {
-            const DATA = JSON.parse(`${message}`);
+            try {
+                const DATA = JSON.parse(`${message}`);
 
-            if (DATA.type === 'user') {
-                ws.username = DATA.username;
-            }
-            else if (DATA.type === 'chatMessage') {
-                // check if the web socket request was made by a user logged in
-                const COOKIES = req.headers.cookie;
+                if (DATA.type === 'user') {
+                    ws.username = DATA.username;
+                }
+                else if (DATA.type === 'chatMessage') {
+                    // check if the web socket request was made by a user logged in
+                    const COOKIES = req.headers.cookie;
 
-                if (COOKIES.length > 0) {
-                    const LOGIN_TOKEN = COOKIES.match(/LT=.*;?/);
+                    if (COOKIES.length > 0) {
+                        const LOGIN_TOKEN = COOKIES.match(/LT=.*;?/);
 
-                    if (LOGIN_TOKEN !== null) {
-                        // create an object that mimics the request object of Express (except it only contains the cookies field)
-                        const REQUEST = {
-                            cookies: {
-                                LT: LOGIN_TOKEN[0].substring(3)
-                            }
-                        };
+                        if (LOGIN_TOKEN !== null) {
+                            // create an object that mimics the request object of Express (except it only contains the cookies field)
+                            const REQUEST = {
+                                cookies: {
+                                    LT: LOGIN_TOKEN[0].substring(3)
+                                }
+                            };
 
-                        // authenticate the user who made the request
-                        const AUTHENTICATION_RESULT = authenticateUser(REQUEST);
+                            // authenticate the user who made the request
+                            const AUTHENTICATION_RESULT = authenticateUser(REQUEST);
 
-                        if (AUTHENTICATION_RESULT.isAuthenticated) {
-                            const CHATS_COLLECTION = backend.locals.db.collection('Chats');
+                            if (AUTHENTICATION_RESULT.isAuthenticated) {
+                                const CHATS_COLLECTION = backend.locals.db.collection('Chats');
 
-                            if (await CHATS_COLLECTION.findOne({cid: DATA.cid}) !== null) {
-                                // save message to database
-                                const MESSAGES_COLLECTION = backend.locals.db.collection('Messages');
+                                if (await CHATS_COLLECTION.findOne({cid: DATA.cid}) !== null) {
+                                    // save message to database
+                                    const MESSAGES_COLLECTION = backend.locals.db.collection('Messages');
 
-                                await MESSAGES_COLLECTION.insertOne({
-                                    cid: DATA.cid,
-                                    sid: AUTHENTICATION_RESULT.tokenData.uid, // sender's uid
-                                    message: DATA.message,
-                                    timestamp: DATA.timestamp
-                                });
+                                    await MESSAGES_COLLECTION.insertOne({
+                                        cid: DATA.cid,
+                                        sid: AUTHENTICATION_RESULT.tokenData.uid, // sender's uid
+                                        message: DATA.message,
+                                        timestamp: DATA.timestamp
+                                    });
 
-                                // pass the message to the recipient
-                                wss.clients.forEach((clientWebSocket) => {
-                                    if (clientWebSocket.username === DATA.to) {
-                                        clientWebSocket.send(JSON.stringify({
-                                            message: DATA.message,
-                                            timestamp: DATA.timestamp
-                                        }));
-                                    }
-                                });
+                                    // pass the message to the recipient
+                                    wss.clients.forEach((clientWebSocket) => {
+                                        if (clientWebSocket.username === DATA.to) {
+                                            clientWebSocket.send(JSON.stringify({
+                                                message: DATA.message,
+                                                timestamp: DATA.timestamp
+                                            }));
+                                        }
+                                    });
+                                }
                             }
                         }
                     }
                 }
+            }
+            catch (error) {
+                Logger.error(`[WS message] ${error} {message: ${message}}`);
             }
         });
     });
