@@ -2037,22 +2037,29 @@ backend.get('/notifications/settings', async (req, res) => {
 
 
 backend.put('/notifications/settings', async (req, res) => {
-    const RESPONSE = {};
-    const AUTHENTICATION_RESULT = authenticateUser(req);
+    try {
+        const RESPONSE = {};
+        const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
+        if (AUTHENTICATION_RESULT.isAuthenticated) {
+            const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
 
-        const SETTING = {};
-        SETTING[req.body.setting] = req.body.action === 'enable' ? 1 : 0;
+            const SETTING = {};
+            SETTING[req.body.setting] = req.body.action === 'enable' ? 1 : 0;
 
-        await NOTIFICATIONS_SETTINGS_COLLECTION.updateOne(
-            {uid: AUTHENTICATION_RESULT.tokenData.uid},
-            {$set: SETTING}
-        );
+            await NOTIFICATIONS_SETTINGS_COLLECTION.updateOne(
+                {uid: AUTHENTICATION_RESULT.tokenData.uid},
+                {$set: SETTING}
+            );
+        }
+
+        return res.json(RESPONSE);
     }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
 
-    return res.json(RESPONSE);
+        return res.status(500).send('');
+    }
 });
 
 
