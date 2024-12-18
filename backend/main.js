@@ -145,13 +145,20 @@ backend.post('/login', async (req, res) => {
 
 
 backend.get('/logout', async (req, res) => {
-    const AUTHENTICATION_RESULT = authenticateUser(req);
+    try {
+        const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    if (AUTHENTICATION_RESULT.isAuthenticated) {
-        res.clearCookie('LT');
+        if (AUTHENTICATION_RESULT.isAuthenticated) {
+            res.clearCookie('LT');
+        }
+
+        return res.json({});
     }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
 
-    return res.json({});
+        return res.status(500).send('');
+    }
 });
 
 
