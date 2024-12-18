@@ -2064,117 +2064,124 @@ backend.put('/notifications/settings', async (req, res) => {
 
 
 backend.get('/viralusers', async (req, res) => {
-    const RESPONSE = {};
+    try {
+        const RESPONSE = {};
 
-    const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
+        const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
 
-    const VIRAL_POSTS = await POSTS_COLLECTION.aggregate([
-        {$sort: {timestamp: -1}}, // put most recent posts at the start
-        {$limit: 50}, // first 50
-        {
-            // get data of users who made the posts
-            $lookup: {
-                from: 'Users',
-                localField: 'uid',
-                foreignField: 'uid',
-                as: 'user'
-            }
-        },
-        {$unwind: '$user'},
-        {
-            // get the comments of the posts
-            $lookup: {
-                from: 'Comments',
-                localField: 'pid',
-                foreignField: 'pid',
-                as: 'comments'
-            }
-        },
-        {
-            // include only the following fields in the final result
-            $project: {
-                uid: 1,
-                likes: {$size: '$likes'},
-                comments: {$size: '$comments'},
-                username: '$user.username',
-                pfp: '$user.pfp'
-            }
-        },
-        {$unset: '_id'} // exclude this from the final result
-    ]).toArray();
-
-    if (VIRAL_POSTS !== null) {
-        const USERS_WITH_ENGAGEMENT = {};
-        const USER_DATA = {}; // data of users with engagement
-
-        VIRAL_POSTS.forEach((postData) => {
-            // count the total engagement (no. likes & comments) each user got
-            const POINTS = postData.likes + postData.comments;
-
-            if (POINTS > 0) {
-                if (USERS_WITH_ENGAGEMENT[postData.uid] !== undefined) {
-                    USERS_WITH_ENGAGEMENT[postData.uid] += POINTS;
+        const VIRAL_POSTS = await POSTS_COLLECTION.aggregate([
+            {$sort: {timestamp: -1}}, // put most recent posts at the start
+            {$limit: 50}, // first 50
+            {
+                // get data of users who made the posts
+                $lookup: {
+                    from: 'Users',
+                    localField: 'uid',
+                    foreignField: 'uid',
+                    as: 'user'
                 }
-                else {
-                    USERS_WITH_ENGAGEMENT[postData.uid] = POINTS;
+            },
+            {$unwind: '$user'},
+            {
+                // get the comments of the posts
+                $lookup: {
+                    from: 'Comments',
+                    localField: 'pid',
+                    foreignField: 'pid',
+                    as: 'comments'
+                }
+            },
+            {
+                // include only the following fields in the final result
+                $project: {
+                    uid: 1,
+                    likes: {$size: '$likes'},
+                    comments: {$size: '$comments'},
+                    username: '$user.username',
+                    pfp: '$user.pfp'
+                }
+            },
+            {$unset: '_id'} // exclude this from the final result
+        ]).toArray();
 
-                    // keep track of data
-                    USER_DATA[postData.uid] = {
-                        username: postData.username,
-                        pfp: postData.pfp
+        if (VIRAL_POSTS !== null) {
+            const USERS_WITH_ENGAGEMENT = {};
+            const USER_DATA = {}; // data of users with engagement
+
+            VIRAL_POSTS.forEach((postData) => {
+                // count the total engagement (no. likes & comments) each user got
+                const POINTS = postData.likes + postData.comments;
+
+                if (POINTS > 0) {
+                    if (USERS_WITH_ENGAGEMENT[postData.uid] !== undefined) {
+                        USERS_WITH_ENGAGEMENT[postData.uid] += POINTS;
+                    }
+                    else {
+                        USERS_WITH_ENGAGEMENT[postData.uid] = POINTS;
+
+                        // keep track of data
+                        USER_DATA[postData.uid] = {
+                            username: postData.username,
+                            pfp: postData.pfp
+                        }
                     }
                 }
+            });
+
+            // put the users with the most engagement (i.e. the viral users) at the start
+            let viral_users_uids = Object.keys(USERS_WITH_ENGAGEMENT).sort((user1, user2) => {
+                const USER1_POINTS = USERS_WITH_ENGAGEMENT[user1];
+                const USER2_POINTS = USERS_WITH_ENGAGEMENT[user2];
+
+                if (USER1_POINTS > USER2_POINTS) {
+                    return -1;
+                }
+                else if (USER1_POINTS < USER2_POINTS) {
+                    return 1;
+                }
+
+                return 0;
+            });
+
+            // keep only the first 10 viral users
+            viral_users_uids = viral_users_uids.slice(0, 10);
+
+            // find which viral user is being followed by the logged-in user making the request (if any)
+            const AUTHENTICATION_RESULT = authenticateUser(req);
+
+            if (AUTHENTICATION_RESULT.isAuthenticated) {
+                const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
+
+                const FOLLOWED_USERS = await FOLLOWERS_COLLECTION.find(
+                    {uid: {$in: viral_users_uids}, fid: AUTHENTICATION_RESULT.tokenData.uid},
+                    {projection: {_id: 0, uid: 1}}
+                ).toArray();
+
+                if (FOLLOWED_USERS !== null) {
+                    FOLLOWED_USERS.forEach((user) => {
+                        // add a flag to show the user making the request is following the viral user
+                        USER_DATA[user.uid].followedByUser = true
+                    });
+                }
             }
-        });
 
-        // put the users with the most engagement (i.e. the viral users) at the start
-        let viral_users_uids = Object.keys(USERS_WITH_ENGAGEMENT).sort((user1, user2) => {
-            const USER1_POINTS = USERS_WITH_ENGAGEMENT[user1];
-            const USER2_POINTS = USERS_WITH_ENGAGEMENT[user2];
+            // create response
+            const VIRAL_USERS = [];
 
-            if (USER1_POINTS > USER2_POINTS) {
-                return -1;
-            }
-            else if (USER1_POINTS < USER2_POINTS) {
-                return 1;
-            }
+            viral_users_uids.forEach((uid) => {
+                VIRAL_USERS.push(USER_DATA[uid]); // the most viral is at the start
+            });
 
-            return 0;
-        });
-
-        // keep only the first 10 viral users
-        viral_users_uids = viral_users_uids.slice(0, 10);
-
-        // find which viral user is being followed by the logged-in user making the request (if any)
-        const AUTHENTICATION_RESULT = authenticateUser(req);
-
-        if (AUTHENTICATION_RESULT.isAuthenticated) {
-            const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
-
-            const FOLLOWED_USERS = await FOLLOWERS_COLLECTION.find(
-                {uid: {$in: viral_users_uids}, fid: AUTHENTICATION_RESULT.tokenData.uid},
-                {projection: {_id: 0, uid: 1}}
-            ).toArray();
-
-            if (FOLLOWED_USERS !== null) {
-                FOLLOWED_USERS.forEach((user) => {
-                    // add a flag to show the user making the request is following the viral user
-                    USER_DATA[user.uid].followedByUser = true
-                });
-            }
+            RESPONSE.viralUsers = VIRAL_USERS;
         }
 
-        // create response
-        const VIRAL_USERS = [];
-
-        viral_users_uids.forEach((uid) => {
-            VIRAL_USERS.push(USER_DATA[uid]); // the most viral is at the start
-        });
-
-        RESPONSE.viralUsers = VIRAL_USERS;
+        return res.json(RESPONSE);
     }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
 
-    return res.json(RESPONSE);
+        return res.status(500).send('');
+    }
 });
 
 
