@@ -87,7 +87,7 @@ backend.post('/signup', async (req, res) => {
                     });
                 }
                 else {
-                    RESPONSE.errorMessage = "Invalid username";
+                    RESPONSE.errorMessage = "Invalid username. Try a different one";
                 }
             }
         }
