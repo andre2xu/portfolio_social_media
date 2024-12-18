@@ -1887,96 +1887,103 @@ backend.delete('/chats/:cid', async (req, res) => {
 
 
 backend.get('/messages/:cid', async (req, res) => {
-    const RESPONSE = {};
-    const AUTHENTICATION_RESULT = authenticateUser(req);
+    try {
+        const RESPONSE = {};
+        const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const CHAT_ID = req.params.cid;
-        const CHATS_COLLECTION = req.app.locals.db.collection('Chats');
+        if (AUTHENTICATION_RESULT.isAuthenticated) {
+            const CHAT_ID = req.params.cid;
+            const CHATS_COLLECTION = req.app.locals.db.collection('Chats');
 
-        const CHAT_DATA = await CHATS_COLLECTION.aggregate([
-            {$match: {cid: CHAT_ID}},
-            {
-                $lookup: {
-                    from: 'Users',
-                    localField: 'uid',
-                    foreignField: 'uid',
-                    as: 'owner'
-                }
-            },
-            {$unwind: '$owner'},
-            {
-                $lookup: {
-                    from: 'Users',
-                    localField: 'rid',
-                    foreignField: 'uid',
-                    as: 'recipient'
-                }
-            },
-            {$unwind: '$recipient'},
-            {
-                $project: {
-                    cid: 1,
-                    chatName: '$name',
-                    ownerUid: '$owner.uid',
-                    owner: '$owner.username',
-                    recipient: '$recipient.username'
-                }
-            },
-            {$unset: '_id'}
-        ]).toArray();
-
-        if (CHAT_DATA !== null) {
-            // add a flag to show whether the user who made the request is the chat owner or the recipient
-            if (AUTHENTICATION_RESULT.tokenData.uid === CHAT_DATA[0].ownerUid) {
-                CHAT_DATA[0].userIsChatOwner = true;
-            }
-            else {
-                CHAT_DATA[0].userIsRecipient = true;
-            }
-
-            delete CHAT_DATA[0].ownerUid;
-
-            // get all the messages in the chat
-            const MESSAGES_COLLECTION = req.app.locals.db.collection('Messages');
-
-            const ALL_MESSAGES = await MESSAGES_COLLECTION.find({cid: CHAT_ID}, {projection: {_id: 0, sid: 1, message: 1, timestamp: 1}}).toArray();
-
-            if (ALL_MESSAGES !== null) {
-                // add a flag to the messages sent by the user who made the request
-                let i = 0;
-                let j = ALL_MESSAGES.length - 1;
-
-                while (i <= j) {
-                    const LMESSAGE = ALL_MESSAGES[i];
-
-                    if (LMESSAGE.sid === AUTHENTICATION_RESULT.tokenData.uid) {
-                        LMESSAGE.sentByUser = true;
+            const CHAT_DATA = await CHATS_COLLECTION.aggregate([
+                {$match: {cid: CHAT_ID}},
+                {
+                    $lookup: {
+                        from: 'Users',
+                        localField: 'uid',
+                        foreignField: 'uid',
+                        as: 'owner'
                     }
+                },
+                {$unwind: '$owner'},
+                {
+                    $lookup: {
+                        from: 'Users',
+                        localField: 'rid',
+                        foreignField: 'uid',
+                        as: 'recipient'
+                    }
+                },
+                {$unwind: '$recipient'},
+                {
+                    $project: {
+                        cid: 1,
+                        chatName: '$name',
+                        ownerUid: '$owner.uid',
+                        owner: '$owner.username',
+                        recipient: '$recipient.username'
+                    }
+                },
+                {$unset: '_id'}
+            ]).toArray();
 
-                    delete LMESSAGE.sid;
+            if (CHAT_DATA !== null) {
+                // add a flag to show whether the user who made the request is the chat owner or the recipient
+                if (AUTHENTICATION_RESULT.tokenData.uid === CHAT_DATA[0].ownerUid) {
+                    CHAT_DATA[0].userIsChatOwner = true;
+                }
+                else {
+                    CHAT_DATA[0].userIsRecipient = true;
+                }
 
-                    if (i != j) {
-                        const RMESSAGE = ALL_MESSAGES[j];
+                delete CHAT_DATA[0].ownerUid;
 
-                        if (RMESSAGE.sid === AUTHENTICATION_RESULT.tokenData.uid) {
-                            RMESSAGE.sentByUser = true;
+                // get all the messages in the chat
+                const MESSAGES_COLLECTION = req.app.locals.db.collection('Messages');
+
+                const ALL_MESSAGES = await MESSAGES_COLLECTION.find({cid: CHAT_ID}, {projection: {_id: 0, sid: 1, message: 1, timestamp: 1}}).toArray();
+
+                if (ALL_MESSAGES !== null) {
+                    // add a flag to the messages sent by the user who made the request
+                    let i = 0;
+                    let j = ALL_MESSAGES.length - 1;
+
+                    while (i <= j) {
+                        const LMESSAGE = ALL_MESSAGES[i];
+
+                        if (LMESSAGE.sid === AUTHENTICATION_RESULT.tokenData.uid) {
+                            LMESSAGE.sentByUser = true;
                         }
 
-                        delete RMESSAGE.sid;
+                        delete LMESSAGE.sid;
+
+                        if (i != j) {
+                            const RMESSAGE = ALL_MESSAGES[j];
+
+                            if (RMESSAGE.sid === AUTHENTICATION_RESULT.tokenData.uid) {
+                                RMESSAGE.sentByUser = true;
+                            }
+
+                            delete RMESSAGE.sid;
+                        }
+
+                        i++;
+                        j--;
                     }
 
-                    i++;
-                    j--;
+                    RESPONSE.chatData = CHAT_DATA[0];
+                    RESPONSE.messages = ALL_MESSAGES;
                 }
-
-                RESPONSE.chatData = CHAT_DATA[0];
-                RESPONSE.messages = ALL_MESSAGES;
             }
         }
-    }
 
-    return res.json(RESPONSE);
+        return res.json(RESPONSE);
+    }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
+
+        return res.status(500).send('');
+    }
 });
 
 
