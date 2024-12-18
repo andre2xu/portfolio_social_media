@@ -177,34 +177,41 @@ backend.post('/auth', async (req, res) => {
 
 
 backend.get('/account/info/:username?', async (req, res) => {
-    let response = {};
-    let account = null;
+    try {
+        let response = {};
+        let account = null;
 
-    const USERS_COLLECTION = req.app.locals.db.collection('Users');
+        const USERS_COLLECTION = req.app.locals.db.collection('Users');
 
-    if (req.params.username !== undefined && req.params.username.length > 0) {
-        account = await USERS_COLLECTION.findOne({username: req.params.username});
-    }
-    else {
-        const AUTHENTICATION_RESULT = authenticateUser(req);
-
-        if (AUTHENTICATION_RESULT.isAuthenticated) {
-            account = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
+        if (req.params.username !== undefined && req.params.username.length > 0) {
+            account = await USERS_COLLECTION.findOne({username: req.params.username});
         }
-    }
+        else {
+            const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    if (account !== null) {
-        Object.keys(account).forEach((key) => {
-            // remove irrelevant data
-            if (key !== 'username' && key !== 'cover' && key !== 'pfp') {
-                delete account[key];
+            if (AUTHENTICATION_RESULT.isAuthenticated) {
+                account = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
             }
+        }
 
-            response = account;
-        });
+        if (account !== null) {
+            Object.keys(account).forEach((key) => {
+                // remove irrelevant data
+                if (key !== 'username' && key !== 'cover' && key !== 'pfp') {
+                    delete account[key];
+                }
+
+                response = account;
+            });
+        }
+
+        return res.json(response);
     }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
 
-    return res.json(response);
+        return res.status(500).send('');
+    }
 });
 
 
