@@ -2,6 +2,7 @@ const { MongoClient } = require('mongodb');
 const { createHash } = require('crypto');
 const { WebSocketServer } = require('ws');
 const { authenticateUser, generateLoginToken } = require('./helpers');
+const { Logger } = require('./logger');
 const body_parser = require('body-parser');
 const multer = require('multer');
 const cookie_parser = require('cookie-parser');
@@ -1085,105 +1086,112 @@ backend.get('/following/:username', async (req, res) => {
 
 
 backend.get('/explore', async (req, res) => {
-    const RESPONSE = {};
+    try {
+        const RESPONSE = {};
 
-    const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
+        const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
 
-    const LATEST_POSTS = await POSTS_COLLECTION.aggregate([
-        {$match: {tags: 'explore'}}, // get only the posts that have the 'explore' tag
-        {$sort: {timestamp: -1}}, // put the latest posts at the start
-        {$limit: 2000}, // reduce data set
-        {
-            // get the account data of every poster
-            $lookup: {
-                from: 'Users',
-                localField: 'uid',
-                foreignField: 'uid',
-                as: 'user'
-            }
-        },
-        {$unwind: '$user'}, // store each result of the account lookup in an object
-        {
-            // get the comments of every post (NOTE: don't unwind so that the total count can be calculated with '$size')
-            $lookup: {
-                from: 'Comments',
-                localField: 'pid',
-                foreignField: 'pid',
-                as: 'comments'
-            }
-        },
-        {
-            // include only the following fields in the final result
-            $project: {
-                pid: 1,
-                body: 1,
-                tags: 1,
-                media: 1,
-                date: 1,
-                likes: 1,
-                comments: {$size: '$comments'},
-                username: '$user.username',
-                pfp: '$user.pfp'
-            }
-        },
-        {$unset: '_id'} // exclude this from the final result
-    ]).toArray();
+        const LATEST_POSTS = await POSTS_COLLECTION.aggregate([
+            {$match: {tags: 'explore'}}, // get only the posts that have the 'explore' tag
+            {$sort: {timestamp: -1}}, // put the latest posts at the start
+            {$limit: 2000}, // reduce data set
+            {
+                // get the account data of every poster
+                $lookup: {
+                    from: 'Users',
+                    localField: 'uid',
+                    foreignField: 'uid',
+                    as: 'user'
+                }
+            },
+            {$unwind: '$user'}, // store each result of the account lookup in an object
+            {
+                // get the comments of every post (NOTE: don't unwind so that the total count can be calculated with '$size')
+                $lookup: {
+                    from: 'Comments',
+                    localField: 'pid',
+                    foreignField: 'pid',
+                    as: 'comments'
+                }
+            },
+            {
+                // include only the following fields in the final result
+                $project: {
+                    pid: 1,
+                    body: 1,
+                    tags: 1,
+                    media: 1,
+                    date: 1,
+                    likes: 1,
+                    comments: {$size: '$comments'},
+                    username: '$user.username',
+                    pfp: '$user.pfp'
+                }
+            },
+            {$unset: '_id'} // exclude this from the final result
+        ]).toArray();
 
-    // check if a logged-in user is making the request and find which posts they've liked
-    let uid_of_user_logged_in = undefined;
+        // check if a logged-in user is making the request and find which posts they've liked
+        let uid_of_user_logged_in = undefined;
 
-    if (req.cookies.LT !== undefined) {
-        uid_of_user_logged_in = authenticateUser(req).tokenData.uid;
-    }
+        if (req.cookies.LT !== undefined) {
+            uid_of_user_logged_in = authenticateUser(req).tokenData.uid;
+        }
 
-    if (uid_of_user_logged_in !== undefined) {
-        // use a two pointer loop to quickly find the posts that were liked by the logged-in user
-        let i = 0;
-        let j = LATEST_POSTS.length - 1;
+        if (uid_of_user_logged_in !== undefined) {
+            // use a two pointer loop to quickly find the posts that were liked by the logged-in user
+            let i = 0;
+            let j = LATEST_POSTS.length - 1;
 
-        while (i <= j) {
-            const USER_LIKED_LPOST = LATEST_POSTS[i].likes.includes(uid_of_user_logged_in);
+            while (i <= j) {
+                const USER_LIKED_LPOST = LATEST_POSTS[i].likes.includes(uid_of_user_logged_in);
 
-            if (USER_LIKED_LPOST) {
-                LATEST_POSTS[i].likedByUser = true;
-            }
-
-            LATEST_POSTS[i].likes = LATEST_POSTS[i].likes.length;
-
-            if (i != j) {
-                const USER_LIKED_RPOST = LATEST_POSTS[j].likes.includes(uid_of_user_logged_in);
-
-                if (USER_LIKED_RPOST) {
-                    LATEST_POSTS[j].likedByUser = true;
+                if (USER_LIKED_LPOST) {
+                    LATEST_POSTS[i].likedByUser = true;
                 }
 
-                LATEST_POSTS[j].likes = LATEST_POSTS[j].likes.length;
+                LATEST_POSTS[i].likes = LATEST_POSTS[i].likes.length;
+
+                if (i != j) {
+                    const USER_LIKED_RPOST = LATEST_POSTS[j].likes.includes(uid_of_user_logged_in);
+
+                    if (USER_LIKED_RPOST) {
+                        LATEST_POSTS[j].likedByUser = true;
+                    }
+
+                    LATEST_POSTS[j].likes = LATEST_POSTS[j].likes.length;
+                }
+
+                i++;
+                j--;
             }
-
-            i++;
-            j--;
         }
-    }
-    else {
-        // change likes array to no. likes
-        let i = 0;
-        let j = LATEST_POSTS.length - 1;
+        else {
+            // change likes array to no. likes
+            let i = 0;
+            let j = LATEST_POSTS.length - 1;
 
-        while (i <= j) {
-            LATEST_POSTS[i].likes = LATEST_POSTS[i].likes.length;
+            while (i <= j) {
+                LATEST_POSTS[i].likes = LATEST_POSTS[i].likes.length;
 
-            if (i != j) {
-                LATEST_POSTS[j].likes = LATEST_POSTS[j].likes.length;
+                if (i != j) {
+                    LATEST_POSTS[j].likes = LATEST_POSTS[j].likes.length;
+                }
+
+                i++;
+                j--;
             }
-
-            i++;
-            j--;
         }
+
+        RESPONSE.posts = LATEST_POSTS;
+
+        return res.json(RESPONSE);
     }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
 
-    RESPONSE.posts = LATEST_POSTS;
-
-    return res.json(RESPONSE);
+        return res.status(500).send('');
+    }
 });
 
 
