@@ -87,7 +87,7 @@ backend.post('/signup', async (req, res) => {
                     });
                 }
                 else {
-                    RESPONSE.errorMessage = "That username is already taken";
+                    RESPONSE.errorMessage = "Invalid username";
                 }
             }
         }
