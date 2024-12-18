@@ -1733,118 +1733,125 @@ backend.get('/chats', async (req, res) => {
 
 
 backend.post('/chats', async (req, res) => {
-    const RESPONSE = {};
-    const AUTHENTICATION_RESULT = authenticateUser(req);
+    try {
+        const RESPONSE = {};
+        const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const CHAT_NAME = req.body.chatName;
-        const RECIPIENT = req.body.username;
-        const MESSAGE = req.body.message;
+        if (AUTHENTICATION_RESULT.isAuthenticated) {
+            const CHAT_NAME = req.body.chatName;
+            const RECIPIENT = req.body.username;
+            const MESSAGE = req.body.message;
 
-        if (CHAT_NAME === undefined || CHAT_NAME.length === 0) {
-            RESPONSE.errorMessage = "Chat name is missing";
-        }
-        else if (RECIPIENT === undefined || RECIPIENT.length === 0) {
-            RESPONSE.errorMessage = "Username is missing";
-        }
-        else if (MESSAGE === undefined || MESSAGE.length === 0) {
-            RESPONSE.errorMessage = "Message is missing";
-        }
-        else {
-            if (RECIPIENT[0] !== '@' || RECIPIENT.length < 2 || RECIPIENT.length > 20) {
-                RESPONSE.errorMessage = "Invalid username";
+            if (CHAT_NAME === undefined || CHAT_NAME.length === 0) {
+                RESPONSE.errorMessage = "Chat name is missing";
+            }
+            else if (RECIPIENT === undefined || RECIPIENT.length === 0) {
+                RESPONSE.errorMessage = "Username is missing";
+            }
+            else if (MESSAGE === undefined || MESSAGE.length === 0) {
+                RESPONSE.errorMessage = "Message is missing";
             }
             else {
-                // verify that the recipient exists
-                const USERS_COLLECTION = req.app.locals.db.collection('Users');
-                const RECIPIENT_ACCOUNT = await USERS_COLLECTION.findOne({username: RECIPIENT.substring(1)});
-
-                if (RECIPIENT_ACCOUNT !== null) {
-                    if (AUTHENTICATION_RESULT.tokenData.uid === RECIPIENT_ACCOUNT.uid) {
-                        RESPONSE.errorMessage = "You cannot start a chat with yourself";
-                    }
-                    else {
-                        // create a chat
-                        const CHATS_COLLECTION = req.app.locals.db.collection('Chats');
-                        const CURRENT_DATE = new Date().toISOString();
-                        const CHAT_ID = createHash('sha256').update(`${CHAT_NAME}${AUTHENTICATION_RESULT.tokenData.uid}${RECIPIENT_ACCOUNT.uid}${CURRENT_DATE}`).digest('hex');
-
-                        await CHATS_COLLECTION.insertOne({
-                            cid: CHAT_ID,
-                            uid: AUTHENTICATION_RESULT.tokenData.uid,
-                            rid: RECIPIENT_ACCOUNT.uid, // recipient's uid
-                            name: CHAT_NAME,
-                            timestamp: CURRENT_DATE
-                        });
-
-                        // add a message in the chat
-                        const MESSAGES_COLLECTION = req.app.locals.db.collection('Messages');
-
-                        await MESSAGES_COLLECTION.insertOne({
-                            cid: CHAT_ID,
-                            sid: AUTHENTICATION_RESULT.tokenData.uid, // sender's uid
-                            message: MESSAGE,
-                            timestamp: CURRENT_DATE
-                        });
-
-                        RESPONSE.chatData = {
-                            cid: CHAT_ID,
-                            recipientUsername: RECIPIENT_ACCOUNT.username,
-                            recipientPfp: RECIPIENT_ACCOUNT.pfp,
-                            chatName: CHAT_NAME,
-                            recentMessage: MESSAGE
-                        };
-
-                        // send notification to the recipient
-                        const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
-                        const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
-                        const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
-
-                        const SENDER_FOLLOWS_RECIPIENT = await FOLLOWERS_COLLECTION.findOne({
-                            uid: RECIPIENT_ACCOUNT.uid,
-                            fid: AUTHENTICATION_RESULT.tokenData.uid
-                        }) !== null;
-
-                        if (SENDER_FOLLOWS_RECIPIENT) {
-                            const NOTIFY_FOR_NEW_MESSAGE = await NOTIFICATIONS_SETTINGS_COLLECTION.findOne({
-                                uid: RECIPIENT_ACCOUNT.uid,
-                                followerStartedChat: 1
-                            });
-
-                            if (NOTIFY_FOR_NEW_MESSAGE !== null) {
-                                await NOTIFICATIONS_COLLECTION.insertOne({
-                                    uid: RECIPIENT_ACCOUNT.uid,
-                                    title: `New Chat`,
-                                    body: `A follower started a new chat called "${CHAT_NAME}" with you.`,
-                                    timestamp: new Date().toISOString()
-                                });
-                            }
-                        }
-                        else {
-                            const NOTIFY_FOR_NEW_MESSAGE = await NOTIFICATIONS_SETTINGS_COLLECTION.findOne({
-                                uid: RECIPIENT_ACCOUNT.uid,
-                                strangerStartedChat: 1
-                            });
-
-                            if (NOTIFY_FOR_NEW_MESSAGE !== null) {
-                                await NOTIFICATIONS_COLLECTION.insertOne({
-                                    uid: RECIPIENT_ACCOUNT.uid,
-                                    title: `New Chat`,
-                                    body: `Someone started a new chat called "${CHAT_NAME}" with you.`,
-                                    timestamp: new Date().toISOString()
-                                });
-                            }
-                        }
-                    }
+                if (RECIPIENT[0] !== '@' || RECIPIENT.length < 2 || RECIPIENT.length > 20) {
+                    RESPONSE.errorMessage = "Invalid username";
                 }
                 else {
-                    RESPONSE.errorMessage = "That user does not exist";
+                    // verify that the recipient exists
+                    const USERS_COLLECTION = req.app.locals.db.collection('Users');
+                    const RECIPIENT_ACCOUNT = await USERS_COLLECTION.findOne({username: RECIPIENT.substring(1)});
+
+                    if (RECIPIENT_ACCOUNT !== null) {
+                        if (AUTHENTICATION_RESULT.tokenData.uid === RECIPIENT_ACCOUNT.uid) {
+                            RESPONSE.errorMessage = "You cannot start a chat with yourself";
+                        }
+                        else {
+                            // create a chat
+                            const CHATS_COLLECTION = req.app.locals.db.collection('Chats');
+                            const CURRENT_DATE = new Date().toISOString();
+                            const CHAT_ID = createHash('sha256').update(`${CHAT_NAME}${AUTHENTICATION_RESULT.tokenData.uid}${RECIPIENT_ACCOUNT.uid}${CURRENT_DATE}`).digest('hex');
+
+                            await CHATS_COLLECTION.insertOne({
+                                cid: CHAT_ID,
+                                uid: AUTHENTICATION_RESULT.tokenData.uid,
+                                rid: RECIPIENT_ACCOUNT.uid, // recipient's uid
+                                name: CHAT_NAME,
+                                timestamp: CURRENT_DATE
+                            });
+
+                            // add a message in the chat
+                            const MESSAGES_COLLECTION = req.app.locals.db.collection('Messages');
+
+                            await MESSAGES_COLLECTION.insertOne({
+                                cid: CHAT_ID,
+                                sid: AUTHENTICATION_RESULT.tokenData.uid, // sender's uid
+                                message: MESSAGE,
+                                timestamp: CURRENT_DATE
+                            });
+
+                            RESPONSE.chatData = {
+                                cid: CHAT_ID,
+                                recipientUsername: RECIPIENT_ACCOUNT.username,
+                                recipientPfp: RECIPIENT_ACCOUNT.pfp,
+                                chatName: CHAT_NAME,
+                                recentMessage: MESSAGE
+                            };
+
+                            // send notification to the recipient
+                            const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
+                            const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
+                            const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
+
+                            const SENDER_FOLLOWS_RECIPIENT = await FOLLOWERS_COLLECTION.findOne({
+                                uid: RECIPIENT_ACCOUNT.uid,
+                                fid: AUTHENTICATION_RESULT.tokenData.uid
+                            }) !== null;
+
+                            if (SENDER_FOLLOWS_RECIPIENT) {
+                                const NOTIFY_FOR_NEW_MESSAGE = await NOTIFICATIONS_SETTINGS_COLLECTION.findOne({
+                                    uid: RECIPIENT_ACCOUNT.uid,
+                                    followerStartedChat: 1
+                                });
+
+                                if (NOTIFY_FOR_NEW_MESSAGE !== null) {
+                                    await NOTIFICATIONS_COLLECTION.insertOne({
+                                        uid: RECIPIENT_ACCOUNT.uid,
+                                        title: `New Chat`,
+                                        body: `A follower started a new chat called "${CHAT_NAME}" with you.`,
+                                        timestamp: new Date().toISOString()
+                                    });
+                                }
+                            }
+                            else {
+                                const NOTIFY_FOR_NEW_MESSAGE = await NOTIFICATIONS_SETTINGS_COLLECTION.findOne({
+                                    uid: RECIPIENT_ACCOUNT.uid,
+                                    strangerStartedChat: 1
+                                });
+
+                                if (NOTIFY_FOR_NEW_MESSAGE !== null) {
+                                    await NOTIFICATIONS_COLLECTION.insertOne({
+                                        uid: RECIPIENT_ACCOUNT.uid,
+                                        title: `New Chat`,
+                                        body: `Someone started a new chat called "${CHAT_NAME}" with you.`,
+                                        timestamp: new Date().toISOString()
+                                    });
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        RESPONSE.errorMessage = "That user does not exist";
+                    }
                 }
             }
         }
-    }
 
-    return res.json(RESPONSE);
+        return res.json(RESPONSE);
+    }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
+
+        return res.status(500).send('');
+    }
 });
 
 
