@@ -2012,20 +2012,27 @@ backend.get('/notifications', async (req, res) => {
 
 
 backend.get('/notifications/settings', async (req, res) => {
-    const RESPONSE = {};
-    const AUTHENTICATION_RESULT = authenticateUser(req);
+    try {
+        const RESPONSE = {};
+        const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
+        if (AUTHENTICATION_RESULT.isAuthenticated) {
+            const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
 
-        const SETTINGS = await NOTIFICATIONS_SETTINGS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid}, {projection: {_id: 0, uid: 0}});
+            const SETTINGS = await NOTIFICATIONS_SETTINGS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid}, {projection: {_id: 0, uid: 0}});
 
-        if (SETTINGS !== null) {
-            RESPONSE.settings = SETTINGS;
+            if (SETTINGS !== null) {
+                RESPONSE.settings = SETTINGS;
+            }
         }
-    }
 
-    return res.json(RESPONSE);
+        return res.json(RESPONSE);
+    }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
+
+        return res.status(500).send('');
+    }
 });
 
 
