@@ -2265,6 +2265,10 @@ backend.listen(8010, async () => {
         });
     });
 
+    wss.on('error', (error) => {
+        Logger.error(`[WSS] ${error}`);
+    });
+
     const PERIODIC_WS_CONNECTION_CHECK = setInterval(() => {
         wss.clients.forEach((connection) => {
             if (connection.isAlive === false) {
