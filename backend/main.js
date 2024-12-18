@@ -1148,32 +1148,39 @@ backend.post('/follow', async (req, res) => {
 
 
 backend.delete('/follow/:username', async (req, res) => {
-    const RESPONSE = {status: 'failed'};
-    const AUTHENTICATION_RESULT = authenticateUser(req);
+    try {
+        const RESPONSE = {status: 'failed'};
+        const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    if (AUTHENTICATION_RESULT.isAuthenticated) {
-        const USERS_COLLECTION = req.app.locals.db.collection('Users');
-        const USER_INFO = await USERS_COLLECTION.findOne({username: req.params.username});
-        const LOGGED_IN_USER_INFO = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
+        if (AUTHENTICATION_RESULT.isAuthenticated) {
+            const USERS_COLLECTION = req.app.locals.db.collection('Users');
+            const USER_INFO = await USERS_COLLECTION.findOne({username: req.params.username});
+            const LOGGED_IN_USER_INFO = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
 
-        if (USER_INFO !== null) {
-            const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
+            if (USER_INFO !== null) {
+                const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
 
-            await FOLLOWERS_COLLECTION.deleteOne({
-                uid: USER_INFO.uid, // user being unfollowed by logged in user
-                fid: LOGGED_IN_USER_INFO.uid // logged in user
-            });
+                await FOLLOWERS_COLLECTION.deleteOne({
+                    uid: USER_INFO.uid, // user being unfollowed by logged in user
+                    fid: LOGGED_IN_USER_INFO.uid // logged in user
+                });
 
-            RESPONSE.status = 'success';
+                RESPONSE.status = 'success';
 
-            RESPONSE.followerRemoved = {
-                username: LOGGED_IN_USER_INFO.username,
-                pfp: LOGGED_IN_USER_INFO.pfp
-            };
+                RESPONSE.followerRemoved = {
+                    username: LOGGED_IN_USER_INFO.username,
+                    pfp: LOGGED_IN_USER_INFO.pfp
+                };
+            }
         }
-    }
 
-    return res.json(RESPONSE);
+        return res.json(RESPONSE);
+    }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
+
+        return res.status(500).send('');
+    }
 });
 
 
