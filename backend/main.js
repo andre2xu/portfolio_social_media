@@ -435,88 +435,95 @@ backend.delete('/account/delete', async (req, res) => {
 
 
 backend.post('/post', userPostsMedia.fields([{name: 'postMedia', maxCount: 1}]), async (req, res) => {
-    const RESPONSE = {};
-    const AUTHENTICATION_RESULT = authenticateUser(req);
+    try {
+        const RESPONSE = {};
+        const AUTHENTICATION_RESULT = authenticateUser(req);
 
-    if (AUTHENTICATION_RESULT.isAuthenticated) {
-        let valid_post = true;
-        const BODY_CHARACTER_LIMIT = 500;
+        if (AUTHENTICATION_RESULT.isAuthenticated) {
+            let valid_post = true;
+            const BODY_CHARACTER_LIMIT = 500;
 
-        const BODY = req.body.postBody;
-        const TAGS = req.body.postTags;
+            const BODY = req.body.postBody;
+            const TAGS = req.body.postTags;
 
-        if (BODY === undefined || BODY.length === 0) {
-            RESPONSE.errorMessage = "Post body missing";
-            valid_post = false;
-        }
-        else if (BODY !== undefined && BODY.length > BODY_CHARACTER_LIMIT) {
-            RESPONSE.errorMessage = `Only ${BODY_CHARACTER_LIMIT} characters are allowed for the body`;
-            valid_post = false;
-        }
-        else if (TAGS === undefined || TAGS.length === 0) {
-            RESPONSE.errorMessage = "Post tags missing";
-            valid_post = false;
-        }
-        else if (/^[a-zA-Z0-9 ,]+$/.test(TAGS) === false) {
-            RESPONSE.errorMessage = "Only letters, numbers, spaces, and commas are allowed for tags";
-            valid_post = false;
-        }
-
-        if (valid_post) {
-            let tags = TAGS.trim();
-            tags = tags.replace(/\s/g, '');
-
-            const CURRENT_DATE = new Date();
-            let day = CURRENT_DATE.getDate();
-            let month = CURRENT_DATE.getMonth() + 1;
-            let year = CURRENT_DATE.getFullYear();
-
-            if (day.length === 1) {
-                day = `0${day}`;
+            if (BODY === undefined || BODY.length === 0) {
+                RESPONSE.errorMessage = "Post body missing";
+                valid_post = false;
+            }
+            else if (BODY !== undefined && BODY.length > BODY_CHARACTER_LIMIT) {
+                RESPONSE.errorMessage = `Only ${BODY_CHARACTER_LIMIT} characters are allowed for the body`;
+                valid_post = false;
+            }
+            else if (TAGS === undefined || TAGS.length === 0) {
+                RESPONSE.errorMessage = "Post tags missing";
+                valid_post = false;
+            }
+            else if (/^[a-zA-Z0-9 ,]+$/.test(TAGS) === false) {
+                RESPONSE.errorMessage = "Only letters, numbers, spaces, and commas are allowed for tags";
+                valid_post = false;
             }
 
-            if (month.length === 1) {
-                month = `0${month}`;
-            }
+            if (valid_post) {
+                let tags = TAGS.trim();
+                tags = tags.replace(/\s/g, '');
 
-            const POST_DATA = {
-                pid: createHash('sha256').update(`${AUTHENTICATION_RESULT.tokenData.uid}${BODY}${new Date().getMilliseconds()}`).digest('hex'),
-                uid: AUTHENTICATION_RESULT.tokenData.uid,
-                body: BODY,
-                tags: tags.split(','),
-                media: [], // [{src: 'filename': type: 'image/video'}, ...]
-                date: `${day}/${month}/${year}`, // for the frontend
-                timestamp: new Date().toISOString(), // for the backend
-                likes: [] // list of uids
-            };
+                const CURRENT_DATE = new Date();
+                let day = CURRENT_DATE.getDate();
+                let month = CURRENT_DATE.getMonth() + 1;
+                let year = CURRENT_DATE.getFullYear();
 
-            if (req.files.postMedia !== undefined) {
-                // validate & save media
-
-                const MEDIA = req.files.postMedia;
-                const VALID_EXTENSIONS = ['png', 'jpg', 'jpeg', 'mp4'];
-                const VALID_MIME_TYPES = ['image', 'video'];
-
-                const IS_VALID_MEDIA = MEDIA.every((file) => {
-                    const EXTENSION = file.originalname.split('.').pop();
-                    const MIME_TYPE = file.mimetype.split('/')[0];
-
-                    return VALID_EXTENSIONS.includes(EXTENSION) && VALID_MIME_TYPES.includes(MIME_TYPE);
-                });
-
-                if (IS_VALID_MEDIA) {
-                    MEDIA.forEach((file) => {
-                        POST_DATA.media.push({src: file.filename, type: file.mimetype.split('/')[0]});
-                    });
+                if (day.length === 1) {
+                    day = `0${day}`;
                 }
+
+                if (month.length === 1) {
+                    month = `0${month}`;
+                }
+
+                const POST_DATA = {
+                    pid: createHash('sha256').update(`${AUTHENTICATION_RESULT.tokenData.uid}${BODY}${new Date().getMilliseconds()}`).digest('hex'),
+                    uid: AUTHENTICATION_RESULT.tokenData.uid,
+                    body: BODY,
+                    tags: tags.split(','),
+                    media: [], // [{src: 'filename': type: 'image/video'}, ...]
+                    date: `${day}/${month}/${year}`, // for the frontend
+                    timestamp: new Date().toISOString(), // for the backend
+                    likes: [] // list of uids
+                };
+
+                if (req.files.postMedia !== undefined) {
+                    // validate & save media
+
+                    const MEDIA = req.files.postMedia;
+                    const VALID_EXTENSIONS = ['png', 'jpg', 'jpeg', 'mp4'];
+                    const VALID_MIME_TYPES = ['image', 'video'];
+
+                    const IS_VALID_MEDIA = MEDIA.every((file) => {
+                        const EXTENSION = file.originalname.split('.').pop();
+                        const MIME_TYPE = file.mimetype.split('/')[0];
+
+                        return VALID_EXTENSIONS.includes(EXTENSION) && VALID_MIME_TYPES.includes(MIME_TYPE);
+                    });
+
+                    if (IS_VALID_MEDIA) {
+                        MEDIA.forEach((file) => {
+                            POST_DATA.media.push({src: file.filename, type: file.mimetype.split('/')[0]});
+                        });
+                    }
+                }
+
+                const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
+                await POSTS_COLLECTION.insertOne(POST_DATA);
             }
-
-            const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
-            await POSTS_COLLECTION.insertOne(POST_DATA);
         }
-    }
 
-    return res.json(RESPONSE);
+        return res.json(RESPONSE);
+    }
+    catch (error) {
+        Logger.error(`[${req.path}] ${error}`);
+
+        return res.status(500).send('');
+    }
 });
 
 
