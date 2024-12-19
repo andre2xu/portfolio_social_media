@@ -15,7 +15,7 @@ catch {}
 
 const BACKEND_URL = 'http://localhost:8010'; // development
 
-describe("[/login] Valid Request Body", () => {
+describe("Request Body", () => {
     it("Request body has 'username' and 'password'. Return 200", async () => {
         const RESPONSE = await request(BACKEND_URL).post('/login').send({username: '', password: ''});
 
@@ -38,7 +38,7 @@ describe("[/login] Valid Request Body", () => {
     });
 });
 
-describe("[/login] Response Headers", () => {
+describe("Response Headers", () => {
     it("Response content type is JSON", async () => {
         const RESPONSE = await request(BACKEND_URL).post('/login').send({username: '', password: ''});
 
@@ -46,7 +46,7 @@ describe("[/login] Response Headers", () => {
     });
 });
 
-describe("[/login] Response Data", () => {
+describe("Response Data", () => {
     it("Username is empty. Return error message: \"Fields cannot be empty\"", async () => {
         const RESPONSE = await request(BACKEND_URL).post('/login').send({username: '', password: 'a'});
 
