@@ -40,3 +40,29 @@ describe("Response Headers", () => {
         expect(RESPONSE.headers['content-type'].indexOf('application/json') !== -1).toBe(true);
     });
 });
+
+describe("Response Data", () => {
+    it("Username is empty. Return error message: \"Fields cannot be empty\"", async () => {
+        const RESPONSE = await request(BACKEND_URL).post('/signup').send({username: '', password: 'a', confirmPassword: 'a'});
+
+        expect(RESPONSE.body).toEqual({errorMessage: 'Fields cannot be empty'});
+    });
+
+    it("Password is empty. Return error message: \"Fields cannot be empty\"", async () => {
+        const RESPONSE = await request(BACKEND_URL).post('/signup').send({username: 'a', password: '', confirmPassword: 'a'});
+
+        expect(RESPONSE.body).toEqual({errorMessage: 'Fields cannot be empty'});
+    });
+
+    it("Confirm password is empty. Return error message: \"Fields cannot be empty\"", async () => {
+        const RESPONSE = await request(BACKEND_URL).post('/signup').send({username: 'a', password: 'a', confirmPassword: ''});
+
+        expect(RESPONSE.body).toEqual({errorMessage: 'Fields cannot be empty'});
+    });
+
+    it("Username, password, and confirm password are empty. Return error message: \"Fields cannot be empty\"", async () => {
+        const RESPONSE = await request(BACKEND_URL).post('/signup').send({username: '', password: '', confirmPassword: ''});
+
+        expect(RESPONSE.body).toEqual({errorMessage: 'Fields cannot be empty'});
+    });
+});
