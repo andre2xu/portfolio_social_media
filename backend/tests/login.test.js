@@ -72,7 +72,7 @@ describe("Response Data", () => {
     });
 
     it("Incorrect password. Return error message: \"Invalid credentials\"", async () => {
-        // create temporary user
+        // create test user
         const MONGO_CLIENT = new MongoClient(process.env.MONGO_CLUSTER_URI);
         await MONGO_CLIENT.connect();
 
@@ -84,19 +84,19 @@ describe("Response Data", () => {
 
         await USERS_COLLECTION.insertOne({username: TEST_USER_USERNAME, password: crypto.createHash('sha256').update(TEST_USER_PASSWORD).digest('hex')});
 
-        // login as the temporary user
+        // login as the test user
         const RESPONSE = await request(BACKEND_URL).post('/login').send({username: TEST_USER_USERNAME, password: 'wrongPassword'});
 
         // check for error message
         expect(RESPONSE.body).toEqual({errorMessage: 'Invalid credentials'});
 
-        // delete temporary user
+        // delete test user
         await USERS_COLLECTION.deleteOne({username: TEST_USER_USERNAME});
         await MONGO_CLIENT.close();
     });
 
     it("Log in successfully and check for login token", async () => {
-        // create temporary user
+        // create test user
         const MONGO_CLIENT = new MongoClient(process.env.MONGO_CLUSTER_URI);
         await MONGO_CLIENT.connect();
 
@@ -108,7 +108,7 @@ describe("Response Data", () => {
 
         await USERS_COLLECTION.insertOne({username: TEST_USER_USERNAME, password: crypto.createHash('sha256').update(TEST_USER_PASSWORD).digest('hex')});
 
-        // login as the temporary user
+        // login as the test user
         const RESPONSE = await request(BACKEND_URL).post('/login').send({username: TEST_USER_USERNAME, password: TEST_USER_PASSWORD});
 
         // check if login token exists and validate it
@@ -122,7 +122,7 @@ describe("Response Data", () => {
         expect(LOGIN_TOKEN.indexOf('Secure') !== -1).toBe(true);
         expect(LOGIN_TOKEN.indexOf('SameSite=Strict') !== -1).toBe(true);
 
-        // delete temporary user
+        // delete test user
         await USERS_COLLECTION.deleteOne({username: TEST_USER_USERNAME});
         await MONGO_CLIENT.close();
     });
