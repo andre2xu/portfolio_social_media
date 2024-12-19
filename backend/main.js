@@ -2192,7 +2192,7 @@ backend.listen(process.env.PORT, async () => {
     backend.locals.db = MONGO_CLIENT.db('socialmedia'); // accessible in routes via `req.app.locals.db`
 
     // WEB SOCKET SERVER
-    const wss = new WebSocketServer({port: 8011});
+    const wss = new WebSocketServer({port: process.env.WSS_PORT});
 
     wss.on('connection', (ws, req) => {
         ws.isAlive = true;
