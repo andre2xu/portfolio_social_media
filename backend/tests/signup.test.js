@@ -32,3 +32,11 @@ describe("Request Body", () => {
         expect(RESPONSE.status).toEqual(500);
     });
 });
+
+describe("Response Headers", () => {
+    it("Response content type is JSON", async () => {
+        const RESPONSE = await request(BACKEND_URL).post('/signup').send({username: '', password: '', confirmPassword: ''});
+
+        expect(RESPONSE.headers['content-type'].indexOf('application/json') !== -1).toBe(true);
+    });
+});
