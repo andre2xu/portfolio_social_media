@@ -55,11 +55,23 @@ async function deleteTestUsers(uids) {
     MONGO_CLIENT.close();
 };
 
+function expectJSONResponse(response) {
+    expect(response.status).toEqual(200);
+    expect(response.headers['content-type'].indexOf('application/json') !== -1).toBe(true);
+};
+
+function expectEmptyJSONResponse(response) {
+    expectJSONResponse(response);
+    expect(response.body).toEqual({});
+};
+
 
 
 module.exports = {
     BACKEND_URL,
     openDatabaseConnection,
     createTestUser,
-    deleteTestUsers
+    deleteTestUsers,
+    expectJSONResponse,
+    expectEmptyJSONResponse
 };
