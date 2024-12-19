@@ -1,3 +1,4 @@
+const { MongoClient } = require('mongodb');
 const path = require('path');
 const request = require('supertest');
 const crypto = require('crypto');
@@ -127,5 +128,28 @@ describe("Response Data", () => {
         const RESPONSE = await request(BACKEND_URL).post('/signup').send({username: crypto.randomBytes(5).toString('hex'), password: '!aB0aaaaaaaaaaaa', confirmPassword: '!aB0aaaaaaaaaaac'});
 
         expect(RESPONSE.body).toEqual({errorMessage: 'Both passwords must match'});
+    });
+
+    it("Username is taken. Return error message: \"Invalid username. Try a different one\"", async () => {
+        // create fake user
+        const MONGO_CLIENT = new MongoClient(process.env.MONGO_CLUSTER_URI);
+        await MONGO_CLIENT.connect();
+
+        const DATABASE = MONGO_CLIENT.db('socialmedia');
+        const USERS_COLLECTION = DATABASE.collection('Users');
+
+        const TEST_USER_USERNAME = crypto.randomBytes(5).toString('hex');
+        await USERS_COLLECTION.insertOne({username: TEST_USER_USERNAME});
+
+        // sign up
+        const TEST_USER_PASSWORD = '!aB0aaaaaaaaaaaa';
+
+        const RESPONSE = await request(BACKEND_URL).post('/signup').send({username: TEST_USER_USERNAME, password: TEST_USER_PASSWORD, confirmPassword: TEST_USER_PASSWORD});
+
+        expect(RESPONSE.body).toEqual({errorMessage: 'Invalid username. Try a different one'});
+
+        // delete fake user
+        await USERS_COLLECTION.deleteOne({username: TEST_USER_USERNAME});
+        await MONGO_CLIENT.close();
     });
 });
