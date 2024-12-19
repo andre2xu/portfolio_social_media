@@ -65,4 +65,67 @@ describe("Response Data", () => {
 
         expect(RESPONSE.body).toEqual({errorMessage: 'Fields cannot be empty'});
     });
+
+    it("Username is too long. Return error message: \"Username cannot exceed 20 characters\"", async () => {
+        const TEST_USER_PASSWORD = '!aB0aaaaaaaaaaaa';
+
+        const RESPONSE = await request(BACKEND_URL).post('/signup').send({username: crypto.randomBytes(50).toString('hex').substring(0,21), password: TEST_USER_PASSWORD, confirmPassword: TEST_USER_PASSWORD});
+
+        expect(RESPONSE.body).toEqual({errorMessage: 'Username cannot exceed 20 characters'});
+    });
+
+    it("Invalid passwords. Return error message: \"Password must be 8-30 characters long and have a lowercase and uppercase letter, a digit, and a special character\"", async () => {
+        const TEST_USER_USERNAME = crypto.randomBytes(5).toString('hex');
+        let test_user_password = '';
+
+        const ERROR_MESSAGE = "Password must be 8-30 characters long and have a lowercase and uppercase letter, a digit, and a special character";
+
+        // too short
+        test_user_password = 'a';
+
+        let response = await request(BACKEND_URL).post('/signup').send({username: TEST_USER_USERNAME, password: test_user_password, confirmPassword: test_user_password});
+
+        expect(response.body).toEqual({errorMessage: ERROR_MESSAGE});
+
+        // too long
+        test_user_password = crypto.randomBytes(60).toString('hex').substring(0, 31);
+
+        response = await request(BACKEND_URL).post('/signup').send({username: TEST_USER_USERNAME, password: test_user_password, confirmPassword: test_user_password});
+
+        expect(response.body).toEqual({errorMessage: ERROR_MESSAGE});
+
+        // missing a lowercase letter
+        test_user_password = '!AB0AAAAAAAAAAAAAAAAAA';
+
+        response = await request(BACKEND_URL).post('/signup').send({username: TEST_USER_USERNAME, password: test_user_password, confirmPassword: test_user_password});
+
+        expect(response.body).toEqual({errorMessage: ERROR_MESSAGE});
+
+        // missing an uppercase letter
+        test_user_password = '!ab0aaaaaaaaaaaa';
+
+        response = await request(BACKEND_URL).post('/signup').send({username: TEST_USER_USERNAME, password: test_user_password, confirmPassword: test_user_password});
+
+        expect(response.body).toEqual({errorMessage: ERROR_MESSAGE});
+
+        // missing a digit
+        test_user_password = '!aBaaaaaaaaaaaaa';
+
+        response = await request(BACKEND_URL).post('/signup').send({username: TEST_USER_USERNAME, password: test_user_password, confirmPassword: test_user_password});
+
+        expect(response.body).toEqual({errorMessage: ERROR_MESSAGE});
+
+        // missing a special character
+        test_user_password = 'caB0aaaaaaaaaaaa';
+
+        response = await request(BACKEND_URL).post('/signup').send({username: TEST_USER_USERNAME, password: test_user_password, confirmPassword: test_user_password});
+
+        expect(response.body).toEqual({errorMessage: ERROR_MESSAGE});
+    });
+
+    it("Password and confirm password values don't match. Return error message: \"Both passwords must match\"", async () => {
+        const RESPONSE = await request(BACKEND_URL).post('/signup').send({username: crypto.randomBytes(5).toString('hex'), password: '!aB0aaaaaaaaaaaa', confirmPassword: '!aB0aaaaaaaaaaac'});
+
+        expect(RESPONSE.body).toEqual({errorMessage: 'Both passwords must match'});
+    });
 });
