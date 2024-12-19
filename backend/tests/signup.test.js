@@ -152,4 +152,49 @@ describe("Response Data", () => {
         await USERS_COLLECTION.deleteOne({username: TEST_USER_USERNAME});
         await MONGO_CLIENT.close();
     });
+
+    it("Sign up successfully and check the database for the new user and their notifications settings, and also check for their login token", async () => {
+        // sign up
+        const TEST_USER_USERNAME = crypto.randomBytes(5).toString('hex');
+        const TEST_USER_PASSWORD = '!aB0aaaaaaaaaaaa';
+
+        const RESPONSE = await request(BACKEND_URL).post('/signup').send({username: TEST_USER_USERNAME, password: TEST_USER_PASSWORD, confirmPassword: TEST_USER_PASSWORD});
+
+        // check if login token exists and validate it
+        expect(Array.isArray(RESPONSE.headers['set-cookie'])).toBe(true);
+
+        const LOGIN_TOKEN = RESPONSE.headers['set-cookie'][0];
+        const JWT_PATTERN = new RegExp('^LT=[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+\.[A-Za-z0-9_\-]+;');
+
+        expect(JWT_PATTERN.test(LOGIN_TOKEN)).toBe(true);
+        expect(LOGIN_TOKEN.indexOf('HttpOnly') !== -1).toBe(true);
+        expect(LOGIN_TOKEN.indexOf('Secure') !== -1).toBe(true);
+        expect(LOGIN_TOKEN.indexOf('SameSite=Strict') !== -1).toBe(true);
+
+        // check if test user exists in database along with their default notifications settings
+        const MONGO_CLIENT = new MongoClient(process.env.MONGO_CLUSTER_URI);
+        await MONGO_CLIENT.connect();
+
+        const DATABASE = MONGO_CLIENT.db('socialmedia');
+        const USERS_COLLECTION = DATABASE.collection('Users');
+        const NOTIFICATIONS_SETTINGS_COLLECTION_COLLECTION = DATABASE.collection('NotificationsSettings');
+
+        const TEST_USER = await USERS_COLLECTION.findOne({username: TEST_USER_USERNAME});
+
+        expect(TEST_USER !== null).toBe(true);
+        expect(TEST_USER.uid !== undefined).toBe(true);
+        expect(TEST_USER.username !== undefined).toBe(true);
+        expect(TEST_USER.password !== undefined).toBe(true);
+        expect(TEST_USER.pfp !== undefined).toBe(true);
+        expect(TEST_USER.cover !== undefined).toBe(true);
+
+        const TEST_USER_NOTIFICATIONS_SETTINGS = await NOTIFICATIONS_SETTINGS_COLLECTION_COLLECTION.findOne({uid: TEST_USER.uid});
+
+        expect(TEST_USER_NOTIFICATIONS_SETTINGS !== null).toBe(true);
+
+        // delete test user
+        await NOTIFICATIONS_SETTINGS_COLLECTION_COLLECTION.deleteOne({uid: TEST_USER.uid});
+        await USERS_COLLECTION.deleteOne({username: TEST_USER_USERNAME});
+        await MONGO_CLIENT.close();
+    });
 });
