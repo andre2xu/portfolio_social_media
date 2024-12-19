@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "start": "nodemon main.js"
+    "start": "nodemon main.js",
+    "test": "jest --detectOpenHandles"
   },
   "dependencies": {
     "body-parser": "^1.20.3",
