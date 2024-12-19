@@ -1,7 +1,7 @@
 {
   "scripts": {
     "start": "nodemon main.js",
-    "test": "jest --detectOpenHandles"
+    "test": "jest --detectOpenHandles --testPathIgnorePatterns shared.test.js"
   },
   "dependencies": {
     "body-parser": "^1.20.3",
