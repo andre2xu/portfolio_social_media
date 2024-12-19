@@ -13,7 +13,7 @@ catch {}
 
 // NOTE: Start the server first before running the tests
 
-const BACKEND_URL = 'http://localhost:8010'; // development
+const BACKEND_URL = `http://localhost:${process.env.PORT}`; // development
 
 describe("Request Body", () => {
     it("Request body has 'username' and 'password'. Return 200", async () => {

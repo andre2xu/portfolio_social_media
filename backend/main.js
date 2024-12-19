@@ -2183,7 +2183,7 @@ backend.get('/viralusers', async (req, res) => {
 
 
 // INITIALIZATION
-backend.listen(8010, async () => {
+backend.listen(process.env.PORT, async () => {
     // connect to database & store the connection in a shared variable
     const MONGO_CLIENT = new MongoClient(process.env.MONGO_CLUSTER_URI);
 
