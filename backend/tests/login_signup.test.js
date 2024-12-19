@@ -29,3 +29,11 @@ describe("[/login] Valid Request Body", () => {
         expect(RESPONSE.status).toEqual(500);
     });
 });
+
+describe("[/login] Response Headers", () => {
+    it("Response content type is JSON", async () => {
+        const RESPONSE = await request(BACKEND_URL).post('/login').send({username: '', password: ''});
+
+        expect(RESPONSE.headers['content-type'].indexOf('application/json') !== -1).toBe(true);
+    });
+});
