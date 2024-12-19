@@ -3,11 +3,7 @@ const path = require('path');
 const request = require('supertest');
 const crypto = require('crypto');
 
-try {
-    // load environment variables for development but silently fail for production
-    require('dotenv').config({path: path.join(__dirname, '../.env')});
-}
-catch {}
+require('dotenv').config({path: path.join(__dirname, '../.env')}); // since tests are only in development, make the 'dotenv' package a mandatory import
 
 
 
