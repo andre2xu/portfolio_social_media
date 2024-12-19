@@ -7,7 +7,7 @@ const crypto = require('crypto');
 
 const BACKEND_URL = 'http://localhost:8010'; // development
 
-describe("Valid Request Body", () => {
+describe("[/login] Valid Request Body", () => {
     it("Request body has 'username' and 'password'. Return 200", async () => {
         const RESPONSE = await request(BACKEND_URL).post('/login').send({username: '', password: ''});
 
