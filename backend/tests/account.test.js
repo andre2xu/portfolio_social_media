@@ -1,6 +1,7 @@
 const shared = require('./shared.test');
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 
 
 
@@ -74,5 +75,24 @@ describe("Account Data Retrieval", () => {
         shared.expectJSONResponse(RESPONSE);
         expect(RESPONSE.body).not.toEqual({username: test_user1_data.username, cover: '', pfp: ''});
         expect(RESPONSE.body).toEqual({username: test_user2_data.username, cover: '', pfp: ''});
+    });
+});
+
+describe("Account Data Update", () => {
+    it("No login token passed. Return 200 and an empty JSON object", async () => {
+        const RESPONSE = await request(shared.BACKEND_URL).put('/account/update').set('Cookie', '').send();
+
+        shared.expectEmptyJSONResponse(RESPONSE);
+    });
+
+    it("Pass login token of user that doesn't exist. Return 200 and an empty JSON object", async () => {
+        const LOGIN_TOKEN = jwt.sign(
+            {uid: crypto.randomBytes(5).toString('hex')},
+            process.env.LTS
+        );
+
+        const RESPONSE = await request(shared.BACKEND_URL).put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`).send();
+
+        shared.expectEmptyJSONResponse(RESPONSE);
     });
 });
