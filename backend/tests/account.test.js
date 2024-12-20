@@ -119,6 +119,8 @@ describe("Account Data Update", () => {
     });
 
     it("Invalid request bodies. Return 500 or error message", async () => {
+        // NOTE: most of these tests will cause errors to be logged in /backend/logs/error.log. Be sure to clean them up after
+
         const LOGIN_TOKEN = jwt.sign(
             {uid: test_user1_data.uid},
             process.env.LTS
