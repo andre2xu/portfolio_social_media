@@ -112,7 +112,7 @@ describe("Account Data Update", () => {
         shared.expectEmptyJSONResponse(RESPONSE);
     });
 
-    it("Invalid request bodies. Return 500", async () => {
+    it("Invalid request bodies. Return 500 or error message", async () => {
         const LOGIN_TOKEN = jwt.sign(
             {uid: test_user1_data.uid},
             process.env.LTS
@@ -142,5 +142,17 @@ describe("Account Data Update", () => {
             .field('pfp', '');
 
         expect(response.status).toEqual(500);
+
+        // invalid new password
+        response = await request(shared.BACKEND_URL)
+            .put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .field('newUsername', '')
+            .field('newPassword', 'MyNewPassword')
+            .field('cover', '')
+            .field('pfp', '');
+
+        shared.expectJSONResponse(response);
+
+        expect(response.body).toEqual({errorMessage: "Password must be 8-30 characters long and have a lowercase and uppercase letter, a digit, and a special character"});
     });
 });
