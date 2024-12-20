@@ -305,4 +305,23 @@ describe("Account Profile Upload Removal", () => {
         const RESPONSE = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({type: 'profile', target: 'pfp'});
         shared.expectEmptyJSONResponse(RESPONSE);
     });
+
+    it("Remove non-existent profile uploads. Return 200 and an error message", async () => {
+        const LOGIN_TOKEN = jwt.sign(
+            {uid: test_user2_data.uid}, // test user 2 doesn't have uploads
+            process.env.LTS
+        );
+
+        // non-existent cover
+        let response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({type: 'profile', target: 'cover'});
+
+        shared.expectJSONResponse(response);
+        expect(response.body).toEqual({errorMessage: "Cover doesn't exist"});
+
+        // non-existent pfp
+        response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({type: 'profile', target: 'pfp'});
+
+        shared.expectJSONResponse(response);
+        expect(response.body).toEqual({errorMessage: "Profile picture doesn't exist"});
+    });
 });
