@@ -73,6 +73,14 @@ function getPostTestDataURI(filename) {
     return path.join(__dirname, '/data/posts', filename);
 };
 
+function getProfileUploadURI(filename) {
+    return path.join(__dirname, '../public/users/profile', filename);
+};
+
+function getPostMediaURI(filename) {
+    return path.join(__dirname, '../public/users/posts', filename);
+};
+
 
 
 module.exports = {
@@ -83,5 +91,7 @@ module.exports = {
     expectJSONResponse,
     expectEmptyJSONResponse,
     getProfileTestDataURI,
-    getPostTestDataURI
+    getPostTestDataURI,
+    getProfileUploadURI,
+    getPostMediaURI
 };
