@@ -243,7 +243,7 @@ backend.put('/account/update', userProfileUploads.fields([{name: 'cover', maxCou
                         RESPONSE.errorMessage = "Password must be 8-30 characters long and have a lowercase and uppercase letter, a digit, and a special character";
                     }
                     else {
-                        NEW_DATA.password = createHash('sha256').update(FORM_TEXT_DATA.newPassword).digest('hex');;
+                        NEW_DATA.password = createHash('sha256').update(FORM_TEXT_DATA.newPassword).digest('hex');
                     }
                 }
 
