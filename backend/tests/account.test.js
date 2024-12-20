@@ -95,4 +95,52 @@ describe("Account Data Update", () => {
 
         shared.expectEmptyJSONResponse(RESPONSE);
     });
+
+    it("Empty request body (i.e. no changes to account data). Return 200 and an empty JSON object", async () => {
+        const LOGIN_TOKEN = jwt.sign(
+            {uid: test_user1_data.uid},
+            process.env.LTS
+        );
+
+        const RESPONSE = await request(shared.BACKEND_URL)
+            .put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .field('newUsername', '')
+            .field('newPassword', '')
+            .field('cover', '')
+            .field('pfp', '');
+
+        shared.expectEmptyJSONResponse(RESPONSE);
+    });
+
+    it("Invalid request bodies. Return 500", async () => {
+        const LOGIN_TOKEN = jwt.sign(
+            {uid: test_user1_data.uid},
+            process.env.LTS
+        );
+
+        // no fields
+        let response = await request(shared.BACKEND_URL)
+            .put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .send({});
+
+        expect(response.status).toEqual(500);
+
+        // missing username field
+        response = await request(shared.BACKEND_URL)
+            .put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .field('newPassword', '')
+            .field('cover', '')
+            .field('pfp', '');
+
+        expect(response.status).toEqual(500);
+
+        // missing password field
+        response = await request(shared.BACKEND_URL)
+            .put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .field('newUsername', '')
+            .field('cover', '')
+            .field('pfp', '');
+
+        expect(response.status).toEqual(500);
+    });
 });
