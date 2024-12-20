@@ -2,6 +2,7 @@ const shared = require('./shared.test');
 const request = require('supertest');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const fs = require('fs');
 
 
 
@@ -9,10 +10,13 @@ const crypto = require('crypto');
 
 let test_user1_data = {};
 let test_user2_data = {};
+let mongo_client = undefined;
 
 beforeAll(async () => {
     test_user1_data = await shared.createTestUser('user1', '!aB0aaaaaaaaaaaa');
     test_user2_data = await shared.createTestUser('user2', '!aB0aaaaaaaaaaaa');
+
+    mongo_client = await shared.openDatabaseConnection();
 });
 
 afterAll(async () => {
@@ -20,6 +24,8 @@ afterAll(async () => {
         test_user1_data.uid,
         test_user2_data.uid
     ]);
+
+    mongo_client.close();
 });
 
 describe("Account Data Retrieval", () => {
@@ -154,5 +160,94 @@ describe("Account Data Update", () => {
         shared.expectJSONResponse(response);
 
         expect(response.body).toEqual({errorMessage: "Password must be 8-30 characters long and have a lowercase and uppercase letter, a digit, and a special character"});
+    });
+
+    it("Successful updates. Return 200 and verify changes made to account data", async () => {
+        // NOTE: multiple fields can be updated. These tests however will only update one at a time
+
+        const LOGIN_TOKEN = jwt.sign(
+            {uid: test_user1_data.uid},
+            process.env.LTS
+        );
+
+        const UPLOADED_FILES = {};
+
+        // new username
+        const NEW_USERNAME = 'MyNewUsername';
+        test_user1_data.username = NEW_USERNAME;
+
+        let response = await request(shared.BACKEND_URL)
+            .put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .field('newUsername', NEW_USERNAME)
+            .field('newPassword', '')
+            .field('cover', '')
+            .field('pfp', '');
+
+        shared.expectJSONResponse(response);
+
+        expect(response.body).toEqual({newData: {username: NEW_USERNAME}});
+
+        // new password
+        const NEW_PASSWORD = '$aB1cccaaaaaaaaa'; // old password = !aB0aaaaaaaaaaaa
+        test_user1_data.password = crypto.createHash('sha256').update(NEW_PASSWORD).digest('hex');
+
+        response = await request(shared.BACKEND_URL)
+            .put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .field('newUsername', '')
+            .field('newPassword', NEW_PASSWORD)
+            .field('cover', '')
+            .field('pfp', '');
+
+        shared.expectJSONResponse(response);
+
+        expect(response.body).toEqual({newData: {}}); // password is sensitive info so it's not returned
+
+        // new cover
+        response = await request(shared.BACKEND_URL)
+            .put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .field('newUsername', '')
+            .field('newPassword', '')
+            .attach('cover', shared.getProfileTestDataURI('cover1.jpg'))
+            .field('pfp', '');
+
+        shared.expectJSONResponse(response);
+
+        expect(Object.keys(response.body.newData).length === 1 && response.body.newData.cover !== undefined).toBe(true);
+
+        UPLOADED_FILES['cover'] = response.body.newData.cover;
+
+        // new pfp
+        response = await request(shared.BACKEND_URL)
+            .put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .field('newUsername', '')
+            .field('newPassword', '')
+            .field('cover', '')
+            .attach('pfp', shared.getProfileTestDataURI('pfp1.jpg'));
+
+        shared.expectJSONResponse(response);
+
+        expect(Object.keys(response.body.newData).length === 1 && response.body.newData.pfp !== undefined).toBe(true);
+
+        UPLOADED_FILES['pfp'] = response.body.newData.pfp;
+
+        // verify changes in database
+        const DATABASE = mongo_client.db('socialmedia');
+        const USERS_COLLECTION = DATABASE.collection('Users');
+
+        const TEST_USER = await USERS_COLLECTION.findOne({uid: test_user1_data.uid}, {projection: {_id: 0, uid: 0}});
+
+        expect(TEST_USER !== null).toBe(true);
+
+        expect(TEST_USER).toEqual({
+            username: NEW_USERNAME,
+            password: test_user1_data.password, // hashed version of new password
+            cover: UPLOADED_FILES.cover,
+            pfp: UPLOADED_FILES.pfp
+        });
+
+        // delete uploaded files
+        Object.values(UPLOADED_FILES).forEach((filename) => {
+            fs.unlink(shared.getProfileUploadURI(filename), () => {});
+        });
     });
 });
