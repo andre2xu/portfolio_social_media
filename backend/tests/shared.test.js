@@ -65,6 +65,14 @@ function expectEmptyJSONResponse(response) {
     expect(response.body).toEqual({});
 };
 
+function getProfileTestDataURI(filename) {
+    return path.join(__dirname, '/data/profile', filename);
+};
+
+function getPostTestDataURI(filename) {
+    return path.join(__dirname, '/data/posts', filename);
+};
+
 
 
 module.exports = {
@@ -73,5 +81,7 @@ module.exports = {
     createTestUser,
     deleteTestUsers,
     expectJSONResponse,
-    expectEmptyJSONResponse
+    expectEmptyJSONResponse,
+    getProfileTestDataURI,
+    getPostTestDataURI
 };
