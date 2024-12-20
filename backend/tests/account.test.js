@@ -253,3 +253,56 @@ describe("Account Data Update", () => {
         });
     });
 });
+
+describe("Account Profile Upload Removal", () => {
+    it("No login token passed. Return 200 and an empty JSON object", async () => {
+        const RESPONSE = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', '').send();
+
+        shared.expectEmptyJSONResponse(RESPONSE);
+    });
+
+    it("Pass login token and invalid request bodies. Return 200 and an empty JSON object", async () => {
+        const LOGIN_TOKEN = jwt.sign(
+            {uid: test_user1_data.uid},
+            process.env.LTS
+        );
+
+        // no body
+        let response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send();
+        shared.expectEmptyJSONResponse(response);
+
+        // empty body
+        response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({});
+        shared.expectEmptyJSONResponse(response);
+
+        // empty fields
+        response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({type: '', target: ''});
+        shared.expectEmptyJSONResponse(response);
+
+        // missing type field
+        response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({target: ''});
+        shared.expectEmptyJSONResponse(response);
+
+        // missing target field
+        response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({type: ''});
+        shared.expectEmptyJSONResponse(response);
+
+        // unknown type
+        response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({type: crypto.randomBytes(3).toString('hex'), target: ''});
+        shared.expectEmptyJSONResponse(response);
+
+        // unknown target
+        response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({type: 'profile', target: crypto.randomBytes(3).toString('hex')});
+        shared.expectEmptyJSONResponse(response);
+    });
+
+    it("Pass login token of user that doesn't exist. Return 200 and an empty JSON object", async () => {
+        const LOGIN_TOKEN = jwt.sign(
+            {uid: crypto.randomBytes(5).toString('hex')},
+            process.env.LTS
+        );
+
+        const RESPONSE = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({type: 'profile', target: 'pfp'});
+        shared.expectEmptyJSONResponse(RESPONSE);
+    });
+});
