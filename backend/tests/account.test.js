@@ -214,7 +214,7 @@ describe("Account Data Update", () => {
 
         shared.expectJSONResponse(response);
 
-        expect(Object.keys(response.body.newData).length === 1 && response.body.newData.cover !== undefined).toBe(true);
+        expect(response.body.newData !== undefined && Object.keys(response.body.newData).length === 1 && response.body.newData.cover !== undefined).toBe(true);
 
         UPLOADED_FILES['cover'] = response.body.newData.cover;
 
@@ -228,7 +228,7 @@ describe("Account Data Update", () => {
 
         shared.expectJSONResponse(response);
 
-        expect(Object.keys(response.body.newData).length === 1 && response.body.newData.pfp !== undefined).toBe(true);
+        expect(response.body.newData !== undefined && Object.keys(response.body.newData).length === 1 && response.body.newData.pfp !== undefined).toBe(true);
 
         UPLOADED_FILES['pfp'] = response.body.newData.pfp;
 
