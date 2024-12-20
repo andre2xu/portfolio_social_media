@@ -324,4 +324,50 @@ describe("Account Profile Upload Removal", () => {
         shared.expectJSONResponse(response);
         expect(response.body).toEqual({errorMessage: "Profile picture doesn't exist"});
     });
+
+    it("Remove profile uploads. Return 200 and an empty JSON object", async () => {
+        const LOGIN_TOKEN = jwt.sign(
+            {uid: test_user2_data.uid},
+            process.env.LTS
+        );
+
+        // upload pfp and cover
+        const UPLOAD_RESPONSE = await request(shared.BACKEND_URL)
+            .put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .field('newUsername', '')
+            .field('newPassword', '')
+            .attach('cover', shared.getProfileTestDataURI('cover2.jpg'))
+            .attach('pfp', shared.getProfileTestDataURI('pfp2.jpg'));
+
+        shared.expectJSONResponse(UPLOAD_RESPONSE);
+
+        expect(UPLOAD_RESPONSE.body.newData !== undefined && Object.keys(UPLOAD_RESPONSE.body.newData).length === 2 && UPLOAD_RESPONSE.body.newData.cover !== undefined && UPLOAD_RESPONSE.body.newData.pfp !== undefined).toBe(true);
+
+        // verify uploads in database
+        const DATABASE = mongo_client.db('socialmedia');
+        const USERS_COLLECTION = DATABASE.collection('Users');
+
+        let test_user_data = await USERS_COLLECTION.findOne({uid: test_user2_data.uid, cover: UPLOAD_RESPONSE.body.newData.cover, pfp: UPLOAD_RESPONSE.body.newData.pfp});
+        expect(test_user_data).not.toEqual(null);
+
+        // verify uploads in file system
+        expect(fs.existsSync(shared.getProfileUploadURI(UPLOAD_RESPONSE.body.newData.cover))).toBe(true);
+        expect(fs.existsSync(shared.getProfileUploadURI(UPLOAD_RESPONSE.body.newData.pfp))).toBe(true);
+
+        // remove cover
+        let removal_response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({type: 'profile', target: 'cover'});
+        shared.expectEmptyJSONResponse(removal_response);
+
+        // remove pfp
+        removal_response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({type: 'profile', target: 'pfp'});
+        shared.expectEmptyJSONResponse(removal_response);
+
+        // verify removal from database
+        test_user_data = await USERS_COLLECTION.findOne({uid: test_user2_data.uid, cover: '', pfp: ''});
+        expect(test_user_data).not.toEqual(null);
+
+        // verify removal from file system
+        expect(fs.existsSync(shared.getProfileUploadURI(UPLOAD_RESPONSE.body.newData.cover))).toBe(false);
+        expect(fs.existsSync(shared.getProfileUploadURI(UPLOAD_RESPONSE.body.newData.pfp))).toBe(false);
+    });
 });
