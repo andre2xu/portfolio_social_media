@@ -333,4 +333,36 @@ describe("Post Deletion", () => {
 
         expect(RESPONSE.body).toEqual({status: 'failed'});
     });
+
+    it("Delete post with no media. Return 200 and a success status", async () => {
+        const LOGIN_TOKEN = jwt.sign(
+            {uid: test_user_data.uid},
+            process.env.LTS
+        );
+
+        const DATABASE = mongo_client.db('socialmedia');
+        const POSTS_COLLECTION = DATABASE.collection('Posts');
+
+        // create a temporary post
+        const POST_CREATION_RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .field('postBody', "Delete me plz.")
+            .field('postTags', 'tag1, tag2, tag3');
+
+        shared.expectEmptyJSONResponse(POST_CREATION_RESPONSE);
+
+        let post = await POSTS_COLLECTION.findOne({uid: test_user_data.uid});
+        expect(post).not.toEqual(null);
+
+        // delete the post
+        const POST_DELETION_RESPONSE = await request(shared.BACKEND_URL).delete(`/post/${post.pid}`).set('Cookie', `LT=${LOGIN_TOKEN}`).send();
+
+        shared.expectJSONResponse(POST_DELETION_RESPONSE);
+
+        expect(POST_DELETION_RESPONSE.body).toEqual({status: 'success'});
+
+        // verify deletion
+        post = await POSTS_COLLECTION.findOne({uid: test_user_data.uid, pid: post.pid});
+
+        expect(post).toEqual(null);
+    });
 });
