@@ -311,3 +311,26 @@ describe("Post Retrieval", () => {
         await POSTS_COLLECTION.deleteOne({uid: test_user_data.uid});
     });
 });
+
+describe("Post Deletion", () => {
+    it("No login token passed. Return 200 and a fail status", async () => {
+        const RESPONSE = await request(shared.BACKEND_URL).delete(`/post/abc`).send();
+
+        shared.expectJSONResponse(RESPONSE);
+
+        expect(RESPONSE.body).toEqual({status: 'failed'});
+    });
+
+    it("Deleting a post that doesn't exist. Return 200 and a fail status", async () => {
+        const LOGIN_TOKEN = jwt.sign(
+            {uid: test_user_data.uid},
+            process.env.LTS
+        );
+
+        const RESPONSE = await request(shared.BACKEND_URL).delete(`/post/abc`).set('Cookie', `LT=${LOGIN_TOKEN}`).send();
+
+        shared.expectJSONResponse(RESPONSE);
+
+        expect(RESPONSE.body).toEqual({status: 'failed'});
+    });
+});
