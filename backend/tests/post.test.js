@@ -194,4 +194,62 @@ describe("Post Retrieval", () => {
 
         shared.expectEmptyJSONResponse(RESPONSE);
     });
+
+    it("Passing the username of a user that exists. Return 200 and an empty JSON object or a list of their posts.", async () => {
+        const LOGIN_TOKEN = jwt.sign(
+            {uid: test_user_data.uid},
+            process.env.LTS
+        );
+
+        // test user has no post
+        let post_retrieval_response = await request(shared.BACKEND_URL).get(`/post/${test_user_data.username}`).send();
+
+        shared.expectEmptyJSONResponse(post_retrieval_response);
+
+        // make a post (with no media) for the test user
+        const POST_BODY = "Just a test";
+        const POST_TAGS = 'tag1, tag2, tag3';
+
+        const POST_RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .field('postBody', POST_BODY)
+            .field('postTags', POST_TAGS);
+
+        shared.expectEmptyJSONResponse(POST_RESPONSE);
+
+        // retrieve a list of the user's posts and verify it has the one that was made
+        post_retrieval_response = await request(shared.BACKEND_URL).get(`/post/${test_user_data.username}`).send();
+
+        shared.expectJSONResponse(post_retrieval_response);
+
+        expect(post_retrieval_response.body.posts !== undefined && Array.isArray(post_retrieval_response.body.posts) && post_retrieval_response.body.posts.length === 1).toBe(true);
+
+        const POST = post_retrieval_response.body.posts[0];
+
+        expect(POST.body).toEqual(POST_BODY);
+        expect(POST.tags.join(', ')).toEqual(POST_TAGS);
+
+        // make the test user like the post
+        const LIKE_RESPONSE = await request(shared.BACKEND_URL).put('/post/like').set('Cookie', `LT=${LOGIN_TOKEN}`).send({pid: POST.pid});
+
+        shared.expectJSONResponse(LIKE_RESPONSE);
+
+        // retrieve the post again and check if it has the test user's like (login token required)
+        post_retrieval_response = await request(shared.BACKEND_URL).get(`/post/${test_user_data.username}`).set('Cookie', `LT=${LOGIN_TOKEN}`).send();
+
+        shared.expectJSONResponse(post_retrieval_response);
+
+        expect(post_retrieval_response.body.likedPosts !== undefined).toBe(true);
+
+        expect(Array.isArray(post_retrieval_response.body.posts[0].likes) && post_retrieval_response.body.posts[0].likes.includes(test_user_data.uid)).toBe(true);
+
+        const LIKED_POSTS = post_retrieval_response.body.likedPosts;
+
+        expect(Array.isArray(LIKED_POSTS) && LIKED_POSTS.length === 1 && LIKED_POSTS.includes(POST.pid)).toBe(true);
+
+        // delete the post
+        const DATABASE = mongo_client.db('socialmedia');
+        const POSTS_COLLECTION = DATABASE.collection('Posts');
+
+        await POSTS_COLLECTION.deleteOne({uid: test_user_data.uid});
+    });
 });
