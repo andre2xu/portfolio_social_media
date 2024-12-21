@@ -433,3 +433,22 @@ describe("Post Deletion", () => {
         expect(fs.existsSync(shared.getPostMediaURI(UPLOADED_MEDIA), () => {})).toBe(false);
     });
 });
+
+describe("Liking Post", () => {
+    it("No login token passed. Return 200 and an empty JSON object", async () => {
+        const RESPONSE = await request(shared.BACKEND_URL).put('/post/like').send();
+
+        shared.expectEmptyJSONResponse(RESPONSE);
+    });
+
+    it("No post id passed. Return 200 and an empty JSON object", async () => {
+        const LOGIN_TOKEN = jwt.sign(
+            {uid: test_user_data.uid},
+            process.env.LTS
+        );
+
+        const RESPONSE = await request(shared.BACKEND_URL).put('/post/like').set('Cookie', `LT= ${LOGIN_TOKEN}`).send();
+
+        shared.expectEmptyJSONResponse(RESPONSE);
+    });
+});
