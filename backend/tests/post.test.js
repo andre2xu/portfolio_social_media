@@ -137,4 +137,47 @@ describe("Creating Posts", () => {
         // delete uploaded image
         fs.unlink(UPLOADED_IMAGE, () => {});
     });
+
+    it("Making a post with a video media. Return 200 and an empty JSON object.", async () => {
+        const LOGIN_TOKEN = jwt.sign(
+            {uid: test_user_data.uid},
+            process.env.LTS
+        );
+
+        const POST_BODY = "This is a new post.";
+        const POST_TAGS = ['tag1', 'tag2', 'tag3'];
+
+        const RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .field('postBody', POST_BODY)
+            .field('postTags', POST_TAGS.join(', '))
+            .attach('postMedia', shared.getPostTestDataURI('vid.mp4'));
+
+        shared.expectEmptyJSONResponse(RESPONSE);
+
+        // verify in database
+        const DATABASE = mongo_client.db('socialmedia');
+        const POSTS_COLLECTION = DATABASE.collection('Posts');
+
+        const POST = await POSTS_COLLECTION.findOne({uid: test_user_data.uid}, {projection: {_id: 0}});
+
+        await POSTS_COLLECTION.deleteOne({uid: test_user_data.uid});
+
+        expect(POST).not.toEqual(null);
+
+        expect(POST.body !== undefined && POST.body === POST_BODY).toBe(true);
+
+        expect(POST.tags !== undefined && POST.tags.every((element, index) => POST_TAGS[index] === element)).toBe(true);
+
+        expect(POST.media !== undefined && Array.isArray(POST.media) && POST.media.length === 1).toBe(true);
+
+        expect(POST.media[0].src !== undefined && POST.media[0].type !== undefined).toBe(true);
+
+        // verify uploaded video in file system
+        const UPLOADED_VIDEO = shared.getPostMediaURI(POST.media[0].src);
+
+        expect(fs.existsSync(UPLOADED_VIDEO)).toBe(true);
+
+        // delete uploaded video
+        fs.unlink(UPLOADED_VIDEO, () => {});
+    });
 });
