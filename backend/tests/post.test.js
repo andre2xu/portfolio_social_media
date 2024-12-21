@@ -8,13 +8,18 @@ const jwt = require('jsonwebtoken');
 // NOTE: Start the server first before running the tests
 
 let test_user_data = {};
+let mongo_client = undefined;
 
 beforeAll(async () => {
     test_user_data = await shared.createTestUser(crypto.randomBytes(5).toString('hex'), '!aB0aaaaaaaaaaaa');
+
+    mongo_client = await shared.openDatabaseConnection();
 });
 
 afterAll(async () => {
     shared.deleteTestUsers([test_user_data.uid]);
+
+    mongo_client.close();
 });
 
 describe("Creating Posts", () => {
@@ -59,5 +64,33 @@ describe("Creating Posts", () => {
 
         shared.expectJSONResponse(response);
         expect(response.body).toEqual({errorMessage: "Only letters, numbers, spaces, and commas are allowed for tags"});
+    });
+
+    it("Making a post with no media. Return 200 and an empty JSON object.", async () => {
+        const LOGIN_TOKEN = jwt.sign(
+            {uid: test_user_data.uid},
+            process.env.LTS
+        );
+
+        const POST_BODY = "This is a new post.";
+        const POST_TAGS = ['tag1', 'tag2', 'tag3'];
+
+        const RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .field('postBody', POST_BODY)
+            .field('postTags', POST_TAGS.join(', '));
+
+        shared.expectEmptyJSONResponse(RESPONSE);
+
+        // verify in database
+        const DATABASE = mongo_client.db('socialmedia');
+        const POSTS_COLLECTION = DATABASE.collection('Posts');
+
+        const POST = await POSTS_COLLECTION.findOne({uid: test_user_data.uid}, {projection: {_id: 0}});
+
+        await POSTS_COLLECTION.deleteOne({uid: test_user_data.uid});
+
+        expect(POST).not.toEqual(null);
+        expect(POST.body !== undefined && POST.body === POST_BODY).toBe(true);
+        expect(POST.tags !== undefined && POST.tags.every((element, index) => POST_TAGS[index] === element)).toBe(true);
     });
 });
