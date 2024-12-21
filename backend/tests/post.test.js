@@ -447,8 +447,52 @@ describe("Liking Post", () => {
             process.env.LTS
         );
 
-        const RESPONSE = await request(shared.BACKEND_URL).put('/post/like').set('Cookie', `LT= ${LOGIN_TOKEN}`).send();
+        const RESPONSE = await request(shared.BACKEND_URL).put('/post/like').set('Cookie', `LT=${LOGIN_TOKEN}`).send();
 
         shared.expectEmptyJSONResponse(RESPONSE);
+    });
+
+    it("Adding/removing a like from a post. Return 200 and action taken (added/removed) as well as the post's number of likes", async () => {
+        const LOGIN_TOKEN = jwt.sign(
+            {uid: test_user_data.uid},
+            process.env.LTS
+        );
+
+        const DATABASE = mongo_client.db('socialmedia');
+        const POSTS_COLLECTION = DATABASE.collection('Posts');
+
+        // create a temporary post
+        const POST_CREATION_RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .field('postBody', "Like me plz.")
+            .field('postTags', 'tag1, tag2, tag3');
+
+        shared.expectEmptyJSONResponse(POST_CREATION_RESPONSE);
+
+        const POST = await POSTS_COLLECTION.findOne({uid: test_user_data.uid});
+        expect(POST).not.toEqual(null);
+        expect(Array.isArray(POST.likes) && POST.likes.length === 0).toBe(true);
+
+        // like the post
+        let post_like_response = await request(shared.BACKEND_URL).put('/post/like').set('Cookie', `LT=${LOGIN_TOKEN}`).send({pid: POST.pid});
+
+        shared.expectJSONResponse(post_like_response);
+
+        expect(post_like_response.body).toEqual({
+            action: 'added',
+            count: 1
+        });
+
+        // unlike the post
+        post_like_response = await request(shared.BACKEND_URL).put('/post/like').set('Cookie', `LT=${LOGIN_TOKEN}`).send({pid: POST.pid});
+
+        shared.expectJSONResponse(post_like_response);
+
+        expect(post_like_response.body).toEqual({
+            action: 'removed',
+            count: 0
+        });
+
+        // delete the post
+        await POSTS_COLLECTION.deleteOne({pid: POST.pid});
     });
 });
