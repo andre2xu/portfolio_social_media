@@ -181,3 +181,17 @@ describe("Creating Posts", () => {
         fs.unlink(UPLOADED_VIDEO, () => {});
     });
 });
+
+describe("Post Retrieval", () => {
+    it("No login token or username. Return 200 and an empty JSON object.", async () => {
+        const RESPONSE = await request(shared.BACKEND_URL).get('/post').send();
+
+        shared.expectEmptyJSONResponse(RESPONSE);
+    });
+
+    it("Passing the username of a user that doesn't exist. Return 200 and an empty JSON object.", async () => {
+        const RESPONSE = await request(shared.BACKEND_URL).get('/post/idontexist').send();
+
+        shared.expectEmptyJSONResponse(RESPONSE);
+    });
+});
