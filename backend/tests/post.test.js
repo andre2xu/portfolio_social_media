@@ -216,7 +216,7 @@ describe("Post Retrieval", () => {
 
         shared.expectEmptyJSONResponse(POST_RESPONSE);
 
-        // retrieve a list of the user's posts and verify it has the one that was made
+        // retrieve the test user's posts (a list) and verify it has the one that was made
         post_retrieval_response = await request(shared.BACKEND_URL).get(`/post/${test_user_data.username}`).send();
 
         shared.expectJSONResponse(post_retrieval_response);
