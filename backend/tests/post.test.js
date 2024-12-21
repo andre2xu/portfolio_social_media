@@ -321,17 +321,46 @@ describe("Post Deletion", () => {
         expect(RESPONSE.body).toEqual({status: 'failed'});
     });
 
-    it("Deleting a post that doesn't exist. Return 200 and a fail status", async () => {
-        const LOGIN_TOKEN = jwt.sign(
+    it("Deleting a post that doesn't exist or isn't owned by the requesting user. Return 200 and a fail status", async () => {
+        // non-existent post id
+        let login_token = jwt.sign(
             {uid: test_user_data.uid},
             process.env.LTS
         );
 
-        const RESPONSE = await request(shared.BACKEND_URL).delete(`/post/abc`).set('Cookie', `LT=${LOGIN_TOKEN}`).send();
+        let response = await request(shared.BACKEND_URL).delete(`/post/abc`).set('Cookie', `LT=${login_token}`).send();
 
-        shared.expectJSONResponse(RESPONSE);
+        shared.expectJSONResponse(response);
 
-        expect(RESPONSE.body).toEqual({status: 'failed'});
+        expect(response.body).toEqual({status: 'failed'});
+
+        // create a temporary real post
+        const POST_CREATION_RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', `LT=${login_token}`)
+            .field('postBody', "Delete me plz.")
+            .field('postTags', 'tag1, tag2, tag3');
+
+        shared.expectEmptyJSONResponse(POST_CREATION_RESPONSE);
+
+        const DATABASE = mongo_client.db('socialmedia');
+        const POSTS_COLLECTION = DATABASE.collection('Posts');
+
+        const POST = await POSTS_COLLECTION.findOne({uid: test_user_data.uid});
+        expect(POST).not.toEqual(null);
+
+        // non-existent user (i.e. user who doesn't own the temporary post)
+        login_token = jwt.sign(
+            {uid: 'idontexist'},
+            process.env.LTS
+        );
+
+        response = await request(shared.BACKEND_URL).delete(`/post/${POST.pid}`).set('Cookie', `LT=${login_token}`).send();
+
+        shared.expectJSONResponse(response);
+
+        expect(response.body).toEqual({status: 'failed'});
+
+        // delete temporary post
+        await POSTS_COLLECTION.deleteOne({pid: POST.pid});
     });
 
     it("Delete post with no media. Return 200 and a success status", async () => {
