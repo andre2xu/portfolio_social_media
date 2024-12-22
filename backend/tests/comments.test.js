@@ -281,4 +281,47 @@ describe("Liking Comments", () => {
 
         shared.expectEmptyJSONResponse(response);
     });
+
+    it("Adding/removing a like. Return 200, action taken (added/removed), and the comment's number of likes", async () => {
+        // liking the post (not disliked by the test user)
+        let response = await request(shared.BACKEND_URL).put('/comments/like').set('Cookie', test_user_data.loginToken).send({cid: test_comment_data.cid});
+
+        shared.expectJSONResponse(response);
+
+        expect(response.body).toEqual({
+            action: 'added',
+            count: 1
+        });
+
+        // unliking the post
+        response = await request(shared.BACKEND_URL).put('/comments/like').set('Cookie', test_user_data.loginToken).send({cid: test_comment_data.cid});
+
+        shared.expectJSONResponse(response);
+
+        expect(response.body).toEqual({
+            action: 'removed',
+            count: 0
+        });
+
+        // liking the post (disliked by the test user)
+        const COMMENTS_COLLECTION = mongo_client.db('socialmedia').collection('Comments');
+
+        await COMMENTS_COLLECTION.updateOne(
+            {cid: test_comment_data.cid},
+            {$push: {dislikes: test_user_data.uid}} // add a dislike
+        );
+
+        expect(await COMMENTS_COLLECTION.findOne({cid: test_comment_data.cid, dislikes: test_user_data.uid})).not.toEqual(null);
+
+        response = await request(shared.BACKEND_URL).put('/comments/like').set('Cookie', test_user_data.loginToken).send({cid: test_comment_data.cid});
+
+        shared.expectJSONResponse(response);
+
+        expect(response.body).toEqual({
+            action: 'added',
+            count: 1
+        });
+
+        expect(await COMMENTS_COLLECTION.findOne({cid: test_comment_data.cid, dislikes: test_user_data.uid})).toEqual(null); // see if the user was removed from the list of dislikers
+    });
 });
