@@ -106,6 +106,11 @@ describe("Creating Comments", () => {
         expect(COMMENT_DATA.cid !== undefined && COMMENT_DATA.comment !== undefined && COMMENT_DATA.date !== undefined && Array.isArray(COMMENT_DATA.likes) && Array.isArray(COMMENT_DATA.dislikes) && COMMENT_DATA.ownedByUser === true).toBe(true);
 
         expect(COMMENT_DATA.comment).toEqual(COMMENT);
+
+        // delete comment(s)
+        const COMMENTS_COLLECTION = mongo_client.db('socialmedia').collection('Comments');
+
+        await COMMENTS_COLLECTION.deleteMany({pid: test_post_data.pid});
     });
 });
 
