@@ -64,5 +64,25 @@ describe("Creating Comments", () => {
         response = await request(shared.BACKEND_URL).post(`/comments/${test_post_data.pid}`).set('Cookie', `LT=${LOGIN_TOKEN}`).send();
 
         shared.expectEmptyJSONResponse(response);
+
+        // no body
+        response = await request(shared.BACKEND_URL).post(`/comments/${test_post_data.pid}`).set('Cookie', test_user_data.loginToken).send();
+
+        shared.expectEmptyJSONResponse(response);
+
+        // wrong key (should be 'replyBody')
+        response = await request(shared.BACKEND_URL).post(`/comments/${test_post_data.pid}`).set('Cookie', test_user_data.loginToken).send({wrongKey: 'this is ignored'});
+
+        shared.expectEmptyJSONResponse(response);
+
+        // wrong value (should be a string)
+        response = await request(shared.BACKEND_URL).post(`/comments/${test_post_data.pid}`).set('Cookie', test_user_data.loginToken).send({replyBody: 1});
+
+        shared.expectEmptyJSONResponse(response);
+
+        // empty value
+        response = await request(shared.BACKEND_URL).post(`/comments/${test_post_data.pid}`).set('Cookie', test_user_data.loginToken).send({replyBody: ''});
+
+        shared.expectEmptyJSONResponse(response);
     });
 });
