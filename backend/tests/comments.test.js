@@ -226,4 +226,11 @@ describe("Deleting Comments", () => {
         shared.expectJSONResponse(response);
         expect(response.body).toEqual({status: 'failed'});
     });
+
+    it("Successful deletion. Return 200 and a success status", async () => {
+        const RESPONSE = await request(shared.BACKEND_URL).delete(`/comments/${test_comment_data.cid}`).set('Cookie', test_user_data.loginToken).send();
+
+        shared.expectJSONResponse(RESPONSE);
+        expect(RESPONSE.body).toEqual({status: 'success'});
+    });
 });
