@@ -822,63 +822,63 @@ backend.post('/comments/:pid', async (req, res) => {
         const AUTHENTICATION_RESULT = authenticateUser(req);
 
         if (AUTHENTICATION_RESULT.isAuthenticated) {
-            const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
+            // check if post exists and get its data
+            const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
+            const POST = await POSTS_COLLECTION.findOne({pid: req.params.pid});
 
-            // save comment to database
-            const CURRENT_DATE = new Date();
-            let day = CURRENT_DATE.getDate();
-            let month = CURRENT_DATE.getMonth() + 1;
-            let year = CURRENT_DATE.getFullYear();
+            if (POST !== null) {
+                // check if commenter exists and get their data
+                const USERS_COLLECTION = req.app.locals.db.collection('Users');
+                const USER_INFO = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
 
-            if (day.length === 1) {
-                day = `0${day}`;
-            }
+                if (USER_INFO !== null) {
+                    Object.keys(USER_INFO).forEach((data) => {
+                        if (data !== 'username' && data !== 'pfp') {
+                            delete USER_INFO[data]; // remove unnecessary or sensitive data
+                        }
+                    });
 
-            if (month.length === 1) {
-                month = `0${month}`;
-            }
+                    RESPONSE.userData = USER_INFO;
 
-            const FORMATTED_DATE = `${day}/${month}/${year}`;
-            const COMMENT_ID = createHash('sha256').update(`${req.params.pid}${AUTHENTICATION_RESULT.tokenData.uid}${req.body.replyBody}${FORMATTED_DATE}${CURRENT_DATE.getMilliseconds()}`).digest('hex');
+                    // save comment to database
+                    const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
 
-            await COMMENTS_COLLECTION.insertOne({
-                cid: COMMENT_ID,
-                pid: req.params.pid,
-                uid: AUTHENTICATION_RESULT.tokenData.uid,
-                comment: req.body.replyBody,
-                date: FORMATTED_DATE,
-                likes: [],
-                dislikes: []
-            });
+                    const CURRENT_DATE = new Date();
+                    let day = CURRENT_DATE.getDate();
+                    let month = CURRENT_DATE.getMonth() + 1;
+                    let year = CURRENT_DATE.getFullYear();
 
-            // get user data of commenter
-            const USERS_COLLECTION = req.app.locals.db.collection('Users');
-            const USER_INFO = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
-
-            // generate response data
-            if (USER_INFO !== null) {
-                Object.keys(USER_INFO).forEach((data) => {
-                    if (data !== 'username' && data !== 'pfp') {
-                        delete USER_INFO[data]; // remove unnecessary or sensitive data
+                    if (day.length === 1) {
+                        day = `0${day}`;
                     }
-                });
 
-                RESPONSE.userData = USER_INFO;
+                    if (month.length === 1) {
+                        month = `0${month}`;
+                    }
 
-                RESPONSE.commentData = {
-                    cid: COMMENT_ID,
-                    comment: req.body.replyBody,
-                    date: FORMATTED_DATE,
-                    ownedByUser: true,
-                    likes: [],
-                    dislikes: []
-                };
+                    const FORMATTED_DATE = `${day}/${month}/${year}`;
+                    const COMMENT_ID = createHash('sha256').update(`${req.params.pid}${AUTHENTICATION_RESULT.tokenData.uid}${req.body.replyBody}${FORMATTED_DATE}${CURRENT_DATE.getMilliseconds()}`).digest('hex');
 
-                // send notification to user who owns the post
-                const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
-                const POST = await POSTS_COLLECTION.findOne({pid: req.params.pid});
+                    await COMMENTS_COLLECTION.insertOne({
+                        cid: COMMENT_ID,
+                        pid: req.params.pid,
+                        uid: AUTHENTICATION_RESULT.tokenData.uid,
+                        comment: req.body.replyBody,
+                        date: FORMATTED_DATE,
+                        likes: [],
+                        dislikes: []
+                    });
 
-                if (POST !== null) {
+                    RESPONSE.commentData = {
+                        cid: COMMENT_ID,
+                        comment: req.body.replyBody,
+                        date: FORMATTED_DATE,
+                        ownedByUser: true,
+                        likes: [],
+                        dislikes: []
+                    };
+
+                    // send notification to user who owns the post
                     const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
                     const NOTIFICATIONS_COLLECTION = req.app.locals.db.collection('Notifications');
 
