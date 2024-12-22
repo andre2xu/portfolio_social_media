@@ -324,4 +324,47 @@ describe("Liking Comments", () => {
 
         expect(await COMMENTS_COLLECTION.findOne({cid: test_comment_data.cid, dislikes: test_user_data.uid})).toEqual(null); // see if the user was removed from the list of dislikers
     });
+
+    it("Adding/removing a dislike. Return 200, action taken (added/removed), and the comment's number of dislikes", async () => {
+        // disliking the post (not liked by the test user)
+        let response = await request(shared.BACKEND_URL).put('/comments/dislike').set('Cookie', test_user_data.loginToken).send({cid: test_comment_data.cid});
+
+        shared.expectJSONResponse(response);
+
+        expect(response.body).toEqual({
+            action: 'added',
+            count: 1
+        });
+
+        // undisliking the post
+        response = await request(shared.BACKEND_URL).put('/comments/dislike').set('Cookie', test_user_data.loginToken).send({cid: test_comment_data.cid});
+
+        shared.expectJSONResponse(response);
+
+        expect(response.body).toEqual({
+            action: 'removed',
+            count: 0
+        });
+
+        // disliking the post (liked by the test user)
+        const COMMENTS_COLLECTION = mongo_client.db('socialmedia').collection('Comments');
+
+        await COMMENTS_COLLECTION.updateOne(
+            {cid: test_comment_data.cid},
+            {$push: {likes: test_user_data.uid}} // add a like
+        );
+
+        expect(await COMMENTS_COLLECTION.findOne({cid: test_comment_data.cid, likes: test_user_data.uid})).not.toEqual(null);
+
+        response = await request(shared.BACKEND_URL).put('/comments/dislike').set('Cookie', test_user_data.loginToken).send({cid: test_comment_data.cid});
+
+        shared.expectJSONResponse(response);
+
+        expect(response.body).toEqual({
+            action: 'added',
+            count: 1
+        });
+
+        expect(await COMMENTS_COLLECTION.findOne({cid: test_comment_data.cid, likes: test_user_data.uid})).toEqual(null); // see if the user was removed from the list of likers
+    });
 });
