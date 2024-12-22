@@ -137,4 +137,47 @@ describe("Retrieving Comments", () => {
 
         shared.expectEmptyJSONResponse(response);
     });
+
+    it("Successful retrieval. Return 200 and data for displaying the post and its comments", async () => {
+        // add a test comment
+        const COMMENT = "This is a test";
+        const COMMENT_RESPONSE = await request(shared.BACKEND_URL).post(`/comments/${test_post_data.pid}`).set('Cookie', test_user_data.loginToken).send({replyBody: COMMENT});
+
+        shared.expectJSONResponse(COMMENT_RESPONSE);
+
+        // retrieve the post and its comments
+        const RESPONSE = await request(shared.BACKEND_URL).get(`/comments/${test_post_data.pid}`).set('Cookie', test_user_data.loginToken).send();
+
+        shared.expectJSONResponse(RESPONSE);
+
+        expect(RESPONSE.body.postData !== undefined && RESPONSE.body.userData !== undefined && Array.isArray(RESPONSE.body.comments)).toBe(true);
+
+        // verify post data
+        const POST_DATA = RESPONSE.body.postData;
+
+        expect(POST_DATA.pid).toEqual(test_post_data.pid);
+        expect(POST_DATA.uid === undefined).toBe(true); // uid is sensitive info and should not be in the response
+
+        POST_DATA.uid = test_user_data.uid; // add uid to post data just for testing
+
+        expect(POST_DATA).toEqual(test_post_data);
+
+        // verify user data
+        const USER_DATA = RESPONSE.body.userData;
+
+        expect(USER_DATA.username).toEqual(test_user_data.username);
+        expect(USER_DATA.pfp !== undefined).toBe(true);
+
+        // verify comments
+        const COMMENTS = RESPONSE.body.comments;
+
+        expect(COMMENTS.length).toEqual(1);
+        expect(COMMENTS[0].username).toEqual(test_user_data.username);
+        expect(COMMENTS[0].comment).toEqual(COMMENT);
+
+        // delete test comment(s)
+        const COMMENTS_COLLECTION = mongo_client.db('socialmedia').collection('Comments');
+
+        await COMMENTS_COLLECTION.deleteMany({pid: test_post_data.pid});
+    });
 });
