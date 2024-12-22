@@ -917,9 +917,11 @@ backend.delete('/comments/:cid', async (req, res) => {
         if (AUTHENTICATION_RESULT.isAuthenticated) {
             const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
 
-            await COMMENTS_COLLECTION.deleteOne({cid: req.params.cid});
+            const RESULT = await COMMENTS_COLLECTION.deleteOne({cid: req.params.cid, uid: AUTHENTICATION_RESULT.tokenData.uid});
 
-            RESPONSE.status = 'success';
+            if (RESULT.deletedCount === 1) {
+                RESPONSE.status = 'success';
+            }
         }
 
         return res.json(RESPONSE);
