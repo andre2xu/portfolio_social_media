@@ -402,7 +402,7 @@ describe("Liking Post", () => {
         shared.expectEmptyJSONResponse(RESPONSE);
     });
 
-    it("Adding/removing a like from a post. Return 200 and action taken (added/removed) as well as the post's number of likes", async () => {
+    it("Adding/removing a like. Return 200, action taken (added/removed), and the post's number of likes", async () => {
         const DATABASE = mongo_client.db('socialmedia');
         const POSTS_COLLECTION = DATABASE.collection('Posts');
 
