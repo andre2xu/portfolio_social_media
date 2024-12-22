@@ -751,57 +751,57 @@ backend.get('/comments/:pid', async (req, res) => {
                     if (POST_DATA.likes.includes(AUTHENTICATION_RESULT.tokenData.uid)) {
                         RESPONSE.postData.likedByUser = true;
                     }
-                }
 
-                // retrieve comments data
-                const COMMENTS = await COMMENTS_COLLECTION.aggregate([
-                    {
-                        $match: {pid: req.params.pid} // get only the comments for the given post
-                    },
-                    {
-                        // find the user account data of each commenter
-                        $lookup: {
-                            from: 'Users',
-                            localField: 'uid',
-                            foreignField: 'uid',
-                            as: 'user'
-                        }
-                    },
-                    {$unwind: '$user'}, // store lookup result in the '$user' object
-                    {
-                        // ensure that all the fields required by the frontend are set to 1 so that they appear in the result
-                        $project: {
-                            cid: 1,
-                            comment: 1,
-                            date: 1,
-                            likes: 1,
-                            dislikes: 1,
-                            username: '$user.username',
-                            pfp: '$user.pfp'
-                        }
-                    },
-                    {$unset: '_id'} // exclude from final result
-                ]).toArray();
+                    // retrieve comments data
+                    const COMMENTS = await COMMENTS_COLLECTION.aggregate([
+                        {
+                            $match: {pid: req.params.pid} // get only the comments for the given post
+                        },
+                        {
+                            // find the user account data of each commenter
+                            $lookup: {
+                                from: 'Users',
+                                localField: 'uid',
+                                foreignField: 'uid',
+                                as: 'user'
+                            }
+                        },
+                        {$unwind: '$user'}, // store lookup result in the '$user' object
+                        {
+                            // ensure that all the fields required by the frontend are set to 1 so that they appear in the result
+                            $project: {
+                                cid: 1,
+                                comment: 1,
+                                date: 1,
+                                likes: 1,
+                                dislikes: 1,
+                                username: '$user.username',
+                                pfp: '$user.pfp'
+                            }
+                        },
+                        {$unset: '_id'} // exclude from final result
+                    ]).toArray();
 
-                RESPONSE.comments = COMMENTS;
+                    RESPONSE.comments = COMMENTS;
 
-                // check which comments were sent and which ones were liked/disliked by the user that's logged in
-                const LOGGED_IN_USER_INFO = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
+                    // check which comments were sent and which ones were liked/disliked by the user that's logged in
+                    const LOGGED_IN_USER_INFO = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
 
-                if (LOGGED_IN_USER_INFO !== null) {
-                    COMMENTS.forEach((comment) => {
-                        if (LOGGED_IN_USER_INFO.username === comment.username) {
-                            comment.ownedByUser = true; // add a flag to show this comment was posted by the user that's logged in
-                        }
+                    if (LOGGED_IN_USER_INFO !== null) {
+                        COMMENTS.forEach((comment) => {
+                            if (LOGGED_IN_USER_INFO.username === comment.username) {
+                                comment.ownedByUser = true; // add a flag to show this comment was posted by the user that's logged in
+                            }
 
-                        // add a flag to show this comment was liked/disliked by the user that's logged in
-                        if (comment.likes.includes(LOGGED_IN_USER_INFO.uid)) {
-                            comment.likedByUser = true;
-                        }
-                        else if (comment.dislikes.includes(LOGGED_IN_USER_INFO.uid)) {
-                            comment.dislikedByUser = true;
-                        }
-                    });
+                            // add a flag to show this comment was liked/disliked by the user that's logged in
+                            if (comment.likes.includes(LOGGED_IN_USER_INFO.uid)) {
+                                comment.likedByUser = true;
+                            }
+                            else if (comment.dislikes.includes(LOGGED_IN_USER_INFO.uid)) {
+                                comment.dislikedByUser = true;
+                            }
+                        });
+                    }
                 }
             }
         }
