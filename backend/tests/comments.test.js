@@ -85,4 +85,26 @@ describe("Creating Comments", () => {
 
         shared.expectEmptyJSONResponse(response);
     });
+
+    it("New comment. Return 200 and data for displaying the comment", async () => {
+        const COMMENT = "Hi";
+        const RESPONSE = await request(shared.BACKEND_URL).post(`/comments/${test_post_data.pid}`).set('Cookie', test_user_data.loginToken).send({replyBody: COMMENT});
+
+        shared.expectJSONResponse(RESPONSE);
+
+        expect(RESPONSE.body.userData !== undefined && RESPONSE.body.commentData !== undefined).toBe(true);
+
+        // check user data
+        const USER_DATA = RESPONSE.body.userData;
+
+        expect(USER_DATA.username).toEqual(test_user_data.username);
+        expect(USER_DATA.pfp !== undefined).toBe(true);
+
+        // check comment data
+        const COMMENT_DATA = RESPONSE.body.commentData;
+
+        expect(COMMENT_DATA.cid !== undefined && COMMENT_DATA.comment !== undefined && COMMENT_DATA.date !== undefined && Array.isArray(COMMENT_DATA.likes) && Array.isArray(COMMENT_DATA.dislikes) && COMMENT_DATA.ownedByUser === true).toBe(true);
+
+        expect(COMMENT_DATA.comment).toEqual(COMMENT);
+    });
 });
