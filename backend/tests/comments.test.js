@@ -108,3 +108,28 @@ describe("Creating Comments", () => {
         expect(COMMENT_DATA.comment).toEqual(COMMENT);
     });
 });
+
+describe("Retrieving Comments", () => {
+    it("No login token passed. Return 200 and an empty JSON object", async () => {
+        const RESPONSE = await request(shared.BACKEND_URL).get(`/comments/${test_post_data.pid}`).send();
+
+        shared.expectEmptyJSONResponse(RESPONSE);
+    });
+
+    it("Invalid request bodies. Return 200 and an empty JSON object", async () => {
+        // non-existent post
+        let response = await request(shared.BACKEND_URL).get('/comments/notapost').set('Cookie', test_user_data.loginToken).send();
+
+        shared.expectEmptyJSONResponse(response);
+
+        // non-existent user
+        const LOGIN_TOKEN = jwt.sign(
+            {uid: crypto.randomBytes(5).toString('hex')},
+            process.env.LTS
+        );
+
+        response = await request(shared.BACKEND_URL).post(`/comments/${test_post_data.pid}`).set('Cookie', `LT=${LOGIN_TOKEN}`).send();
+
+        shared.expectEmptyJSONResponse(response);
+    });
+});
