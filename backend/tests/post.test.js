@@ -31,52 +31,42 @@ describe("Creating Posts", () => {
     });
 
     it("Invalid request bodies. Return 200 and an error message", async () => {
-        const LOGIN_TOKEN = jwt.sign(
-            {uid: test_user_data.uid},
-            process.env.LTS
-        );
-
         // no request body
-        let response = await request(shared.BACKEND_URL).post('/post').set('Cookie', `LT=${LOGIN_TOKEN}`).send();
+        let response = await request(shared.BACKEND_URL).post('/post').set('Cookie', test_user_data.loginToken).send();
 
         shared.expectJSONResponse(response);
         expect(response.body).toEqual({errorMessage: "Post body missing"});
 
         // post body with no content
-        response = await request(shared.BACKEND_URL).post('/post').set('Cookie', `LT=${LOGIN_TOKEN}`).send({postBody: ''});
+        response = await request(shared.BACKEND_URL).post('/post').set('Cookie', test_user_data.loginToken).send({postBody: ''});
 
         shared.expectJSONResponse(response);
         expect(response.body).toEqual({errorMessage: "Post body missing"});
 
         // post body with too many characters
-        response = await request(shared.BACKEND_URL).post('/post').set('Cookie', `LT=${LOGIN_TOKEN}`).send({postBody: crypto.randomBytes(500).toString('hex')});
+        response = await request(shared.BACKEND_URL).post('/post').set('Cookie', test_user_data.loginToken).send({postBody: crypto.randomBytes(500).toString('hex')});
 
         shared.expectJSONResponse(response);
         expect(response.body).toEqual({errorMessage: "Only 500 characters are allowed for the body"});
 
         // missing tags
-        response = await request(shared.BACKEND_URL).post('/post').set('Cookie', `LT=${LOGIN_TOKEN}`).send({postBody: 'a'});
+        response = await request(shared.BACKEND_URL).post('/post').set('Cookie', test_user_data.loginToken).send({postBody: 'a'});
 
         shared.expectJSONResponse(response);
         expect(response.body).toEqual({errorMessage: "Post tags missing"});
 
         // invalid tag
-        response = await request(shared.BACKEND_URL).post('/post').set('Cookie', `LT=${LOGIN_TOKEN}`).send({postBody: 'a', postTags: 'valid tag with space, invalid_tag, validtag3'});
+        response = await request(shared.BACKEND_URL).post('/post').set('Cookie', test_user_data.loginToken).send({postBody: 'a', postTags: 'valid tag with space, invalid_tag, validtag3'});
 
         shared.expectJSONResponse(response);
         expect(response.body).toEqual({errorMessage: "Only letters, numbers, spaces, and commas are allowed for tags"});
     });
 
     it("Making a post with no media. Return 200 and an empty JSON object.", async () => {
-        const LOGIN_TOKEN = jwt.sign(
-            {uid: test_user_data.uid},
-            process.env.LTS
-        );
-
         const POST_BODY = "This is a new post.";
         const POST_TAGS = ['tag1', 'tag2', 'tag3'];
 
-        const RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', `LT=${LOGIN_TOKEN}`)
+        const RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', test_user_data.loginToken)
             .field('postBody', POST_BODY)
             .field('postTags', POST_TAGS.join(', '));
 
@@ -96,15 +86,10 @@ describe("Creating Posts", () => {
     });
 
     it("Making a post with an image media. Return 200 and an empty JSON object.", async () => {
-        const LOGIN_TOKEN = jwt.sign(
-            {uid: test_user_data.uid},
-            process.env.LTS
-        );
-
         const POST_BODY = "This is a new post.";
         const POST_TAGS = ['tag1', 'tag2', 'tag3'];
 
-        const RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', `LT=${LOGIN_TOKEN}`)
+        const RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', test_user_data.loginToken)
             .field('postBody', POST_BODY)
             .field('postTags', POST_TAGS.join(', '))
             .attach('postMedia', shared.getPostTestDataURI('img.jpg'));
@@ -139,15 +124,10 @@ describe("Creating Posts", () => {
     });
 
     it("Making a post with a video media. Return 200 and an empty JSON object.", async () => {
-        const LOGIN_TOKEN = jwt.sign(
-            {uid: test_user_data.uid},
-            process.env.LTS
-        );
-
         const POST_BODY = "This is a new post.";
         const POST_TAGS = ['tag1', 'tag2', 'tag3'];
 
-        const RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', `LT=${LOGIN_TOKEN}`)
+        const RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', test_user_data.loginToken)
             .field('postBody', POST_BODY)
             .field('postTags', POST_TAGS.join(', '))
             .attach('postMedia', shared.getPostTestDataURI('vid.mp4'));
@@ -196,11 +176,6 @@ describe("Post Retrieval", () => {
     });
 
     it("Passing the username of a user that exists. Return 200 and an empty JSON object or a list of their posts.", async () => {
-        const LOGIN_TOKEN = jwt.sign(
-            {uid: test_user_data.uid},
-            process.env.LTS
-        );
-
         // test user has no post
         let post_retrieval_response = await request(shared.BACKEND_URL).get(`/post/${test_user_data.username}`).send();
 
@@ -210,7 +185,7 @@ describe("Post Retrieval", () => {
         const POST_BODY = "Just a test";
         const POST_TAGS = 'tag1, tag2, tag3';
 
-        const POST_RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', `LT=${LOGIN_TOKEN}`)
+        const POST_RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', test_user_data.loginToken)
             .field('postBody', POST_BODY)
             .field('postTags', POST_TAGS);
 
@@ -229,12 +204,12 @@ describe("Post Retrieval", () => {
         expect(POST.tags.join(', ')).toEqual(POST_TAGS);
 
         // make the test user like the post
-        const LIKE_RESPONSE = await request(shared.BACKEND_URL).put('/post/like').set('Cookie', `LT=${LOGIN_TOKEN}`).send({pid: POST.pid});
+        const LIKE_RESPONSE = await request(shared.BACKEND_URL).put('/post/like').set('Cookie', test_user_data.loginToken).send({pid: POST.pid});
 
         shared.expectJSONResponse(LIKE_RESPONSE);
 
         // retrieve the post again and check if it has the test user's like (login token required)
-        post_retrieval_response = await request(shared.BACKEND_URL).get(`/post/${test_user_data.username}`).set('Cookie', `LT=${LOGIN_TOKEN}`).send();
+        post_retrieval_response = await request(shared.BACKEND_URL).get(`/post/${test_user_data.username}`).set('Cookie', test_user_data.loginToken).send();
 
         shared.expectJSONResponse(post_retrieval_response);
 
@@ -254,13 +229,8 @@ describe("Post Retrieval", () => {
     });
 
     it("Passing the login token of a user that exists. Return 200 and an empty JSON object or a list of their posts.", async () => {
-        const LOGIN_TOKEN = jwt.sign(
-            {uid: test_user_data.uid},
-            process.env.LTS
-        );
-
         // test user has no post
-        let post_retrieval_response = await request(shared.BACKEND_URL).get('/post').set('Cookie', `LT=${LOGIN_TOKEN}`).send();
+        let post_retrieval_response = await request(shared.BACKEND_URL).get('/post').set('Cookie', test_user_data.loginToken).send();
 
         shared.expectEmptyJSONResponse(post_retrieval_response);
 
@@ -268,14 +238,14 @@ describe("Post Retrieval", () => {
         const POST_BODY = "Just a test";
         const POST_TAGS = 'tag1, tag2, tag3';
 
-        const POST_RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', `LT=${LOGIN_TOKEN}`)
+        const POST_RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', test_user_data.loginToken)
             .field('postBody', POST_BODY)
             .field('postTags', POST_TAGS);
 
         shared.expectEmptyJSONResponse(POST_RESPONSE);
 
         // retrieve the test user's posts (a list) and verify it has the one that was made
-        post_retrieval_response = await request(shared.BACKEND_URL).get('/post').set('Cookie', `LT=${LOGIN_TOKEN}`).send();
+        post_retrieval_response = await request(shared.BACKEND_URL).get('/post').set('Cookie', test_user_data.loginToken).send();
 
         shared.expectJSONResponse(post_retrieval_response);
 
@@ -287,12 +257,12 @@ describe("Post Retrieval", () => {
         expect(POST.tags.join(', ')).toEqual(POST_TAGS);
 
         // make the test user like the post
-        const LIKE_RESPONSE = await request(shared.BACKEND_URL).put('/post/like').set('Cookie', `LT=${LOGIN_TOKEN}`).send({pid: POST.pid});
+        const LIKE_RESPONSE = await request(shared.BACKEND_URL).put('/post/like').set('Cookie', test_user_data.loginToken).send({pid: POST.pid});
 
         shared.expectJSONResponse(LIKE_RESPONSE);
 
         // retrieve the post again and check if it has the test user's like (login token required)
-        post_retrieval_response = await request(shared.BACKEND_URL).get('/post').set('Cookie', `LT=${LOGIN_TOKEN}`).send();
+        post_retrieval_response = await request(shared.BACKEND_URL).get('/post').set('Cookie', test_user_data.loginToken).send();
 
         shared.expectJSONResponse(post_retrieval_response);
 
@@ -323,19 +293,14 @@ describe("Post Deletion", () => {
 
     it("Deleting a post that doesn't exist or isn't owned by the requesting user. Return 200 and a fail status", async () => {
         // non-existent post id
-        let login_token = jwt.sign(
-            {uid: test_user_data.uid},
-            process.env.LTS
-        );
-
-        let response = await request(shared.BACKEND_URL).delete(`/post/abc`).set('Cookie', `LT=${login_token}`).send();
+        let response = await request(shared.BACKEND_URL).delete(`/post/abc`).set('Cookie', test_user_data.loginToken).send();
 
         shared.expectJSONResponse(response);
 
         expect(response.body).toEqual({status: 'failed'});
 
         // create a temporary real post
-        const POST_CREATION_RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', `LT=${login_token}`)
+        const POST_CREATION_RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', test_user_data.loginToken)
             .field('postBody', "Delete me plz.")
             .field('postTags', 'tag1, tag2, tag3');
 
@@ -348,12 +313,12 @@ describe("Post Deletion", () => {
         expect(POST).not.toEqual(null);
 
         // non-existent user (i.e. user who doesn't own the temporary post)
-        login_token = jwt.sign(
+        const LOGIN_TOKEN = jwt.sign(
             {uid: 'idontexist'},
             process.env.LTS
         );
 
-        response = await request(shared.BACKEND_URL).delete(`/post/${POST.pid}`).set('Cookie', `LT=${login_token}`).send();
+        response = await request(shared.BACKEND_URL).delete(`/post/${POST.pid}`).set('Cookie', `LT=${LOGIN_TOKEN}`).send();
 
         shared.expectJSONResponse(response);
 
@@ -364,16 +329,11 @@ describe("Post Deletion", () => {
     });
 
     it("Delete post with no media. Return 200 and a success status", async () => {
-        const LOGIN_TOKEN = jwt.sign(
-            {uid: test_user_data.uid},
-            process.env.LTS
-        );
-
         const DATABASE = mongo_client.db('socialmedia');
         const POSTS_COLLECTION = DATABASE.collection('Posts');
 
         // create a temporary post
-        const POST_CREATION_RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', `LT=${LOGIN_TOKEN}`)
+        const POST_CREATION_RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', test_user_data.loginToken)
             .field('postBody', "Delete me plz.")
             .field('postTags', 'tag1, tag2, tag3');
 
@@ -383,7 +343,7 @@ describe("Post Deletion", () => {
         expect(post).not.toEqual(null);
 
         // delete the post
-        const POST_DELETION_RESPONSE = await request(shared.BACKEND_URL).delete(`/post/${post.pid}`).set('Cookie', `LT=${LOGIN_TOKEN}`).send();
+        const POST_DELETION_RESPONSE = await request(shared.BACKEND_URL).delete(`/post/${post.pid}`).set('Cookie', test_user_data.loginToken).send();
 
         shared.expectJSONResponse(POST_DELETION_RESPONSE);
 
@@ -396,16 +356,11 @@ describe("Post Deletion", () => {
     });
 
     it("Delete post with media. Return 200 and a success status", async () => {
-        const LOGIN_TOKEN = jwt.sign(
-            {uid: test_user_data.uid},
-            process.env.LTS
-        );
-
         const DATABASE = mongo_client.db('socialmedia');
         const POSTS_COLLECTION = DATABASE.collection('Posts');
 
         // create a temporary post
-        const POST_CREATION_RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', `LT=${LOGIN_TOKEN}`)
+        const POST_CREATION_RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', test_user_data.loginToken)
             .field('postBody', "Delete me plz.")
             .field('postTags', 'tag1, tag2, tag3')
             .attach('postMedia', shared.getPostTestDataURI('img.jpg'));
@@ -420,7 +375,7 @@ describe("Post Deletion", () => {
         expect(fs.existsSync(shared.getPostMediaURI(UPLOADED_MEDIA), () => {})).toBe(true);
 
         // delete the post
-        const POST_DELETION_RESPONSE = await request(shared.BACKEND_URL).delete(`/post/${post.pid}`).set('Cookie', `LT=${LOGIN_TOKEN}`).send();
+        const POST_DELETION_RESPONSE = await request(shared.BACKEND_URL).delete(`/post/${post.pid}`).set('Cookie', test_user_data.loginToken).send();
 
         shared.expectJSONResponse(POST_DELETION_RESPONSE);
 
@@ -442,27 +397,17 @@ describe("Liking Post", () => {
     });
 
     it("No post id passed. Return 200 and an empty JSON object", async () => {
-        const LOGIN_TOKEN = jwt.sign(
-            {uid: test_user_data.uid},
-            process.env.LTS
-        );
-
-        const RESPONSE = await request(shared.BACKEND_URL).put('/post/like').set('Cookie', `LT=${LOGIN_TOKEN}`).send();
+        const RESPONSE = await request(shared.BACKEND_URL).put('/post/like').set('Cookie', test_user_data.loginToken).send();
 
         shared.expectEmptyJSONResponse(RESPONSE);
     });
 
     it("Adding/removing a like from a post. Return 200 and action taken (added/removed) as well as the post's number of likes", async () => {
-        const LOGIN_TOKEN = jwt.sign(
-            {uid: test_user_data.uid},
-            process.env.LTS
-        );
-
         const DATABASE = mongo_client.db('socialmedia');
         const POSTS_COLLECTION = DATABASE.collection('Posts');
 
         // create a temporary post
-        const POST_CREATION_RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', `LT=${LOGIN_TOKEN}`)
+        const POST_CREATION_RESPONSE = await request(shared.BACKEND_URL).post('/post').set('Cookie', test_user_data.loginToken)
             .field('postBody', "Like me plz.")
             .field('postTags', 'tag1, tag2, tag3');
 
@@ -473,7 +418,7 @@ describe("Liking Post", () => {
         expect(Array.isArray(POST.likes) && POST.likes.length === 0).toBe(true);
 
         // like the post
-        let post_like_response = await request(shared.BACKEND_URL).put('/post/like').set('Cookie', `LT=${LOGIN_TOKEN}`).send({pid: POST.pid});
+        let post_like_response = await request(shared.BACKEND_URL).put('/post/like').set('Cookie', test_user_data.loginToken).send({pid: POST.pid});
 
         shared.expectJSONResponse(post_like_response);
 
@@ -483,7 +428,7 @@ describe("Liking Post", () => {
         });
 
         // unlike the post
-        post_like_response = await request(shared.BACKEND_URL).put('/post/like').set('Cookie', `LT=${LOGIN_TOKEN}`).send({pid: POST.pid});
+        post_like_response = await request(shared.BACKEND_URL).put('/post/like').set('Cookie', test_user_data.loginToken).send({pid: POST.pid});
 
         shared.expectJSONResponse(post_like_response);
 
