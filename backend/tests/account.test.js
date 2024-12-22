@@ -103,13 +103,8 @@ describe("Account Data Update", () => {
     });
 
     it("Empty request body (i.e. no changes to account data). Return 200 and an empty JSON object", async () => {
-        const LOGIN_TOKEN = jwt.sign(
-            {uid: test_user1_data.uid},
-            process.env.LTS
-        );
-
         const RESPONSE = await request(shared.BACKEND_URL)
-            .put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .put('/account/update').set('Cookie', test_user1_data.loginToken)
             .field('newUsername', '')
             .field('newPassword', '')
             .field('cover', '')
@@ -121,21 +116,16 @@ describe("Account Data Update", () => {
     it("Invalid request bodies. Return 500 or error message", async () => {
         // NOTE: most of these tests will cause errors to be logged in /backend/logs/error.log. Be sure to clean them up after
 
-        const LOGIN_TOKEN = jwt.sign(
-            {uid: test_user1_data.uid},
-            process.env.LTS
-        );
-
         // no fields
         let response = await request(shared.BACKEND_URL)
-            .put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .put('/account/update').set('Cookie', test_user1_data.loginToken)
             .send({});
 
         expect(response.status).toEqual(500);
 
         // missing username field
         response = await request(shared.BACKEND_URL)
-            .put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .put('/account/update').set('Cookie', test_user1_data.loginToken)
             .field('newPassword', '')
             .field('cover', '')
             .field('pfp', '');
@@ -144,7 +134,7 @@ describe("Account Data Update", () => {
 
         // missing password field
         response = await request(shared.BACKEND_URL)
-            .put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .put('/account/update').set('Cookie', test_user1_data.loginToken)
             .field('newUsername', '')
             .field('cover', '')
             .field('pfp', '');
@@ -153,7 +143,7 @@ describe("Account Data Update", () => {
 
         // invalid new password
         response = await request(shared.BACKEND_URL)
-            .put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .put('/account/update').set('Cookie', test_user1_data.loginToken)
             .field('newUsername', '')
             .field('newPassword', 'MyNewPassword')
             .field('cover', '')
@@ -167,11 +157,6 @@ describe("Account Data Update", () => {
     it("Successful updates. Return 200 and verify changes made to account data", async () => {
         // NOTE: multiple fields can be updated. These tests however will only update one at a time
 
-        const LOGIN_TOKEN = jwt.sign(
-            {uid: test_user1_data.uid},
-            process.env.LTS
-        );
-
         const UPLOADED_FILES = {};
 
         // new username
@@ -179,7 +164,7 @@ describe("Account Data Update", () => {
         test_user1_data.username = NEW_USERNAME;
 
         let response = await request(shared.BACKEND_URL)
-            .put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .put('/account/update').set('Cookie', test_user1_data.loginToken)
             .field('newUsername', NEW_USERNAME)
             .field('newPassword', '')
             .field('cover', '')
@@ -194,7 +179,7 @@ describe("Account Data Update", () => {
         test_user1_data.password = crypto.createHash('sha256').update(NEW_PASSWORD).digest('hex');
 
         response = await request(shared.BACKEND_URL)
-            .put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .put('/account/update').set('Cookie', test_user1_data.loginToken)
             .field('newUsername', '')
             .field('newPassword', NEW_PASSWORD)
             .field('cover', '')
@@ -206,7 +191,7 @@ describe("Account Data Update", () => {
 
         // new cover
         response = await request(shared.BACKEND_URL)
-            .put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .put('/account/update').set('Cookie', test_user1_data.loginToken)
             .field('newUsername', '')
             .field('newPassword', '')
             .attach('cover', shared.getProfileTestDataURI('cover1.jpg'))
@@ -220,7 +205,7 @@ describe("Account Data Update", () => {
 
         // new pfp
         response = await request(shared.BACKEND_URL)
-            .put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .put('/account/update').set('Cookie', test_user1_data.loginToken)
             .field('newUsername', '')
             .field('newPassword', '')
             .field('cover', '')
@@ -262,37 +247,32 @@ describe("Account Profile Upload Removal", () => {
     });
 
     it("Pass login token and invalid request bodies. Return 200 and an empty JSON object", async () => {
-        const LOGIN_TOKEN = jwt.sign(
-            {uid: test_user1_data.uid},
-            process.env.LTS
-        );
-
         // no body
-        let response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send();
+        let response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', test_user1_data.loginToken).send();
         shared.expectEmptyJSONResponse(response);
 
         // empty body
-        response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({});
+        response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', test_user1_data.loginToken).send({});
         shared.expectEmptyJSONResponse(response);
 
         // empty fields
-        response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({type: '', target: ''});
+        response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', test_user1_data.loginToken).send({type: '', target: ''});
         shared.expectEmptyJSONResponse(response);
 
         // missing type field
-        response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({target: ''});
+        response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', test_user1_data.loginToken).send({target: ''});
         shared.expectEmptyJSONResponse(response);
 
         // missing target field
-        response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({type: ''});
+        response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', test_user1_data.loginToken).send({type: ''});
         shared.expectEmptyJSONResponse(response);
 
         // unknown type
-        response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({type: crypto.randomBytes(3).toString('hex'), target: ''});
+        response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', test_user1_data.loginToken).send({type: crypto.randomBytes(3).toString('hex'), target: ''});
         shared.expectEmptyJSONResponse(response);
 
         // unknown target
-        response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({type: 'profile', target: crypto.randomBytes(3).toString('hex')});
+        response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', test_user1_data.loginToken).send({type: 'profile', target: crypto.randomBytes(3).toString('hex')});
         shared.expectEmptyJSONResponse(response);
     });
 
@@ -307,33 +287,23 @@ describe("Account Profile Upload Removal", () => {
     });
 
     it("Remove non-existent profile uploads. Return 200 and an error message", async () => {
-        const LOGIN_TOKEN = jwt.sign(
-            {uid: test_user2_data.uid}, // test user 2 doesn't have uploads
-            process.env.LTS
-        );
-
         // non-existent cover
-        let response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({type: 'profile', target: 'cover'});
+        let response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', test_user2_data.loginToken).send({type: 'profile', target: 'cover'});
 
         shared.expectJSONResponse(response);
         expect(response.body).toEqual({errorMessage: "Cover doesn't exist"});
 
         // non-existent pfp
-        response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({type: 'profile', target: 'pfp'});
+        response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', test_user2_data.loginToken).send({type: 'profile', target: 'pfp'});
 
         shared.expectJSONResponse(response);
         expect(response.body).toEqual({errorMessage: "Profile picture doesn't exist"});
     });
 
     it("Remove profile uploads. Return 200 and an empty JSON object", async () => {
-        const LOGIN_TOKEN = jwt.sign(
-            {uid: test_user2_data.uid},
-            process.env.LTS
-        );
-
         // upload pfp and cover
         const UPLOAD_RESPONSE = await request(shared.BACKEND_URL)
-            .put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`)
+            .put('/account/update').set('Cookie', test_user2_data.loginToken)
             .field('newUsername', '')
             .field('newPassword', '')
             .attach('cover', shared.getProfileTestDataURI('cover2.jpg'))
@@ -355,11 +325,11 @@ describe("Account Profile Upload Removal", () => {
         expect(fs.existsSync(shared.getProfileUploadURI(UPLOAD_RESPONSE.body.newData.pfp))).toBe(true);
 
         // remove cover
-        let removal_response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({type: 'profile', target: 'cover'});
+        let removal_response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', test_user2_data.loginToken).send({type: 'profile', target: 'cover'});
         shared.expectEmptyJSONResponse(removal_response);
 
         // remove pfp
-        removal_response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({type: 'profile', target: 'pfp'});
+        removal_response = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', test_user2_data.loginToken).send({type: 'profile', target: 'pfp'});
         shared.expectEmptyJSONResponse(removal_response);
 
         // verify removal from database
