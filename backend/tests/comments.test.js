@@ -234,3 +234,51 @@ describe("Deleting Comments", () => {
         expect(RESPONSE.body).toEqual({status: 'success'});
     });
 });
+
+describe("Liking Comments", () => {
+    let test_comment_data = {};
+
+    beforeEach(async () => {
+        // add a test comment
+        const COMMENT = "Like me plz";
+        const RESPONSE = await request(shared.BACKEND_URL).post(`/comments/${test_post_data.pid}`).set('Cookie', test_user_data.loginToken).send({replyBody: COMMENT});
+
+        shared.expectJSONResponse(RESPONSE);
+
+        test_comment_data = RESPONSE.body.commentData;
+    });
+
+    afterEach(async () => {
+        // delete test comment(s)
+        const COMMENTS_COLLECTION = mongo_client.db('socialmedia').collection('Comments');
+
+        await COMMENTS_COLLECTION.deleteMany({pid: test_post_data.pid});
+    });
+
+    it("Invalid requests. Return 200 and an empty JSON object", async () => {
+        // no login token
+        let response = await request(shared.BACKEND_URL).put('/comments/like').send();
+
+        shared.expectEmptyJSONResponse(response);
+
+        // no body
+        response = await request(shared.BACKEND_URL).put('/comments/like').set('Cookie', test_user_data.loginToken).send();
+
+        shared.expectEmptyJSONResponse(response);
+
+        // non-existent user
+        const LOGIN_TOKEN = jwt.sign(
+            {uid: crypto.randomBytes(5).toString('hex')},
+            process.env.LTS
+        );
+
+        response = await request(shared.BACKEND_URL).put('/comments/like').set('Cookie', `LT=${LOGIN_TOKEN}`).send();
+
+        shared.expectEmptyJSONResponse(response);
+
+        // non-existent comment
+        response = await request(shared.BACKEND_URL).put('/comments/like').set('Cookie', test_user_data.loginToken).send({cid: 'notacomment'});
+
+        shared.expectEmptyJSONResponse(response);
+    });
+});
