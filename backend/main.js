@@ -941,44 +941,51 @@ backend.put('/comments/like', async (req, res) => {
 
         if (AUTHENTICATION_RESULT.isAuthenticated) {
             const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
-            const ALREADY_LIKED = await COMMENTS_COLLECTION.findOne({cid: req.body.cid, likes: AUTHENTICATION_RESULT.tokenData.uid}) !== null;
+            const COMMENT = await COMMENTS_COLLECTION.findOne({cid: req.body.cid});
 
-            if (ALREADY_LIKED) {
-                // remove like
+            const USERS_COLLECTION = req.app.locals.db.collection('Users');
+            const USER = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
 
-                await COMMENTS_COLLECTION.updateOne(
-                    {cid: req.body.cid},
-                    {$pull: {likes: AUTHENTICATION_RESULT.tokenData.uid}}
-                );
+            if (COMMENT !== null && USER !== null) {
+                const ALREADY_LIKED = COMMENT.likes.includes(AUTHENTICATION_RESULT.tokenData.uid);
 
-                RESPONSE.action = 'removed';
-            }
-            else {
-                // add like & remove dislike if it exists
+                if (ALREADY_LIKED) {
+                    // remove like
 
-                await COMMENTS_COLLECTION.updateOne(
-                    {cid: req.body.cid},
-                    {
-                        $push: {likes: AUTHENTICATION_RESULT.tokenData.uid},
-                        $pull: {dislikes: AUTHENTICATION_RESULT.tokenData.uid}
-                    }
-                );
+                    await COMMENTS_COLLECTION.updateOne(
+                        {cid: req.body.cid},
+                        {$pull: {likes: AUTHENTICATION_RESULT.tokenData.uid}}
+                    );
 
-                RESPONSE.action = 'added';
-            }
-
-            // get number of likes
-            const LIKES_COUNT = await COMMENTS_COLLECTION.aggregate([
-                {$match: {cid: req.body.cid}},
-                {
-                    $project: {
-                        _id: 0,
-                        likes: {$size: '$likes'}
-                    }
+                    RESPONSE.action = 'removed';
                 }
-            ]).toArray();
+                else {
+                    // add like & remove dislike if it exists
 
-            RESPONSE.count = LIKES_COUNT[0].likes;
+                    await COMMENTS_COLLECTION.updateOne(
+                        {cid: req.body.cid},
+                        {
+                            $push: {likes: AUTHENTICATION_RESULT.tokenData.uid},
+                            $pull: {dislikes: AUTHENTICATION_RESULT.tokenData.uid}
+                        }
+                    );
+
+                    RESPONSE.action = 'added';
+                }
+
+                // get number of likes
+                const LIKES_COUNT = await COMMENTS_COLLECTION.aggregate([
+                    {$match: {cid: req.body.cid}},
+                    {
+                        $project: {
+                            _id: 0,
+                            likes: {$size: '$likes'}
+                        }
+                    }
+                ]).toArray();
+
+                RESPONSE.count = LIKES_COUNT[0].likes;
+            }
         }
 
         return res.json(RESPONSE);
@@ -998,44 +1005,51 @@ backend.put('/comments/dislike', async (req, res) => {
 
         if (AUTHENTICATION_RESULT.isAuthenticated) {
             const COMMENTS_COLLECTION = req.app.locals.db.collection('Comments');
-            const ALREADY_DISLIKED = await COMMENTS_COLLECTION.findOne({cid: req.body.cid, dislikes: AUTHENTICATION_RESULT.tokenData.uid}) !== null;
+            const COMMENT = await COMMENTS_COLLECTION.findOne({cid: req.body.cid});
 
-            if (ALREADY_DISLIKED) {
-                // remove dislike
+            const USERS_COLLECTION = req.app.locals.db.collection('Users');
+            const USER = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
 
-                await COMMENTS_COLLECTION.updateOne(
-                    {cid: req.body.cid},
-                    {$pull: {dislikes: AUTHENTICATION_RESULT.tokenData.uid}}
-                );
+            if (COMMENT !== null && USER !== null) {
+                const ALREADY_DISLIKED = COMMENT.dislikes.includes(AUTHENTICATION_RESULT.tokenData.uid);
 
-                RESPONSE.action = 'removed';
-            }
-            else {
-                // add dislike & remove like if it exists
+                if (ALREADY_DISLIKED) {
+                    // remove dislike
 
-                await COMMENTS_COLLECTION.updateOne(
-                    {cid: req.body.cid},
-                    {
-                        $push: {dislikes: AUTHENTICATION_RESULT.tokenData.uid},
-                        $pull: {likes: AUTHENTICATION_RESULT.tokenData.uid}
-                    }
-                );
+                    await COMMENTS_COLLECTION.updateOne(
+                        {cid: req.body.cid},
+                        {$pull: {dislikes: AUTHENTICATION_RESULT.tokenData.uid}}
+                    );
 
-                RESPONSE.action = 'added';
-            }
-
-            // get number of dislikes
-            const DISLIKES_COUNT = await COMMENTS_COLLECTION.aggregate([
-                {$match: {cid: req.body.cid}},
-                {
-                    $project: {
-                        _id: 0,
-                        dislikes: {$size: '$dislikes'}
-                    }
+                    RESPONSE.action = 'removed';
                 }
-            ]).toArray();
+                else {
+                    // add dislike & remove like if it exists
 
-            RESPONSE.count = DISLIKES_COUNT[0].dislikes;
+                    await COMMENTS_COLLECTION.updateOne(
+                        {cid: req.body.cid},
+                        {
+                            $push: {dislikes: AUTHENTICATION_RESULT.tokenData.uid},
+                            $pull: {likes: AUTHENTICATION_RESULT.tokenData.uid}
+                        }
+                    );
+
+                    RESPONSE.action = 'added';
+                }
+
+                // get number of dislikes
+                const DISLIKES_COUNT = await COMMENTS_COLLECTION.aggregate([
+                    {$match: {cid: req.body.cid}},
+                    {
+                        $project: {
+                            _id: 0,
+                            dislikes: {$size: '$dislikes'}
+                        }
+                    }
+                ]).toArray();
+
+                RESPONSE.count = DISLIKES_COUNT[0].dislikes;
+            }
         }
 
         return res.json(RESPONSE);
