@@ -821,7 +821,7 @@ backend.post('/comments/:pid', async (req, res) => {
         const RESPONSE = {};
         const AUTHENTICATION_RESULT = authenticateUser(req);
 
-        if (AUTHENTICATION_RESULT.isAuthenticated) {
+        if (AUTHENTICATION_RESULT.isAuthenticated && req.body.replyBody !== undefined && typeof req.body.replyBody === 'string' && req.body.replyBody.length > 0) {
             // check if post exists and get its data
             const POSTS_COLLECTION = req.app.locals.db.collection('Posts');
             const POST = await POSTS_COLLECTION.findOne({pid: req.params.pid});
