@@ -98,4 +98,45 @@ describe("Followers Retrieval", () => {
 
         shared.expectEmptyJSONResponse(response);
     });
+
+    it("Successful retrieval. Return 200 and a list of followers or an empty JSON object", async () => {
+        // no followers
+        let response = await request(shared.BACKEND_URL).get(`/followers/${test_user2_data.username}`).set('Cookie', test_user1_data.loginToken).send();
+
+        shared.expectEmptyJSONResponse(response);
+
+        // with followers (test user 1 is retrieving)
+        const FOLLOW_RESPONSE = await request(shared.BACKEND_URL).post('/follow').set('Cookie', test_user1_data.loginToken).send({username: test_user2_data.username});
+
+        shared.expectJSONResponse(FOLLOW_RESPONSE);
+
+        response = await request(shared.BACKEND_URL).get(`/followers/${test_user2_data.username}`).set('Cookie', test_user1_data.loginToken).send();
+
+        shared.expectJSONResponse(response);
+
+        const FOLLOWERS = response.body.followers;
+
+        expect(Array.isArray(FOLLOWERS) && response.body.followedByUser === true).toBe(true);
+
+        expect(FOLLOWERS.length).toEqual(1);
+
+        expect(FOLLOWERS[0]).toEqual({
+            username: test_user1_data.username,
+            pfp: ''
+        });
+
+        // with followers (test user 2 is retrieving so 'followedByUser' should not be in the response)
+        response = await request(shared.BACKEND_URL).get(`/followers/${test_user2_data.username}`).set('Cookie', test_user2_data.loginToken).send();
+
+        shared.expectJSONResponse(response);
+
+        expect(Array.isArray(FOLLOWERS) && response.body.followedByUser === undefined).toBe(true);
+
+        expect(FOLLOWERS.length).toEqual(1);
+
+        expect(FOLLOWERS[0]).toEqual({
+            username: test_user1_data.username,
+            pfp: ''
+        });
+    });
 });
