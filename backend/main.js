@@ -1113,7 +1113,7 @@ backend.post('/follow', async (req, res) => {
             const USER_INFO = await USERS_COLLECTION.findOne({username: req.body.username});
             const LOGGED_IN_USER_INFO = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
 
-            if (USER_INFO !== null && USER_INFO.uid !== LOGGED_IN_USER_INFO.uid) {
+            if (USER_INFO !== null && LOGGED_IN_USER_INFO !== null && USER_INFO.uid !== LOGGED_IN_USER_INFO.uid) {
                 const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
 
                 await FOLLOWERS_COLLECTION.insertOne({
