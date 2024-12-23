@@ -1169,20 +1169,22 @@ backend.delete('/follow/:username', async (req, res) => {
             const USER_INFO = await USERS_COLLECTION.findOne({username: req.params.username});
             const LOGGED_IN_USER_INFO = await USERS_COLLECTION.findOne({uid: AUTHENTICATION_RESULT.tokenData.uid});
 
-            if (USER_INFO !== null) {
+            if (USER_INFO !== null && LOGGED_IN_USER_INFO !== null) {
                 const FOLLOWERS_COLLECTION = req.app.locals.db.collection('Followers');
 
-                await FOLLOWERS_COLLECTION.deleteOne({
+                const RESULT = await FOLLOWERS_COLLECTION.deleteOne({
                     uid: USER_INFO.uid, // user being unfollowed by logged in user
                     fid: LOGGED_IN_USER_INFO.uid // logged in user
                 });
 
-                RESPONSE.status = 'success';
+                if (RESULT.deletedCount === 1) {
+                    RESPONSE.status = 'success';
 
-                RESPONSE.followerRemoved = {
-                    username: LOGGED_IN_USER_INFO.username,
-                    pfp: LOGGED_IN_USER_INFO.pfp
-                };
+                    RESPONSE.followerRemoved = {
+                        username: LOGGED_IN_USER_INFO.username,
+                        pfp: LOGGED_IN_USER_INFO.pfp
+                    };
+                }
             }
         }
 
