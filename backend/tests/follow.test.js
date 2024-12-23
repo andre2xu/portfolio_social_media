@@ -140,3 +140,23 @@ describe("Followers Retrieval", () => {
         });
     });
 });
+
+describe("Following Retrieval", () => {
+    afterEach(async () => {
+        const FOLLOWERS_COLLECTION = mongo_client.db('socialmedia').collection('Followers');
+
+        await FOLLOWERS_COLLECTION.deleteMany({$or: [{uid: test_user1_data.uid}, {uid: test_user2_data.uid}]});
+    });
+
+    it("Invalid requests. Return 200 and an empty JSON object", async () => {
+        // no login token
+        let response = await request(shared.BACKEND_URL).get(`/following/${test_user1_data.username}`).send();
+
+        shared.expectEmptyJSONResponse(response);
+
+        // non-existent user
+        response = await request(shared.BACKEND_URL).get('/following/abc').set('Cookie', test_user1_data.loginToken).send();
+
+        shared.expectEmptyJSONResponse(response);
+    });
+});
