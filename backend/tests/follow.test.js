@@ -159,4 +159,31 @@ describe("Following Retrieval", () => {
 
         shared.expectEmptyJSONResponse(response);
     });
+
+    it("Successful retrieval. Return 200 and a list of users being followed by the requester", async () => {
+        // no following
+        let response = await request(shared.BACKEND_URL).get(`/following/${test_user1_data.username}`).set('Cookie', test_user1_data.loginToken).send();
+
+        shared.expectJSONResponse(response);
+
+        expect(response.body).toEqual({following: []});
+
+        // with following (test user 1 follows test user 2)
+        const FOLLOW_RESPONSE = await request(shared.BACKEND_URL).post('/follow').set('Cookie', test_user1_data.loginToken).send({username: test_user2_data.username});
+
+        shared.expectJSONResponse(FOLLOW_RESPONSE);
+
+        response = await request(shared.BACKEND_URL).get(`/following/${test_user1_data.username}`).set('Cookie', test_user1_data.loginToken).send();
+
+        shared.expectJSONResponse(response);
+
+        expect(response.body).toEqual({
+            following: [
+                {
+                    username: test_user2_data.username,
+                    pfp: ''
+                }
+            ]
+        });
+    });
 });
