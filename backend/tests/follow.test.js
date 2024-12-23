@@ -219,4 +219,23 @@ describe("Unfollow", () => {
         shared.expectJSONResponse(response);
         expect(response.body).toEqual({status: 'failed'});
     });
+
+    it("Successful unfollow. Return 200, a success status, and the unfollowed user's username & pfp", async () => {
+        // follow user
+        const FOLLOW_RESPONSE = await request(shared.BACKEND_URL).post('/follow').set('Cookie', test_user1_data.loginToken).send({username: test_user2_data.username});
+
+        shared.expectJSONResponse(FOLLOW_RESPONSE);
+
+        // unfollow user
+        const UNFOLLOW_RESPONSE = await request(shared.BACKEND_URL).delete(`/follow/${test_user2_data.username}`).set('Cookie', test_user1_data.loginToken).send();
+
+        shared.expectJSONResponse(UNFOLLOW_RESPONSE);
+
+        expect(UNFOLLOW_RESPONSE.body.status).toEqual('success');
+
+        expect(UNFOLLOW_RESPONSE.body.followerRemoved).toEqual({
+            username: test_user1_data.username,
+            pfp: ''
+        });
+    });
 });
