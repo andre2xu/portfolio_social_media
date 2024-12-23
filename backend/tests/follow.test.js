@@ -9,18 +9,27 @@ const jwt = require('jsonwebtoken');
 
 let test_user1_data = {};
 let test_user2_data = {};
+let mongo_client = undefined;
 
 beforeAll(async () => {
     test_user1_data = await shared.createTestUser(crypto.randomBytes(5).toString('hex'), '!aB0aaaaaaaaaaaa');
 
     test_user2_data = await shared.createTestUser(crypto.randomBytes(5).toString('hex'), '!aB0aaaaaaaaaaaa');
+
+    mongo_client = await shared.openDatabaseConnection();
 });
 
 afterAll(async () => {
+    const FOLLOWERS_COLLECTION = mongo_client.db('socialmedia').collection('Followers');
+
+    await FOLLOWERS_COLLECTION.deleteMany({$or: [{uid: test_user1_data.uid}, {uid: test_user2_data.uid}]});
+
     shared.deleteTestUsers([
         test_user1_data.uid,
         test_user2_data.uid
     ]);
+
+    mongo_client.close();
 });
 
 describe("Follow", () => {
@@ -53,5 +62,20 @@ describe("Follow", () => {
 
         shared.expectJSONResponse(response);
         expect(response.body).toEqual({status: 'failed'});
+    });
+
+    it("Follow a user. Return 200, a success status, and the username & pfp of the follower", async () => {
+        const RESPONSE = await request(shared.BACKEND_URL).post('/follow').set('Cookie', test_user1_data.loginToken).send({username: test_user2_data.username});
+
+        shared.expectJSONResponse(RESPONSE);
+
+        expect(RESPONSE.body.status !== undefined && RESPONSE.body.followerAdded !== undefined).toBe(true);
+
+        expect(RESPONSE.body.status).toEqual('success');
+
+        expect(RESPONSE.body.followerAdded).toEqual({
+            username: test_user1_data.username,
+            pfp: ''
+        });
     });
 });
