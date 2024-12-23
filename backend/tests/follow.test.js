@@ -187,3 +187,36 @@ describe("Following Retrieval", () => {
         });
     });
 });
+
+describe("Unfollow", () => {
+    it("Invalid requests. Return 200 and a fail status", async () => {
+        // no login token
+        let response = await request(shared.BACKEND_URL).delete(`/follow/${test_user2_data.username}`).send();
+
+        shared.expectJSONResponse(response);
+        expect(response.body).toEqual({status: 'failed'});
+
+        // user being unfollowed doesn't exist
+        response = await request(shared.BACKEND_URL).delete('/follow/abc').set('Cookie', test_user1_data.loginToken).send();
+
+        shared.expectJSONResponse(response);
+        expect(response.body).toEqual({status: 'failed'});
+
+        // user doing the unfollowing doesn't exist
+        const LOGIN_TOKEN = jwt.sign(
+            {uid: crypto.randomBytes(5).toString('hex')},
+            process.env.LTS
+        );
+
+        response = await request(shared.BACKEND_URL).delete(`/follow/${test_user2_data.username}`).set('Cookie', `LT=${LOGIN_TOKEN}`).send();
+
+        shared.expectJSONResponse(response);
+        expect(response.body).toEqual({status: 'failed'});
+
+        // unfollowing a user that isn't even followed
+        response = await request(shared.BACKEND_URL).delete(`/follow/${test_user2_data.username}`).set('Cookie', test_user1_data.loginToken).send();
+
+        shared.expectJSONResponse(response);
+        expect(response.body).toEqual({status: 'failed'});
+    });
+});
