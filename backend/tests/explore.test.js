@@ -23,7 +23,7 @@ beforeAll(async () => {
     // create a test posts
     let post_response = await request(shared.BACKEND_URL).post('/post').set('Cookie', test_user1_data.loginToken)
         .field('postBody', "I went on holidays with my friends! We did bvwieibfw and swam at the beach.")
-        .field('postTags', 'explore, funny, adventure');
+        .field('postTags', 'explore, jfiojoif, adventure');
 
     shared.expectEmptyJSONResponse(post_response);
 
@@ -125,7 +125,7 @@ describe("Manual Search (occurs when user clicks on the search bar's button)", (
         shared.expectEmptyJSONResponse(response);
 
         // unique tag (on test post 1)
-        response = await request(shared.BACKEND_URL).get(`/explore/${encodeURIComponent('#funny')}`).send();
+        response = await request(shared.BACKEND_URL).get(`/explore/${encodeURIComponent('#jfiojoif')}`).send();
 
         shared.expectJSONResponse(response);
         expect(Array.isArray(response.body.result) && response.body.result.length === 1).toBe(true);
@@ -166,5 +166,37 @@ describe("Manual Search (occurs when user clicks on the search bar's button)", (
 
         shared.expectJSONResponse(response);
         expect(Array.isArray(response.body.result) && response.body.result.length === 2).toBe(true);
+    });
+});
+
+describe("Auto Search (occurs while user is typing in the search bar)", () => {
+    it("Searching by tag. Return 200 and a list of posts or an empty JSON object", async () => {
+        // tag not on any post
+        let response = await request(shared.BACKEND_URL).get(`/search/${encodeURIComponent('#doesntexist')}`).send();
+
+        shared.expectEmptyJSONResponse(response);
+
+        // unique tag (on test post 1)
+        response = await request(shared.BACKEND_URL).get(`/search/${encodeURIComponent('#jfiojoif ignoredbodysubstring #ignoredtag')}`).send();
+
+        shared.expectJSONResponse(response);
+
+        expect(response.body).toEqual({
+            type: 'tag',
+            result: [
+                {
+                    pid: test_post1_data.pid,
+                    body: test_post1_data.body,
+                    username: test_user1_data.username
+                }
+            ]
+        });
+
+        // shared tag (on test posts 2 and 3)
+        response = await request(shared.BACKEND_URL).get(`/search/${encodeURIComponent('#sharedtag4')}`).send();
+
+        shared.expectJSONResponse(response);
+
+        expect(response.body.result.length).toEqual(2);
     });
 });
