@@ -77,4 +77,42 @@ describe("Explore Page", () => {
 
         expect(RESPONSE.body.posts !== undefined && Array.isArray(RESPONSE.body.posts)).toBe(true);
     });
+
+    it("Verify liked post. Return 200 and list of posts (one of which has a like)", async () => {
+        // like a post
+        let post_like_response = await request(shared.BACKEND_URL).put('/post/like').set('Cookie', test_user1_data.loginToken).send({pid: test_post1_data.pid});
+
+        shared.expectJSONResponse(post_like_response);
+
+        expect(post_like_response.body).toEqual({
+            action: 'added',
+            count: 1
+        });
+
+        // retrieve list of posts and verify the like exists
+        const RESPONSE = await request(shared.BACKEND_URL).get('/explore').set('Cookie', test_user1_data.loginToken).send();
+
+        shared.expectJSONResponse(RESPONSE);
+        expect(RESPONSE.body.posts !== undefined && Array.isArray(RESPONSE.body.posts)).toBe(true);
+
+        let liked_post = undefined;
+
+        RESPONSE.body.posts.forEach((postData) => {
+            if (postData.pid === test_post1_data.pid) {
+                liked_post = postData;
+            }
+        });
+
+        expect(liked_post !== undefined && liked_post.likedByUser).toBe(true);
+
+        // unlike the post
+        post_like_response = await request(shared.BACKEND_URL).put('/post/like').set('Cookie', test_user1_data.loginToken).send({pid: test_post1_data.pid});
+
+        shared.expectJSONResponse(post_like_response);
+
+        expect(post_like_response.body).toEqual({
+            action: 'removed',
+            count: 0
+        });
+    });
 });
