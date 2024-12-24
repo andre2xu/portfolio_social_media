@@ -15,8 +15,8 @@ let mongo_client = undefined;
 
 beforeAll(async () => {
     // create test users
-    test_user1_data = await shared.createTestUser(crypto.randomBytes(5).toString('hex'), '!aB0aaaaaaaaaaaa');
-    test_user2_data = await shared.createTestUser(crypto.randomBytes(5).toString('hex'), '!aB0aaaaaaaaaaaa');
+    test_user1_data = await shared.createTestUser(`${crypto.randomBytes(2).toString('hex').concat('usemefortesting')}`, '!aB0aaaaaaaaaaaa');
+    test_user2_data = await shared.createTestUser(`${crypto.randomBytes(2).toString('hex').concat('usemefortesting')}`, '!aB0aaaaaaaaaaaa');
 
     mongo_client = await shared.openDatabaseConnection();
 
@@ -194,6 +194,37 @@ describe("Auto Search (occurs while user is typing in the search bar)", () => {
 
         // shared tag (on test posts 2 and 3)
         response = await request(shared.BACKEND_URL).get(`/search/${encodeURIComponent('#sharedtag4')}`).send();
+
+        shared.expectJSONResponse(response);
+
+        expect(response.body.result.length).toEqual(2);
+    });
+
+    it("Searching by user. Return 200 and a list of posts or an empty JSON object", async () => {
+        // non-existing user
+        let response = await request(shared.BACKEND_URL).get(`/search/${encodeURIComponent('#doesntexist')}`).send();
+
+        shared.expectEmptyJSONResponse(response);
+
+        // exact user match
+        let search_query = encodeURIComponent(`@${test_user1_data.username} @ignoreduser ignoredbodysubstring #ignoredtag`);
+        response = await request(shared.BACKEND_URL).get(`/search/${search_query}`).send();
+
+        shared.expectJSONResponse(response);
+
+        expect(response.body).toEqual({
+            type: 'user',
+            result: [
+                {
+                    username: test_user1_data.username,
+                    pfp: ''
+                }
+            ]
+        });
+
+        // multiple users (using a username substring)
+        search_query = encodeURIComponent('@usemefortesting');
+        response = await request(shared.BACKEND_URL).get(`/search/${search_query}`).send();
 
         shared.expectJSONResponse(response);
 
