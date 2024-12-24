@@ -29,13 +29,13 @@ beforeAll(async () => {
 
     post_response = await request(shared.BACKEND_URL).post('/post').set('Cookie', test_user2_data.loginToken)
         .field('postBody', "What its like studying Computer Science")
-        .field('postTags', 'explore, academic, tech');
+        .field('postTags', 'explore, academic, tech, sharedtag4testing');
 
     shared.expectEmptyJSONResponse(post_response);
 
     post_response = await request(shared.BACKEND_URL).post('/post').set('Cookie', test_user2_data.loginToken)
         .field('postBody', "This post won't appear in the explore page")
-        .field('postTags', 'onlyvisibleinprofilepage, kindahidden');
+        .field('postTags', 'onlyvisibleinprofilepage, kindahidden, sharedtag4testing');
 
     shared.expectEmptyJSONResponse(post_response);
 
@@ -114,5 +114,32 @@ describe("Explore Page", () => {
             action: 'removed',
             count: 0
         });
+    });
+});
+
+describe("Manual Search (occurs when user clicks on the search bar's button)", () => {
+    it("Searching by tag. Return 200 and a list of posts or an empty JSON object", async () => {
+        // tag not on any post
+        let response = await request(shared.BACKEND_URL).get(`/explore/${encodeURIComponent('#doesntexist')}`).send();
+
+        shared.expectEmptyJSONResponse(response);
+
+        // unique tag (on test post 1)
+        response = await request(shared.BACKEND_URL).get(`/explore/${encodeURIComponent('#funny')}`).send();
+
+        shared.expectJSONResponse(response);
+        expect(Array.isArray(response.body.result) && response.body.result.length === 1).toBe(true);
+
+        let search_result = response.body.result[0];
+
+        expect(search_result.username === test_user1_data.username && search_result.pfp === '').toBe(true);
+        expect(search_result.pid === test_post1_data.pid && search_result.body === test_post1_data.body && search_result.date === test_post1_data.date && search_result.likes === test_post1_data.likes.length).toBe(true);
+        expect(search_result.tags).toEqual(test_post1_data.tags);
+
+        // shared tag (test posts 2 and 3)
+        response = await request(shared.BACKEND_URL).get(`/explore/${encodeURIComponent('#sharedtag4test')}`).send(); // the substring 'sharedtag4test' is present in at least one tag of each post
+
+        shared.expectJSONResponse(response);
+        expect(Array.isArray(response.body.result) && response.body.result.length === 2).toBe(true);
     });
 });
