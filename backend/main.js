@@ -1378,7 +1378,7 @@ backend.get('/explore/:query', async (req, res) => {
 
                     // a tag or tag substring has been found so save the current sequence of words
                     if (sequence_of_words.length > 0) {
-                        WORD_SEQUENCES.push(new RegExp(sequence_of_words));
+                        WORD_SEQUENCES.push(new RegExp(sequence_of_words.trim()));
 
                         // reset sequence
                         sequence_of_words = '';
@@ -1386,13 +1386,13 @@ backend.get('/explore/:query', async (req, res) => {
                 }
                 else {
                     // build sequence of words
-                    sequence_of_words += TOKEN;
+                    sequence_of_words += `${TOKEN} `;
                 }
             }
 
             // save remaining sequence of words (if any)
             if (sequence_of_words.length > 0) {
-                WORD_SEQUENCES.push(new RegExp(sequence_of_words));
+                WORD_SEQUENCES.push(new RegExp(sequence_of_words.trim()));
             }
 
             // find the latest posts that either have the tags (or tag substrings) given, or contain the word sequences given
