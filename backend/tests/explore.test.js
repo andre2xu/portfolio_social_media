@@ -230,4 +230,29 @@ describe("Auto Search (occurs while user is typing in the search bar)", () => {
 
         expect(response.body.result.length).toEqual(2);
     });
+
+    it("Searching by body substring. Return 200 and a list of posts or an empty JSON object", async () => {
+        // body substring not on any post
+        let response = await request(shared.BACKEND_URL).get(`/search/${encodeURIComponent('doesntexistabcdefg123')}`).send();
+
+        shared.expectEmptyJSONResponse(response);
+
+        // shared body substring (on test posts 1 and 3)
+        response = await request(shared.BACKEND_URL).get(`/search/${encodeURIComponent('bvwieibfw')}`).send();
+
+        shared.expectJSONResponse(response);
+
+        expect(response.body.type).toEqual('content');
+
+        expect(Array.isArray(response.body.result) && response.body.result.length === 2).toBe(true);
+
+        expect(response.body.result.every((data) => {
+            if ((data.pid === test_post1_data.pid && data.body === test_post1_data.body && data.username === test_user1_data.username) || (data.pid === test_post3_data.pid && data.body === test_post3_data.body && data.username === test_user2_data.username)) {
+                return true;
+            }
+
+            return false;
+
+        })).toBe(true);
+    });
 });
