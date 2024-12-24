@@ -22,7 +22,7 @@ beforeAll(async () => {
 
     // create a test posts
     let post_response = await request(shared.BACKEND_URL).post('/post').set('Cookie', test_user1_data.loginToken)
-        .field('postBody', "I went on holidays with my friends!")
+        .field('postBody', "I went on holidays with my friends! We did bvwieibfw and swam at the beach.")
         .field('postTags', 'explore, funny, adventure');
 
     shared.expectEmptyJSONResponse(post_response);
@@ -34,7 +34,7 @@ beforeAll(async () => {
     shared.expectEmptyJSONResponse(post_response);
 
     post_response = await request(shared.BACKEND_URL).post('/post').set('Cookie', test_user2_data.loginToken)
-        .field('postBody', "This post won't appear in the explore page")
+        .field('postBody', "This post won't appear in the explore page because of bvwieibfw")
         .field('postTags', 'onlyvisibleinprofilepage, kindahidden, sharedtag4testing');
 
     shared.expectEmptyJSONResponse(post_response);
@@ -42,9 +42,9 @@ beforeAll(async () => {
     // save test post data locally
     const POSTS_COLLECTION = mongo_client.db('socialmedia').collection('Posts');
 
-    test_post1_data = await POSTS_COLLECTION.findOne({body: "I went on holidays with my friends!"});
+    test_post1_data = await POSTS_COLLECTION.findOne({body: "I went on holidays with my friends! We did bvwieibfw and swam at the beach."});
     test_post2_data = await POSTS_COLLECTION.findOne({body: "What its like studying Computer Science"});
-    test_post3_data = await POSTS_COLLECTION.findOne({body: "This post won't appear in the explore page"});
+    test_post3_data = await POSTS_COLLECTION.findOne({body: "This post won't appear in the explore page because of bvwieibfw"});
 
     expect(test_post1_data !== null && Object.keys(test_post1_data).length > 0).toBe(true);
     expect(test_post2_data !== null && Object.keys(test_post2_data).length > 0).toBe(true);
@@ -136,8 +136,33 @@ describe("Manual Search (occurs when user clicks on the search bar's button)", (
         expect(search_result.pid === test_post1_data.pid && search_result.body === test_post1_data.body && search_result.date === test_post1_data.date && search_result.likes === test_post1_data.likes.length).toBe(true);
         expect(search_result.tags).toEqual(test_post1_data.tags);
 
-        // shared tag (test posts 2 and 3)
+        // shared tag (on test posts 2 and 3)
         response = await request(shared.BACKEND_URL).get(`/explore/${encodeURIComponent('#sharedtag4test')}`).send(); // the substring 'sharedtag4test' is present in at least one tag of each post
+
+        shared.expectJSONResponse(response);
+        expect(Array.isArray(response.body.result) && response.body.result.length === 2).toBe(true);
+    });
+
+    it ("Searching by post body. Return 200 and a list of posts or an empty JSON object", async () => {
+        // body substring not on any post
+        let response = await request(shared.BACKEND_URL).get(`/explore/${encodeURIComponent(crypto.randomBytes(10).toString('hex'))}`).send();
+
+        shared.expectEmptyJSONResponse(response);
+
+        // unique body substring (on test post 2)
+        response = await request(shared.BACKEND_URL).get(`/explore/${encodeURIComponent('Computer Science')}`).send();
+
+        shared.expectJSONResponse(response);
+        expect(Array.isArray(response.body.result) && response.body.result.length === 1).toBe(true);
+
+        search_result = response.body.result[0];
+
+        expect(search_result.username === test_user2_data.username && search_result.pfp === '').toBe(true);
+        expect(search_result.pid === test_post2_data.pid && search_result.body === test_post2_data.body && search_result.date === test_post2_data.date && search_result.likes === test_post2_data.likes.length).toBe(true);
+        expect(search_result.tags).toEqual(test_post2_data.tags);
+
+        // shared body substring (on test posts 1 and 3)
+        response = await request(shared.BACKEND_URL).get(`/explore/${encodeURIComponent('bvwieibfw')}`).send();
 
         shared.expectJSONResponse(response);
         expect(Array.isArray(response.body.result) && response.body.result.length === 2).toBe(true);
