@@ -1,6 +1,7 @@
 const shared = require('./shared.test');
 const request = require('supertest');
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 
 
 
@@ -144,5 +145,21 @@ describe("Retrieving Chats", () => {
         const RESPONSE = await request(shared.BACKEND_URL).get('/chats').send();
 
         shared.expectEmptyJSONResponse(RESPONSE);
+    });
+
+    it ("Passing login token of a user that doesn't exist. Return 200 and empty chats lists", async () => {
+        const LOGIN_TOKEN = jwt.sign(
+            {uid: crypto.randomBytes(5).toString('hex')},
+            process.env.LTS
+        );
+
+        const RESPONSE = await request(shared.BACKEND_URL).get('/chats').set('Cookie', `LT=${LOGIN_TOKEN}`).send();
+
+        shared.expectJSONResponse(RESPONSE);
+
+        expect(RESPONSE.body).toEqual({
+            chatsStartedByUser: [],
+            chatsStartedByOthers: []
+        });
     });
 });
