@@ -8,11 +8,14 @@ const crypto = require('crypto');
 
 let test_user1_data = {};
 let test_user2_data = {};
+let mongo_client = undefined;
 
 beforeAll(async () => {
     test_user1_data = await shared.createTestUser(crypto.randomBytes(5).toString('hex'), '!aB0aaaaaaaaaaaa');
 
     test_user2_data = await shared.createTestUser(crypto.randomBytes(5).toString('hex'), '!aB0aaaaaaaaaaaa');
+
+    mongo_client = await shared.openDatabaseConnection();
 });
 
 afterAll(async () => {
@@ -20,6 +23,25 @@ afterAll(async () => {
         test_user1_data.uid,
         test_user2_data.uid
     ]);
+
+    // delete chat(s)
+    const DATABASE = mongo_client.db('socialmedia');
+    const CHATS_COLLECTION = DATABASE.collection('Chats');
+    const MESSAGES_COLLECTION = DATABASE.collection('Messages');
+
+    await CHATS_COLLECTION.deleteMany({uid:
+        {$in: [
+            test_user1_data.uid,
+            test_user2_data.uid
+        ]}
+    });
+
+    await MESSAGES_COLLECTION.deleteMany({sid:
+        {$in: [
+            test_user1_data.uid,
+            test_user2_data.uid
+        ]}
+    });
 });
 
 describe("Creating Chats", () => {
@@ -95,5 +117,24 @@ describe("Creating Chats", () => {
 
         shared.expectJSONResponse(response);
         expect(response.body).toEqual({errorMessage: "You cannot start a chat with yourself"});
+    });
+
+    it("Starting a chat. Return 200 and data for displaying new chat", async () => {
+        const CHAT_NAME = 'Testing';
+        const FIRST_MESSAGE = "Hi";
+
+        const RESPONSE = await request(shared.BACKEND_URL).post('/chats').set('Cookie', test_user1_data.loginToken).send({chatName: CHAT_NAME, username: `@${test_user2_data.username}`, message: FIRST_MESSAGE});
+
+        shared.expectJSONResponse(RESPONSE);
+
+        expect(RESPONSE.body.chatData !== undefined).toBe(true);
+
+        const CHAT_DATA = RESPONSE.body.chatData;
+
+        expect(CHAT_DATA.cid !== undefined).toBe(true);
+        expect(CHAT_DATA.recipientUsername).toEqual(test_user2_data.username);
+        expect(CHAT_DATA.recipientPfp).toEqual('');
+        expect(CHAT_DATA.chatName).toEqual(CHAT_NAME);
+        expect(CHAT_DATA.recentMessage).toEqual(FIRST_MESSAGE);
     });
 });
