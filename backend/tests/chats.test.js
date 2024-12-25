@@ -24,28 +24,30 @@ afterAll(async () => {
         test_user1_data.uid,
         test_user2_data.uid
     ]);
-
-    // delete chat(s)
-    const DATABASE = mongo_client.db('socialmedia');
-    const CHATS_COLLECTION = DATABASE.collection('Chats');
-    const MESSAGES_COLLECTION = DATABASE.collection('Messages');
-
-    await CHATS_COLLECTION.deleteMany({uid:
-        {$in: [
-            test_user1_data.uid,
-            test_user2_data.uid
-        ]}
-    });
-
-    await MESSAGES_COLLECTION.deleteMany({sid:
-        {$in: [
-            test_user1_data.uid,
-            test_user2_data.uid
-        ]}
-    });
 });
 
 describe("Creating Chats", () => {
+    afterEach(async () => {
+        // delete chat(s)
+        const DATABASE = mongo_client.db('socialmedia');
+        const CHATS_COLLECTION = DATABASE.collection('Chats');
+        const MESSAGES_COLLECTION = DATABASE.collection('Messages');
+
+        await CHATS_COLLECTION.deleteMany({uid:
+            {$in: [
+                test_user1_data.uid,
+                test_user2_data.uid
+            ]}
+        });
+
+        await MESSAGES_COLLECTION.deleteMany({sid:
+            {$in: [
+                test_user1_data.uid,
+                test_user2_data.uid
+            ]}
+        });
+    });
+
     it("No login token. Return 200 and an empty JSON object", async () => {
         const RESPONSE = await request(shared.BACKEND_URL).post('/chats').send();
 
@@ -141,6 +143,27 @@ describe("Creating Chats", () => {
 });
 
 describe("Retrieving Chats", () => {
+    afterEach(async () => {
+        // delete chat(s)
+        const DATABASE = mongo_client.db('socialmedia');
+        const CHATS_COLLECTION = DATABASE.collection('Chats');
+        const MESSAGES_COLLECTION = DATABASE.collection('Messages');
+
+        await CHATS_COLLECTION.deleteMany({uid:
+            {$in: [
+                test_user1_data.uid,
+                test_user2_data.uid
+            ]}
+        });
+
+        await MESSAGES_COLLECTION.deleteMany({sid:
+            {$in: [
+                test_user1_data.uid,
+                test_user2_data.uid
+            ]}
+        });
+    });
+
     it("No login token. Return 200 and an empty JSON object", async () => {
         const RESPONSE = await request(shared.BACKEND_URL).get('/chats').send();
 
