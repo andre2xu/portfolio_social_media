@@ -315,4 +315,54 @@ describe("Message Retrieval", () => {
 
         expect(RESPONSE.status).toEqual(500);
     });
+
+    it("Successful retrieval (by chat owner). Return 200, chat data, and a list of messages", async () => {
+        const RESPONSE = await request(shared.BACKEND_URL).get(`/messages/${test_chat_data.cid}`).set('Cookie', test_user1_data.loginToken).send();
+
+        shared.expectJSONResponse(RESPONSE);
+
+        // verify chat data
+        expect(RESPONSE.body.chatData !== undefined).toBe(true);
+
+        const CHAT_DATA = RESPONSE.body.chatData;
+        expect(CHAT_DATA.cid).toEqual(test_chat_data.cid);
+        expect(CHAT_DATA.chatName).toEqual(test_chat_data.chatName);
+        expect(CHAT_DATA.owner).toEqual(test_user1_data.username);
+        expect(CHAT_DATA.recipient).toEqual(test_user2_data.username);
+        expect(CHAT_DATA.userIsChatOwner).toEqual(true);
+        expect(CHAT_DATA.userIsRecipient).toEqual(undefined);
+
+        // verify messages
+        expect(Array.isArray(RESPONSE.body.messages) && RESPONSE.body.messages.length === 1).toBe(true);
+
+        const MESSAGE = RESPONSE.body.messages[0];
+
+        expect(MESSAGE.message).toEqual(test_chat_data.recentMessage);
+        expect(MESSAGE.sentByUser).toEqual(true);
+    });
+
+    it("Successful retrieval (by chat recipient). Return 200, chat data, and a list of messages", async () => {
+        const RESPONSE = await request(shared.BACKEND_URL).get(`/messages/${test_chat_data.cid}`).set('Cookie', test_user2_data.loginToken).send();
+
+        shared.expectJSONResponse(RESPONSE);
+
+        // verify chat data
+        expect(RESPONSE.body.chatData !== undefined).toBe(true);
+
+        const CHAT_DATA = RESPONSE.body.chatData;
+        expect(CHAT_DATA.cid).toEqual(test_chat_data.cid);
+        expect(CHAT_DATA.chatName).toEqual(test_chat_data.chatName);
+        expect(CHAT_DATA.owner).toEqual(test_user1_data.username);
+        expect(CHAT_DATA.recipient).toEqual(test_user2_data.username);
+        expect(CHAT_DATA.userIsChatOwner).toEqual(undefined);
+        expect(CHAT_DATA.userIsRecipient).toEqual(true);
+
+        // verify messages
+        expect(Array.isArray(RESPONSE.body.messages) && RESPONSE.body.messages.length === 1).toBe(true);
+
+        const MESSAGE = RESPONSE.body.messages[0];
+
+        expect(MESSAGE.message).toEqual(test_chat_data.recentMessage);
+        expect(MESSAGE.sentByUser).toEqual(undefined);
+    });
 });
