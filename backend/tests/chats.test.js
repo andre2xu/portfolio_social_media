@@ -220,3 +220,45 @@ describe("Retrieving Chats", () => {
         expect(response.body.chatsStartedByOthers[0]).toEqual(CHAT_STARTED_BY_OTHER);
     });
 });
+
+describe("Deleting Chats", () => {
+    let test_chat_data = {};
+
+    beforeEach(async () => {
+        const RESPONSE = await request(shared.BACKEND_URL).post('/chats').set('Cookie', test_user1_data.loginToken).send({chatName: 'Delete Me Plz', username: `@${test_user2_data.username}`, message: "Did u delete me??"});
+
+        shared.expectJSONResponse(RESPONSE);
+        expect(RESPONSE.body.chatData !== undefined).toBe(true);
+
+        test_chat_data = RESPONSE.body.chatData;
+    });
+
+    afterEach(async () => {
+        // delete chat(s)
+        const DATABASE = mongo_client.db('socialmedia');
+        const CHATS_COLLECTION = DATABASE.collection('Chats');
+        const MESSAGES_COLLECTION = DATABASE.collection('Messages');
+
+        await CHATS_COLLECTION.deleteMany({uid:
+            {$in: [
+                test_user1_data.uid,
+                test_user2_data.uid
+            ]}
+        });
+
+        await MESSAGES_COLLECTION.deleteMany({sid:
+            {$in: [
+                test_user1_data.uid,
+                test_user2_data.uid
+            ]}
+        });
+    });
+
+    it("No login token. Return 200 and a fail status", async () => {
+        const RESPONSE = await request(shared.BACKEND_URL).delete(`/chats/${test_chat_data.cid}`).send();
+
+        shared.expectJSONResponse(RESPONSE);
+
+        expect(RESPONSE.body).toEqual({status: 'failed'});
+    });
+});
