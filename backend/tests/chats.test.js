@@ -170,7 +170,7 @@ describe("Retrieving Chats", () => {
         shared.expectEmptyJSONResponse(RESPONSE);
     });
 
-    it ("Passing login token of a user that doesn't exist. Return 200 and empty chats lists", async () => {
+    it("Passing login token of a user that doesn't exist. Return 200 and empty chats lists", async () => {
         const LOGIN_TOKEN = jwt.sign(
             {uid: crypto.randomBytes(5).toString('hex')},
             process.env.LTS
@@ -184,5 +184,39 @@ describe("Retrieving Chats", () => {
             chatsStartedByUser: [],
             chatsStartedByOthers: []
         });
+    });
+
+    it("Successful retrieval. Return 200 and lists of chats", async () => {
+        // create test chat 1
+        let response = await request(shared.BACKEND_URL).post('/chats').set('Cookie', test_user1_data.loginToken).send({chatName: 'TC1', username: `@${test_user2_data.username}`, message: "Started by test user 1"});
+
+        shared.expectJSONResponse(response);
+        const CHAT_STARTED_BY_USER = response.body.chatData;
+
+        // create test chat 2
+        response = await request(shared.BACKEND_URL).post('/chats').set('Cookie', test_user2_data.loginToken).send({chatName: 'TC2', username: `@${test_user1_data.username}`, message: "Started by test user 2"});
+
+        shared.expectJSONResponse(response);
+        const CHAT_STARTED_BY_OTHER = response.body.chatData;
+
+        // get all chats that include test user 1
+        response = await request(shared.BACKEND_URL).get('/chats').set('Cookie', test_user1_data.loginToken).send();
+
+        shared.expectJSONResponse(response);
+
+        expect(Array.isArray(response.body.chatsStartedByUser) && response.body.chatsStartedByUser.length === 1).toBe(true);
+
+        expect(Array.isArray(response.body.chatsStartedByOthers) && response.body.chatsStartedByOthers.length === 1).toBe(true);
+
+        // make structure of data match the test data
+        response.body.chatsStartedByUser[0].recentMessage = response.body.chatsStartedByUser[0].recentMessage[0];
+
+        response.body.chatsStartedByOthers[0].recentMessage = response.body.chatsStartedByOthers[0].recentMessage[0];
+
+        // correct recipient username (in this case the recipient would be test user 1 since the chat was started by test user 2; this discrepancy exists because of the database aggregate query used for the backend and the fact that the frontend expects the data to be formatted a certain way for its React components)
+        response.body.chatsStartedByOthers[0].recipientUsername = test_user1_data.username;
+
+        expect(response.body.chatsStartedByUser[0]).toEqual(CHAT_STARTED_BY_USER);
+        expect(response.body.chatsStartedByOthers[0]).toEqual(CHAT_STARTED_BY_OTHER);
     });
 });
