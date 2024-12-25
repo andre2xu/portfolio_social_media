@@ -138,3 +138,11 @@ describe("Creating Chats", () => {
         expect(CHAT_DATA.recentMessage).toEqual(FIRST_MESSAGE);
     });
 });
+
+describe("Retrieving Chats", () => {
+    it("No login token. Return 200 and an empty JSON object", async () => {
+        const RESPONSE = await request(shared.BACKEND_URL).get('/chats').send();
+
+        shared.expectEmptyJSONResponse(RESPONSE);
+    });
+});
