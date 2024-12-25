@@ -261,4 +261,12 @@ describe("Deleting Chats", () => {
 
         expect(RESPONSE.body).toEqual({status: 'failed'});
     });
+
+    it("Successful deletion. Return 200 and a success status", async () => {
+        const RESPONSE = await request(shared.BACKEND_URL).delete(`/chats/${test_chat_data.cid}`).set('Cookie', test_user1_data.loginToken).send();
+
+        shared.expectJSONResponse(RESPONSE);
+
+        expect(RESPONSE.body).toEqual({status: 'success'});
+    });
 });
