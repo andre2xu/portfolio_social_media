@@ -55,4 +55,24 @@ describe("Updating a notification setting", () => {
         shared.expectJSONResponse(response);
         expect(response.body).toEqual({status: 'failed'});
     });
+
+    it("Successful setting updates. Return 200 and a success status", async () => {
+        // enabling the setting
+        let response = await request(shared.BACKEND_URL).put('/notifications/settings').set('Cookie', test_user_data.loginToken).send({setting: 'newFollower', action: 'enable'});
+
+        shared.expectJSONResponse(response);
+        expect(response.body).toEqual({status: 'success'});
+
+        // disabling the setting
+        response = await request(shared.BACKEND_URL).put('/notifications/settings').set('Cookie', test_user_data.loginToken).send({setting: 'newFollower', action: 'disable'});
+
+        shared.expectJSONResponse(response);
+        expect(response.body).toEqual({status: 'success'});
+
+        // disabling the setting again (should fail because it's already disabled)
+        response = await request(shared.BACKEND_URL).put('/notifications/settings').set('Cookie', test_user_data.loginToken).send({setting: 'newFollower', action: 'disable'});
+
+        shared.expectJSONResponse(response);
+        expect(response.body).toEqual({status: 'failed'});
+    });
 });
