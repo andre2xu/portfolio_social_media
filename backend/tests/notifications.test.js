@@ -121,3 +121,26 @@ describe("Retrieving Notifications Settings", () => {
         });
     });
 });
+
+describe("Retrieving Notifications", () => {
+    it("Invalid requests. Return 200 and an empty JSON object or an empty array", async () => {
+        // no login token
+        let response = await request(shared.BACKEND_URL).get('/notifications').send();
+
+        shared.expectEmptyJSONResponse(response);
+
+        // non-existing user
+        const LOGIN_TOKEN = jwt.sign(
+            {uid: crypto.randomBytes(5).toString('hex')},
+            process.env.LTS
+        );
+
+        response = await request(shared.BACKEND_URL).get('/notifications').set('Cookie', `LT=${LOGIN_TOKEN}`).send();
+
+        shared.expectJSONResponse(response);
+
+        expect(response.body).toEqual({
+            notifications: [],
+        });
+    });
+});
