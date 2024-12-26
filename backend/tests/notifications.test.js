@@ -29,4 +29,30 @@ describe("Updating a notification setting", () => {
 
         expect(RESPONSE.body).toEqual({status: 'failed'});
     });
+
+    it("Invalid requests. Return 200 and a fail status", async () => {
+        // no body
+        let response = await request(shared.BACKEND_URL).put('/notifications/settings').set('Cookie', test_user_data.loginToken).send();
+
+        shared.expectJSONResponse(response);
+        expect(response.body).toEqual({status: 'failed'});
+
+        // missing fields
+        response = await request(shared.BACKEND_URL).put('/notifications/settings').set('Cookie', test_user_data.loginToken).send({wrongField1: '', wrongField2: ''});
+
+        shared.expectJSONResponse(response);
+        expect(response.body).toEqual({status: 'failed'});
+
+        // incorrect field types
+        response = await request(shared.BACKEND_URL).put('/notifications/settings').set('Cookie', test_user_data.loginToken).send({setting: [], action: 1});
+
+        shared.expectJSONResponse(response);
+        expect(response.body).toEqual({status: 'failed'});
+
+        // incorrect field values
+        response = await request(shared.BACKEND_URL).put('/notifications/settings').set('Cookie', test_user_data.loginToken).send({setting: 'notANotificationSetting', action: 'shouldBeEnableOrDisable'});
+
+        shared.expectJSONResponse(response);
+        expect(response.body).toEqual({status: 'failed'});
+    });
 });
