@@ -57,6 +57,15 @@ describe("Updating a notification setting", () => {
     });
 
     it("Successful setting updates. Return 200 and a success status", async () => {
+        /*
+        SETTINGS:
+        - followerStartedChat
+        - strangerStartedChat
+        - newPostLike
+        - newPostComment
+        - newFollower
+        */
+
         // enabling the setting
         let response = await request(shared.BACKEND_URL).put('/notifications/settings').set('Cookie', test_user_data.loginToken).send({setting: 'newFollower', action: 'enable'});
 
