@@ -143,4 +143,38 @@ describe("Retrieving Notifications", () => {
             notifications: [],
         });
     });
+
+    it("Successful retrieval. Return 200 and a list of notifications", async () => {
+        // create a test notification
+        const NOTIFICATIONS_COLLECTION = mongo_client.db('socialmedia').collection('Notifications');
+
+        const NOTIFICATION_TITLE = "Just a Test";
+        const NOTIFICATION_BODY = "This is a test notification";
+        const NOTIFICATION_TIMESTAMP = new Date().toISOString();
+
+        await NOTIFICATIONS_COLLECTION.insertOne({
+            uid: test_user_data.uid,
+            title: NOTIFICATION_TITLE,
+            body: NOTIFICATION_BODY,
+            timestamp: NOTIFICATION_TIMESTAMP
+        });
+
+        // retrieve notification
+        const RESPONSE = await request(shared.BACKEND_URL).get('/notifications').set('Cookie', test_user_data.loginToken).send();
+
+        shared.expectJSONResponse(RESPONSE);
+
+        expect(RESPONSE.body).toEqual({
+            notifications: [
+                {
+                    title: NOTIFICATION_TITLE,
+                    body: NOTIFICATION_BODY,
+                    timestamp: NOTIFICATION_TIMESTAMP
+                }
+            ]
+        });
+
+        // delete test notification(s)
+        await NOTIFICATIONS_COLLECTION.deleteMany({uid: test_user_data.uid});
+    });
 });
