@@ -2056,7 +2056,7 @@ backend.put('/notifications/settings', async (req, res) => {
         const AUTHENTICATION_RESULT = authenticateUser(req);
 
         if (AUTHENTICATION_RESULT.isAuthenticated) {
-            if (typeof req.body.setting === 'string' && typeof req.body.action === 'string') {
+            if (typeof req.body.setting === 'string' && typeof req.body.action === 'string' && (req.body.action === 'enable' || req.body.action === 'disable')) {
                 const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
 
                 const SETTING = {};
