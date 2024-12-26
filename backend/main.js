@@ -2052,19 +2052,29 @@ backend.get('/notifications/settings', async (req, res) => {
 
 backend.put('/notifications/settings', async (req, res) => {
     try {
-        const RESPONSE = {};
+        const RESPONSE = {status: 'failed'};
         const AUTHENTICATION_RESULT = authenticateUser(req);
 
         if (AUTHENTICATION_RESULT.isAuthenticated) {
-            const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
+            if (typeof req.body.setting === 'string' && typeof req.body.action === 'string') {
+                const NOTIFICATIONS_SETTINGS_COLLECTION = req.app.locals.db.collection('NotificationsSettings');
 
-            const SETTING = {};
-            SETTING[req.body.setting] = req.body.action === 'enable' ? 1 : 0;
+                const SETTING = {};
+                SETTING[req.body.setting] = req.body.action === 'enable' ? 1 : 0;
 
-            await NOTIFICATIONS_SETTINGS_COLLECTION.updateOne(
-                {uid: AUTHENTICATION_RESULT.tokenData.uid},
-                {$set: SETTING}
-            );
+                const FILTER = {uid: AUTHENTICATION_RESULT.tokenData.uid};
+
+                FILTER[req.body.setting] = {$exists: true};
+
+                const RESULT = await NOTIFICATIONS_SETTINGS_COLLECTION.updateOne(
+                    FILTER,
+                    {$set: SETTING}
+                );
+
+                if (RESULT.modifiedCount === 1) {
+                    RESPONSE.status = 'success';
+                }
+            }
         }
 
         return res.json(RESPONSE);
