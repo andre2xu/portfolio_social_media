@@ -1,6 +1,7 @@
 const shared = require('./shared.test');
 const request = require('supertest');
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
 
 
 
@@ -83,5 +84,24 @@ describe("Updating a notification setting", () => {
 
         shared.expectJSONResponse(response);
         expect(response.body).toEqual({status: 'failed'});
+    });
+});
+
+describe("Retrieving Notifications Settings", () => {
+    it("Invalid requests. Return 200 and an empty JSON object", async () => {
+        // no login token
+        let response = await request(shared.BACKEND_URL).get('/notifications/settings').send();
+
+        shared.expectEmptyJSONResponse(response);
+
+        // non-existing user
+        const LOGIN_TOKEN = jwt.sign(
+            {uid: crypto.randomBytes(5).toString('hex')},
+            process.env.LTS
+        );
+
+        response = await request(shared.BACKEND_URL).get('/notifications/settings').set('Cookie', `LT=${LOGIN_TOKEN}`).send();
+
+        shared.expectEmptyJSONResponse(response);
     });
 });
