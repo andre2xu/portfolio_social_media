@@ -104,4 +104,20 @@ describe("Retrieving Notifications Settings", () => {
 
         shared.expectEmptyJSONResponse(response);
     });
+
+    it("Successful retrieval. Return 200 and notifications settings", async () => {
+        const RESPONSE = await request(shared.BACKEND_URL).get('/notifications/settings').set('Cookie', test_user_data.loginToken).send();
+
+        shared.expectJSONResponse(RESPONSE);
+
+        expect(RESPONSE.body).toEqual({
+            settings: {
+                followerStartedChat: 0,
+                strangerStartedChat: 0,
+                newPostLike: 0,
+                newPostComment: 0,
+                newFollower: 0
+            }
+        });
+    });
 });
