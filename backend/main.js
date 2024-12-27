@@ -24,11 +24,21 @@ backend.use('/static', express.static('public')); // static folder that's public
 backend.use(body_parser.json()); // for JSON request data
 backend.use(body_parser.urlencoded({extended: true})); // for URL-encoded request data
 backend.use(cookie_parser());
-backend.use(cors({
-    origin: ['http://localhost:3000'],
+
+const CORS = cors({
+    origin: [
+        'http://localhost:3000',
+        'http://localhost:80',
+        'https://localhost:443',
+        'http://andrewsportfolio.site',
+        'https://andrewsportfolio.site'
+    ],
     optionsSuccessStatus: 200, // for legacy browsers
     credentials: true // allow HTTP-only cookies
-}));
+});
+
+backend.use(CORS);
+backend.options('*', CORS); // enable CORS pre-flight for all routes
 
 
 
