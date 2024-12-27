@@ -16,12 +16,14 @@ function getUserPostMediaURI(filename) {
 
 function getWebSocketServerURI() {
     let protocol = 'ws';
+    let port = '8011';
 
     if (window.location.protocol.toLowerCase().indexOf('https') !== -1) {
         protocol = 'wss';
+        port = '8010';
     }
 
-    return `${protocol}://${window.location.hostname}:8011`;
+    return `${protocol}://${window.location.hostname}:${port}`;
 };
 
 const shared = {
