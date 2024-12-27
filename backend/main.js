@@ -9,7 +9,7 @@ const cookie_parser = require('cookie-parser');
 const cors = require('cors');
 const express = require('express');
 const fs = require('fs');
-const backend = express();
+const https = require('https');
 
 try {
     // load environment variables for development but silently fail for production
@@ -17,13 +17,26 @@ try {
 }
 catch {}
 
+const app = express();
+let backend = app;
+
+if (process.env.PORTFOLIO_SOCIAL_MEDIA_NODE_ENV === 'production') {
+    backend = https.createServer(
+        {
+            key: fs.readFileSync(process.env.PORTFOLIO_SOCIAL_MEDIA_SSL_CERT_KEY),
+            cert: fs.readFileSync(process.env.PORTFOLIO_SOCIAL_MEDIA_SSL_CERT)
+        },
+        app
+    );
+}
+
 
 
 // CONFIG
-backend.use('/static', express.static('public')); // static folder that's publicly accessible via: [BACKEND_ORIGIN]/static/[SUBDIRECTORY]
-backend.use(body_parser.json()); // for JSON request data
-backend.use(body_parser.urlencoded({extended: true})); // for URL-encoded request data
-backend.use(cookie_parser());
+app.use('/static', express.static('public')); // static folder that's publicly accessible via: [BACKEND_ORIGIN]/static/[SUBDIRECTORY]
+app.use(body_parser.json()); // for JSON request data
+app.use(body_parser.urlencoded({extended: true})); // for URL-encoded request data
+app.use(cookie_parser());
 
 const CORS = cors({
     origin: [
@@ -37,8 +50,8 @@ const CORS = cors({
     credentials: true // allow HTTP-only cookies
 });
 
-backend.use(CORS);
-backend.options('*', CORS); // enable CORS pre-flight for all routes
+app.use(CORS);
+app.options('*', CORS); // enable CORS pre-flight for all routes
 
 
 
@@ -50,7 +63,7 @@ const USER_POSTS_MEDIA_FOLDER = './public/users/posts';
 const userPostsMedia = multer({dest: USER_POSTS_MEDIA_FOLDER});
 
 
-backend.post('/signup', async (req, res) => {
+app.post('/signup', async (req, res) => {
     try {
         const RESPONSE = {};
         const FORM_DATA = req.body;
@@ -115,7 +128,7 @@ backend.post('/signup', async (req, res) => {
 });
 
 
-backend.post('/login', async (req, res) => {
+app.post('/login', async (req, res) => {
     try {
         const RESPONSE = {};
         const FORM_DATA = req.body;
@@ -150,7 +163,7 @@ backend.post('/login', async (req, res) => {
 });
 
 
-backend.get('/logout', async (req, res) => {
+app.get('/logout', async (req, res) => {
     try {
         const AUTHENTICATION_RESULT = authenticateUser(req);
 
@@ -168,7 +181,7 @@ backend.get('/logout', async (req, res) => {
 });
 
 
-backend.post('/auth', async (req, res) => {
+app.post('/auth', async (req, res) => {
     try {
         // NOTE: this route is used by React Router in the frontend to check if users are allowed to access a view. For backend authentication, just call the 'authenticateUser' helper
 
@@ -182,7 +195,7 @@ backend.post('/auth', async (req, res) => {
 });
 
 
-backend.get('/account/info/:username?', async (req, res) => {
+app.get('/account/info/:username?', async (req, res) => {
     try {
         let response = {};
         let account = null;
@@ -221,7 +234,7 @@ backend.get('/account/info/:username?', async (req, res) => {
 });
 
 
-backend.put('/account/update', userProfileUploads.fields([{name: 'cover', maxCount: 1}, {name: 'pfp', maxCount: 1}]), async (req, res) => {
+app.put('/account/update', userProfileUploads.fields([{name: 'cover', maxCount: 1}, {name: 'pfp', maxCount: 1}]), async (req, res) => {
     try {
         const RESPONSE = {};
         const AUTHENTICATION_RESULT = authenticateUser(req);
@@ -308,7 +321,7 @@ backend.put('/account/update', userProfileUploads.fields([{name: 'cover', maxCou
 });
 
 
-backend.put('/account/remove', async (req, res) => {
+app.put('/account/remove', async (req, res) => {
     try {
         const RESPONSE = {};
         const AUTHENTICATION_RESULT = authenticateUser(req);
@@ -364,7 +377,7 @@ backend.put('/account/remove', async (req, res) => {
 });
 
 
-backend.delete('/account/delete', async (req, res) => {
+app.delete('/account/delete', async (req, res) => {
     try {
         const AUTHENTICATION_RESULT = authenticateUser(req);
 
@@ -440,7 +453,7 @@ backend.delete('/account/delete', async (req, res) => {
 });
 
 
-backend.post('/post', userPostsMedia.fields([{name: 'postMedia', maxCount: 1}]), async (req, res) => {
+app.post('/post', userPostsMedia.fields([{name: 'postMedia', maxCount: 1}]), async (req, res) => {
     try {
         const RESPONSE = {};
         const AUTHENTICATION_RESULT = authenticateUser(req);
@@ -533,7 +546,7 @@ backend.post('/post', userPostsMedia.fields([{name: 'postMedia', maxCount: 1}]),
 });
 
 
-backend.get('/post/:username?', async (req, res) => {
+app.get('/post/:username?', async (req, res) => {
     try {
         // NOTE: usernames should only be passed when retrieving user posts for a public page (i.e. a page that doesn't require a login token) as this approach is costly
 
@@ -621,7 +634,7 @@ backend.get('/post/:username?', async (req, res) => {
 });
 
 
-backend.delete('/post/:pid', async (req, res) => {
+app.delete('/post/:pid', async (req, res) => {
     try {
         const RESPONSE = {status: 'failed'};
         const AUTHENTICATION_RESULT = authenticateUser(req);
@@ -661,7 +674,7 @@ backend.delete('/post/:pid', async (req, res) => {
 });
 
 
-backend.put('/post/like', async (req, res) => {
+app.put('/post/like', async (req, res) => {
     try {
         const RESPONSE = {};
         const AUTHENTICATION_RESULT = authenticateUser(req);
@@ -735,7 +748,7 @@ backend.put('/post/like', async (req, res) => {
 });
 
 
-backend.get('/comments/:pid', async (req, res) => {
+app.get('/comments/:pid', async (req, res) => {
     try {
         const RESPONSE = {};
         const AUTHENTICATION_RESULT = authenticateUser(req);
@@ -826,7 +839,7 @@ backend.get('/comments/:pid', async (req, res) => {
 });
 
 
-backend.post('/comments/:pid', async (req, res) => {
+app.post('/comments/:pid', async (req, res) => {
     try {
         const RESPONSE = {};
         const AUTHENTICATION_RESULT = authenticateUser(req);
@@ -919,7 +932,7 @@ backend.post('/comments/:pid', async (req, res) => {
 });
 
 
-backend.delete('/comments/:cid', async (req, res) => {
+app.delete('/comments/:cid', async (req, res) => {
     try {
         const RESPONSE = {status: 'failed'};
         const AUTHENTICATION_RESULT = authenticateUser(req);
@@ -944,7 +957,7 @@ backend.delete('/comments/:cid', async (req, res) => {
 });
 
 
-backend.put('/comments/like', async (req, res) => {
+app.put('/comments/like', async (req, res) => {
     try {
         const RESPONSE = {};
         const AUTHENTICATION_RESULT = authenticateUser(req);
@@ -1008,7 +1021,7 @@ backend.put('/comments/like', async (req, res) => {
 });
 
 
-backend.put('/comments/dislike', async (req, res) => {
+app.put('/comments/dislike', async (req, res) => {
     try {
         const RESPONSE = {};
         const AUTHENTICATION_RESULT = authenticateUser(req);
@@ -1072,7 +1085,7 @@ backend.put('/comments/dislike', async (req, res) => {
 });
 
 
-backend.get('/followers/:username', async (req, res) => {
+app.get('/followers/:username', async (req, res) => {
     try {
         const RESPONSE = {};
         const AUTHENTICATION_RESULT = authenticateUser(req);
@@ -1113,7 +1126,7 @@ backend.get('/followers/:username', async (req, res) => {
 });
 
 
-backend.post('/follow', async (req, res) => {
+app.post('/follow', async (req, res) => {
     try {
         const RESPONSE = {status: 'failed'};
         const AUTHENTICATION_RESULT = authenticateUser(req);
@@ -1169,7 +1182,7 @@ backend.post('/follow', async (req, res) => {
 });
 
 
-backend.delete('/follow/:username', async (req, res) => {
+app.delete('/follow/:username', async (req, res) => {
     try {
         const RESPONSE = {status: 'failed'};
         const AUTHENTICATION_RESULT = authenticateUser(req);
@@ -1208,7 +1221,7 @@ backend.delete('/follow/:username', async (req, res) => {
 });
 
 
-backend.get('/following/:username', async (req, res) => {
+app.get('/following/:username', async (req, res) => {
     try {
         const RESPONSE = {};
         const AUTHENTICATION_RESULT = authenticateUser(req);
@@ -1256,7 +1269,7 @@ backend.get('/following/:username', async (req, res) => {
 });
 
 
-backend.get('/explore', async (req, res) => {
+app.get('/explore', async (req, res) => {
     try {
         const RESPONSE = {};
 
@@ -1366,7 +1379,7 @@ backend.get('/explore', async (req, res) => {
 });
 
 
-backend.get('/explore/:query', async (req, res) => {
+app.get('/explore/:query', async (req, res) => {
     try {
         const RESPONSE = {};
         let search_query = req.params.query;
@@ -1518,7 +1531,7 @@ backend.get('/explore/:query', async (req, res) => {
 });
 
 
-backend.get('/search/:query', async (req, res) => {
+app.get('/search/:query', async (req, res) => {
     try {
         const RESPONSE = {};
         const SEARCH_QUERY = req.params.query;
@@ -1654,7 +1667,7 @@ backend.get('/search/:query', async (req, res) => {
 });
 
 
-backend.get('/chats', async (req, res) => {
+app.get('/chats', async (req, res) => {
     try {
         const RESPONSE = {};
         const AUTHENTICATION_RESULT = authenticateUser(req);
@@ -1756,7 +1769,7 @@ backend.get('/chats', async (req, res) => {
 });
 
 
-backend.post('/chats', async (req, res) => {
+app.post('/chats', async (req, res) => {
     try {
         const RESPONSE = {};
         const AUTHENTICATION_RESULT = authenticateUser(req);
@@ -1879,7 +1892,7 @@ backend.post('/chats', async (req, res) => {
 });
 
 
-backend.delete('/chats/:cid', async (req, res) => {
+app.delete('/chats/:cid', async (req, res) => {
     try {
         const RESPONSE = {status: 'failed'};
         const AUTHENTICATION_RESULT = authenticateUser(req);
@@ -1910,7 +1923,7 @@ backend.delete('/chats/:cid', async (req, res) => {
 });
 
 
-backend.get('/messages/:cid', async (req, res) => {
+app.get('/messages/:cid', async (req, res) => {
     try {
         const RESPONSE = {};
         const AUTHENTICATION_RESULT = authenticateUser(req);
@@ -2011,7 +2024,7 @@ backend.get('/messages/:cid', async (req, res) => {
 });
 
 
-backend.get('/notifications', async (req, res) => {
+app.get('/notifications', async (req, res) => {
     try {
         const RESPONSE = {};
         const AUTHENTICATION_RESULT = authenticateUser(req);
@@ -2035,7 +2048,7 @@ backend.get('/notifications', async (req, res) => {
 });
 
 
-backend.get('/notifications/settings', async (req, res) => {
+app.get('/notifications/settings', async (req, res) => {
     try {
         const RESPONSE = {};
         const AUTHENTICATION_RESULT = authenticateUser(req);
@@ -2060,7 +2073,7 @@ backend.get('/notifications/settings', async (req, res) => {
 });
 
 
-backend.put('/notifications/settings', async (req, res) => {
+app.put('/notifications/settings', async (req, res) => {
     try {
         const RESPONSE = {status: 'failed'};
         const AUTHENTICATION_RESULT = authenticateUser(req);
@@ -2097,7 +2110,7 @@ backend.put('/notifications/settings', async (req, res) => {
 });
 
 
-backend.get('/viralusers', async (req, res) => {
+app.get('/viralusers', async (req, res) => {
     try {
         const RESPONSE = {};
 
@@ -2227,7 +2240,7 @@ backend.listen(process.env.PORTFOLIO_SOCIAL_MEDIA_PORT, async () => {
 
     await MONGO_CLIENT.connect();
 
-    backend.locals.db = MONGO_CLIENT.db('socialmedia'); // accessible in routes via `req.app.locals.db`
+    app.locals.db = MONGO_CLIENT.db('socialmedia'); // accessible in routes via `req.app.locals.db`
 
     // WEB SOCKET SERVER
     const wss = new WebSocketServer({port: process.env.PORTFOLIO_SOCIAL_MEDIA_WSS_PORT});
@@ -2270,11 +2283,11 @@ backend.listen(process.env.PORTFOLIO_SOCIAL_MEDIA_PORT, async () => {
                             const AUTHENTICATION_RESULT = authenticateUser(REQUEST);
 
                             if (AUTHENTICATION_RESULT.isAuthenticated) {
-                                const CHATS_COLLECTION = backend.locals.db.collection('Chats');
+                                const CHATS_COLLECTION = app.locals.db.collection('Chats');
 
                                 if (await CHATS_COLLECTION.findOne({cid: DATA.cid}) !== null) {
                                     // save message to database
-                                    const MESSAGES_COLLECTION = backend.locals.db.collection('Messages');
+                                    const MESSAGES_COLLECTION = app.locals.db.collection('Messages');
 
                                     await MESSAGES_COLLECTION.insertOne({
                                         cid: DATA.cid,
