@@ -1,6 +1,7 @@
 {
   "scripts": {
     "start": "nodemon main.js",
+    "start2": "node main.js",
     "test": "jest --detectOpenHandles --testPathIgnorePatterns shared.test.js"
   },
   "dependencies": {
