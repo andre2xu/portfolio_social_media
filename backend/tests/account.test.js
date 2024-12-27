@@ -53,7 +53,7 @@ describe("Account Data Retrieval", () => {
                 uid: test_user1_data.uid,
                 exp: Math.floor(Date.now() / 1000) - 1  // old expiration date (i.e. expired 1 second ago)
             },
-            process.env.LTS
+            process.env.PORTFOLIO_SOCIAL_MEDIA_LTS
         );
 
         const RESPONSE = await request(shared.BACKEND_URL).get('/account/info').set('Cookie', `LT=${EXPIRED_LOGIN_TOKEN}`).send();
@@ -94,7 +94,7 @@ describe("Account Data Update", () => {
     it("Pass login token of user that doesn't exist. Return 200 and an empty JSON object", async () => {
         const LOGIN_TOKEN = jwt.sign(
             {uid: crypto.randomBytes(5).toString('hex')},
-            process.env.LTS
+            process.env.PORTFOLIO_SOCIAL_MEDIA_LTS
         );
 
         const RESPONSE = await request(shared.BACKEND_URL).put('/account/update').set('Cookie', `LT=${LOGIN_TOKEN}`).send();
@@ -279,7 +279,7 @@ describe("Account Profile Upload Removal", () => {
     it("Pass login token of user that doesn't exist. Return 200 and an empty JSON object", async () => {
         const LOGIN_TOKEN = jwt.sign(
             {uid: crypto.randomBytes(5).toString('hex')},
-            process.env.LTS
+            process.env.PORTFOLIO_SOCIAL_MEDIA_LTS
         );
 
         const RESPONSE = await request(shared.BACKEND_URL).put('/account/remove').set('Cookie', `LT=${LOGIN_TOKEN}`).send({type: 'profile', target: 'pfp'});

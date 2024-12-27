@@ -55,7 +55,7 @@ describe("Follow", () => {
         // login token belongs to a non-existent user
         const LOGIN_TOKEN = jwt.sign(
             {uid: crypto.randomBytes(5).toString('hex')},
-            process.env.LTS
+            process.env.PORTFOLIO_SOCIAL_MEDIA_LTS
         );
 
         response = await request(shared.BACKEND_URL).post('/follow').set('Cookie', `LT=${LOGIN_TOKEN}`).send({username: test_user2_data.username});
@@ -205,7 +205,7 @@ describe("Unfollow", () => {
         // user doing the unfollowing doesn't exist
         const LOGIN_TOKEN = jwt.sign(
             {uid: crypto.randomBytes(5).toString('hex')},
-            process.env.LTS
+            process.env.PORTFOLIO_SOCIAL_MEDIA_LTS
         );
 
         response = await request(shared.BACKEND_URL).delete(`/follow/${test_user2_data.username}`).set('Cookie', `LT=${LOGIN_TOKEN}`).send();

@@ -315,7 +315,7 @@ describe("Post Deletion", () => {
         // non-existent user (i.e. user who doesn't own the temporary post)
         const LOGIN_TOKEN = jwt.sign(
             {uid: 'idontexist'},
-            process.env.LTS
+            process.env.PORTFOLIO_SOCIAL_MEDIA_LTS
         );
 
         response = await request(shared.BACKEND_URL).delete(`/post/${POST.pid}`).set('Cookie', `LT=${LOGIN_TOKEN}`).send();

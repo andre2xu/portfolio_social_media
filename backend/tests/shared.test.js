@@ -7,10 +7,10 @@ require('dotenv').config({path: path.join(__dirname, '../.env')}); // since test
 
 
 
-const BACKEND_URL = `http://localhost:${process.env.PORT}`; // development server
+const BACKEND_URL = `http://localhost:${process.env.PORTFOLIO_SOCIAL_MEDIA_PORT}`; // development server
 
 async function openDatabaseConnection() {
-    const CONNECTION = new MongoClient(process.env.MONGO_CLUSTER_URI);
+    const CONNECTION = new MongoClient(process.env.PORTFOLIO_SOCIAL_MEDIA_MONGO_CLUSTER_URI);
     await CONNECTION.connect();
 
     return CONNECTION;
@@ -28,7 +28,7 @@ async function createTestUser(username, password) {
     expect(Array.isArray(SIGN_UP_RESPONSE_COOKIES) && SIGN_UP_RESPONSE_COOKIES.length > 0 && SIGN_UP_RESPONSE_COOKIES[0].indexOf('LT=') !== -1).toBe(true);
 
     const LOGIN_TOKEN = SIGN_UP_RESPONSE_COOKIES[0].split(';')[0].replace('LT=', '');
-    const DECODED_TOKEN = jwt.verify(LOGIN_TOKEN, process.env.LTS);
+    const DECODED_TOKEN = jwt.verify(LOGIN_TOKEN, process.env.PORTFOLIO_SOCIAL_MEDIA_LTS);
 
     // return test user data
     const TEST_USER_DATA = {};

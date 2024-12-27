@@ -173,7 +173,7 @@ describe("Retrieving Chats", () => {
     it("Passing login token of a user that doesn't exist. Return 200 and empty chats lists", async () => {
         const LOGIN_TOKEN = jwt.sign(
             {uid: crypto.randomBytes(5).toString('hex')},
-            process.env.LTS
+            process.env.PORTFOLIO_SOCIAL_MEDIA_LTS
         );
 
         const RESPONSE = await request(shared.BACKEND_URL).get('/chats').set('Cookie', `LT=${LOGIN_TOKEN}`).send();

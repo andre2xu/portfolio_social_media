@@ -13,7 +13,7 @@ function authenticateUser(req) {
 
     try {
         if (LOGIN_TOKEN !== undefined) {
-            RESULT.tokenData = jwt.verify(LOGIN_TOKEN, process.env.LTS);
+            RESULT.tokenData = jwt.verify(LOGIN_TOKEN, process.env.PORTFOLIO_SOCIAL_MEDIA_LTS);
 
             RESULT.isAuthenticated = true;
         }
@@ -28,7 +28,7 @@ function generateLoginToken(res, uid) {
 
     const LOGIN_TOKEN = jwt.sign(
         {uid: uid},
-        process.env.LTS,
+        process.env.PORTFOLIO_SOCIAL_MEDIA_LTS,
         {expiresIn: TOKEN_EXPIRATION}
     );
 

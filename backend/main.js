@@ -2211,16 +2211,16 @@ backend.get('/viralusers', async (req, res) => {
 
 
 // INITIALIZATION
-backend.listen(process.env.PORT, async () => {
+backend.listen(process.env.PORTFOLIO_SOCIAL_MEDIA_PORT, async () => {
     // connect to database & store the connection in a shared variable
-    const MONGO_CLIENT = new MongoClient(process.env.MONGO_CLUSTER_URI);
+    const MONGO_CLIENT = new MongoClient(process.env.PORTFOLIO_SOCIAL_MEDIA_MONGO_CLUSTER_URI);
 
     await MONGO_CLIENT.connect();
 
     backend.locals.db = MONGO_CLIENT.db('socialmedia'); // accessible in routes via `req.app.locals.db`
 
     // WEB SOCKET SERVER
-    const wss = new WebSocketServer({port: process.env.WSS_PORT});
+    const wss = new WebSocketServer({port: process.env.PORTFOLIO_SOCIAL_MEDIA_WSS_PORT});
 
     wss.on('connection', (ws, req) => {
         ws.isAlive = true;

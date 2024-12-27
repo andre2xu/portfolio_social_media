@@ -97,7 +97,7 @@ describe("Retrieving Notifications Settings", () => {
         // non-existing user
         const LOGIN_TOKEN = jwt.sign(
             {uid: crypto.randomBytes(5).toString('hex')},
-            process.env.LTS
+            process.env.PORTFOLIO_SOCIAL_MEDIA_LTS
         );
 
         response = await request(shared.BACKEND_URL).get('/notifications/settings').set('Cookie', `LT=${LOGIN_TOKEN}`).send();
@@ -132,7 +132,7 @@ describe("Retrieving Notifications", () => {
         // non-existing user
         const LOGIN_TOKEN = jwt.sign(
             {uid: crypto.randomBytes(5).toString('hex')},
-            process.env.LTS
+            process.env.PORTFOLIO_SOCIAL_MEDIA_LTS
         );
 
         response = await request(shared.BACKEND_URL).get('/notifications').set('Cookie', `LT=${LOGIN_TOKEN}`).send();

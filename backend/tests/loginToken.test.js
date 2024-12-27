@@ -63,7 +63,7 @@ describe("Frontend Authentication", () => {
                 uid: test_user_data.uid,
                 exp: Math.floor(Date.now() / 1000) - 1 // old expiration date (i.e. expired 1 second ago)
             },
-            process.env.LTS
+            process.env.PORTFOLIO_SOCIAL_MEDIA_LTS
         );
 
         response = await request(shared.BACKEND_URL).post('/auth').set('Cookie', `LT=${EXPIRED_LOGIN_TOKEN}`).send();

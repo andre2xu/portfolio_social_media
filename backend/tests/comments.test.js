@@ -58,7 +58,7 @@ describe("Creating Comments", () => {
         // non-existent user
         const LOGIN_TOKEN = jwt.sign(
             {uid: crypto.randomBytes(5).toString('hex')},
-            process.env.LTS
+            process.env.PORTFOLIO_SOCIAL_MEDIA_LTS
         );
 
         response = await request(shared.BACKEND_URL).post(`/comments/${test_post_data.pid}`).set('Cookie', `LT=${LOGIN_TOKEN}`).send();
@@ -130,7 +130,7 @@ describe("Retrieving Comments", () => {
         // non-existent user
         const LOGIN_TOKEN = jwt.sign(
             {uid: crypto.randomBytes(5).toString('hex')},
-            process.env.LTS
+            process.env.PORTFOLIO_SOCIAL_MEDIA_LTS
         );
 
         response = await request(shared.BACKEND_URL).post(`/comments/${test_post_data.pid}`).set('Cookie', `LT=${LOGIN_TOKEN}`).send();
@@ -212,7 +212,7 @@ describe("Deleting Comments", () => {
         // non-existent commenter
         const LOGIN_TOKEN = jwt.sign(
             {uid: crypto.randomBytes(5).toString('hex')},
-            process.env.LTS
+            process.env.PORTFOLIO_SOCIAL_MEDIA_LTS
         );
 
         response = await request(shared.BACKEND_URL).delete(`/comments/${test_comment_data.cid}`).set('Cookie', `LT=${LOGIN_TOKEN}`).send();
@@ -269,7 +269,7 @@ describe("Liking Comments", () => {
         // non-existent user
         const LOGIN_TOKEN = jwt.sign(
             {uid: crypto.randomBytes(5).toString('hex')},
-            process.env.LTS
+            process.env.PORTFOLIO_SOCIAL_MEDIA_LTS
         );
 
         response = await request(shared.BACKEND_URL).put('/comments/like').set('Cookie', `LT=${LOGIN_TOKEN}`).send();
