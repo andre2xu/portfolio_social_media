@@ -3,7 +3,7 @@ function resolveBackendRoute(path) {
         throw TypeError("Invalid path. Must be a string that starts with a /");
     }
 
-    return `${window.location.protocol}//${window.location.hostname}:8010${path}`;
+    return `${window.location.protocol}//localhost:8010${path}`;
 };
 
 function getUserProfileStaticFileURI(filename) {
