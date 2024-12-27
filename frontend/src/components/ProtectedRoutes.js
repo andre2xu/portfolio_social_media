@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 import { Outlet, Navigate, useNavigate } from 'react-router-dom';
+import shared from '../shared';
 
 
 
@@ -10,7 +11,7 @@ function ProtectedRoutes() {
     const redirectTo = useNavigate();
 
     React.useEffect(() => {
-        axios.post('http://localhost:8010/auth', {}, {withCredentials: true})
+        axios.post(shared.resolveBackendRoute('/auth'), {}, {withCredentials: true})
         .then((response) => {
             if (response.status === 200 && typeof response.data === 'object' && response.data.isAuthenticated) {
                 setAuthenticationFlag(true);
