@@ -10,6 +10,7 @@ const cors = require('cors');
 const express = require('express');
 const fs = require('fs');
 const https = require('https');
+const cron = require('node-cron');
 
 try {
     // load environment variables for development but silently fail for production
@@ -2344,4 +2345,54 @@ backend.listen(process.env.PORTFOLIO_SOCIAL_MEDIA_PORT, async () => {
     wss.on('close', () => {
         clearInterval(PERIODIC_WS_CONNECTION_CHECK);
     });
+
+    // CRON JOB(S)
+    const CRON_RESET = cron.schedule('0 23 * * 6', async () => {
+        // JOB: reset the platform every Saturday at 11pm
+
+        const USERS_COLLECTION = app.locals.db.collection('Users');
+        const POSTS_COLLECTION = app.locals.db.collection('Posts');
+        const COMMENTS_COLLECTION = app.locals.db.collection('Comments');
+        const FOLLOWERS_COLLECTION = app.locals.db.collection('Followers');
+        const CHATS_COLLECTION = app.locals.db.collection('Chats');
+        const MESSAGES_COLLECTION = app.locals.db.collection('Messages');
+        const NOTIFICATIONS_SETTINGS_COLLECTION = app.locals.db.collection('NotificationsSettings');
+        const NOTIFICATIONS_COLLECTION = app.locals.db.collection('Notifications');
+
+        const FILTER = {};
+
+        // get default user(s)
+        const OFFICIAL_VIROST_ACCOUNT = await USERS_COLLECTION.findOne({username: 'Virost'});
+
+        if (OFFICIAL_VIROST_ACCOUNT !== null) {
+            FILTER.uid = {$ne: OFFICIAL_VIROST_ACCOUNT.uid};
+        }
+
+        // empty database
+        USERS_COLLECTION.deleteMany(FILTER);
+        POSTS_COLLECTION.deleteMany(FILTER);
+        COMMENTS_COLLECTION.deleteMany(FILTER);
+        FOLLOWERS_COLLECTION.deleteMany(FILTER);
+        CHATS_COLLECTION.deleteMany(FILTER);
+        MESSAGES_COLLECTION.deleteMany(FILTER);
+        NOTIFICATIONS_SETTINGS_COLLECTION.deleteMany(FILTER);
+        NOTIFICATIONS_COLLECTION.deleteMany(FILTER);
+
+        // empty file system
+        fs.readdir(USER_PROFILE_UPLOADS_FOLDER, (err, files) => {
+            if (err) {
+                Logger.error(`[CRON: RESET] ${err}`);
+                return;
+            }
+
+            // delete uploads from non-default accounts
+            files.forEach((file) => {
+                if (OFFICIAL_VIROST_ACCOUNT !== null && file !== OFFICIAL_VIROST_ACCOUNT.pfp && file !== OFFICIAL_VIROST_ACCOUNT.cover) {
+                    fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${file}`, () => {});
+                }
+            });
+        });
+    }, {scheduled: false});
+
+    CRON_RESET.start();
 });
