@@ -2347,7 +2347,7 @@ backend.listen(process.env.PORTFOLIO_SOCIAL_MEDIA_PORT, async () => {
     });
 
     // CRON JOB(S)
-    const CRON_RESET = cron.schedule('*/10 * * * * *', async () => {
+    const CRON_RESET = cron.schedule('0 23 * * 6', async () => {
         // JOB: reset the platform every Saturday at 11pm
 
         const USERS_COLLECTION = app.locals.db.collection('Users');
