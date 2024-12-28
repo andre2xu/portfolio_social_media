@@ -91,7 +91,52 @@ const userProfileUploads = multer({
 });
 
 const USER_POSTS_MEDIA_FOLDER = './public/users/posts';
-const userPostsMedia = multer({dest: USER_POSTS_MEDIA_FOLDER});
+const userPostsMedia = multer({
+    dest: USER_POSTS_MEDIA_FOLDER,
+    fileFilter: (req, file, callback) => {
+        const FILE_SIZE = parseInt(req.headers['content-length']);
+        const EXTENSION = path.extname(file.originalname).replace('.', '');
+        const MIME_TYPE = file.mimetype;
+
+        const MAX_IMAGE_FILE_SIZE = 1000 * 1000 // 1 MB
+        const MAX_VIDEO_FILE_SIZE = 1000 * 1000 * 10 // 10 MB
+        const VALID_IMAGE_EXTENSIONS = ['png', 'jpeg', 'jpg'];
+        const VALID_VIDEO_EXTENSIONS = ['mp4'];
+
+        req.validFile = true;
+
+        if (VALID_IMAGE_EXTENSIONS.includes(EXTENSION)) {
+            // image files
+
+            if (FILE_SIZE > MAX_IMAGE_FILE_SIZE) {
+                req.validFile = false;
+                req.fileErrorMessage = "Image file size cannot exceed 1 MB";
+            }
+            else if (MIME_TYPE !== 'image/png' && MIME_TYPE !== 'image/jpg' && MIME_TYPE !== 'image/jpeg') {
+                req.validFile = false;
+                req.fileErrorMessage = "Only png and jpeg images are allowed";
+            }
+        }
+        else if (VALID_VIDEO_EXTENSIONS.includes(EXTENSION)) {
+            // video files
+
+            if (FILE_SIZE > MAX_VIDEO_FILE_SIZE) {
+                req.validFile = false;
+                req.fileErrorMessage = "Video file size cannot exceed 10 MB";
+            }
+            else if (MIME_TYPE !== 'video/mp4') {
+                req.validFile = false;
+                req.fileErrorMessage = "Only mp4 videos are allowed";
+            }
+        }
+        else {
+            req.validFile = false;
+            req.fileErrorMessage = "Only png, jpeg, and mp4 files are allowed";
+        }
+
+        callback(null, req.validFile);
+    }
+});
 
 
 app.post('/signup', async (req, res) => {
@@ -493,6 +538,12 @@ app.delete('/account/delete', async (req, res) => {
 app.post('/post', userPostsMedia.fields([{name: 'postMedia', maxCount: 1}]), async (req, res) => {
     try {
         const RESPONSE = {};
+
+        if (req.validFile === false && typeof req.fileErrorMessage === 'string') {
+            RESPONSE.errorMessage = req.fileErrorMessage;
+            return res.json(RESPONSE);
+        }
+
         const AUTHENTICATION_RESULT = authenticateUser(req);
 
         if (AUTHENTICATION_RESULT.isAuthenticated) {
