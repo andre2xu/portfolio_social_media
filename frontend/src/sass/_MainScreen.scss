@@ -219,6 +219,7 @@
 
                 #viral-users-list {
                     .viral-user {
+                        justify-content: center;
                         margin-bottom: 30px;
 
                         img {
@@ -369,6 +370,12 @@
                 display: flex;
                 border-left: thin solid $main_screen_division_line_color;
                 padding-left: 30px;
+
+                #viral-users-list {
+                    .viral-user {
+                        justify-content: left;
+                    }
+                }
             }
         }
 
