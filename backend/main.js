@@ -2347,7 +2347,7 @@ backend.listen(process.env.PORTFOLIO_SOCIAL_MEDIA_PORT, async () => {
     });
 
     // CRON JOB(S)
-    const CRON_RESET = cron.schedule('0 23 * * 6', async () => {
+    const CRON_RESET = cron.schedule('*/10 * * * * *', async () => {
         // JOB: reset the platform every Saturday at 11pm
 
         const USERS_COLLECTION = app.locals.db.collection('Users');
@@ -2381,7 +2381,7 @@ backend.listen(process.env.PORTFOLIO_SOCIAL_MEDIA_PORT, async () => {
         // empty file system
         fs.readdir(USER_PROFILE_UPLOADS_FOLDER, (err, files) => {
             if (err) {
-                Logger.error(`[CRON: RESET] ${err}`);
+                Logger.error(`[CRON RESET: PROFILE UPLOADS] ${err}`);
                 return;
             }
 
@@ -2399,6 +2399,17 @@ backend.listen(process.env.PORTFOLIO_SOCIAL_MEDIA_PORT, async () => {
                     fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${file}`, () => {});
                 });
             }
+        });
+
+        fs.readdir(USER_POSTS_MEDIA_FOLDER, (err, files) => {
+            if (err) {
+                Logger.error(`[CRON RESET: POST MEDIA] ${err}`);
+                return;
+            }
+
+            files.forEach((file) => {
+                fs.unlink(`${USER_POSTS_MEDIA_FOLDER}/${file}`, () => {});
+            });
         });
     }, {scheduled: false});
 
