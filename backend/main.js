@@ -2385,12 +2385,20 @@ backend.listen(process.env.PORTFOLIO_SOCIAL_MEDIA_PORT, async () => {
                 return;
             }
 
-            // delete uploads from non-default accounts
-            files.forEach((file) => {
-                if (OFFICIAL_VIROST_ACCOUNT !== null && file !== OFFICIAL_VIROST_ACCOUNT.pfp && file !== OFFICIAL_VIROST_ACCOUNT.cover) {
+            if (OFFICIAL_VIROST_ACCOUNT !== null) {
+                // delete only uploads from non-default accounts
+                files.forEach((file) => {
+                    if (file !== OFFICIAL_VIROST_ACCOUNT.pfp && file !== OFFICIAL_VIROST_ACCOUNT.cover) {
+                        fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${file}`, () => {});
+                    }
+                });
+            }
+            else {
+                // delete all uploads
+                files.forEach((file) => {
                     fs.unlink(`${USER_PROFILE_UPLOADS_FOLDER}/${file}`, () => {});
-                }
-            });
+                });
+            }
         });
     }, {scheduled: false});
 
