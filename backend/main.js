@@ -11,6 +11,7 @@ const express = require('express');
 const fs = require('fs');
 const https = require('https');
 const cron = require('node-cron');
+const path = require('path');
 
 try {
     // load environment variables for development but silently fail for production
@@ -60,7 +61,34 @@ app.options('*', CORS); // enable CORS pre-flight for all routes
 
 // ROUTES
 const USER_PROFILE_UPLOADS_FOLDER = './public/users/profile';
-const userProfileUploads = multer({dest: USER_PROFILE_UPLOADS_FOLDER});
+const userProfileUploads = multer({
+    dest: USER_PROFILE_UPLOADS_FOLDER,
+    fileFilter: (req, file, callback) => {
+        const FILE_SIZE = parseInt(req.headers['content-length']);
+        const EXTENSION = path.extname(file.originalname);
+        const MIME_TYPE = file.mimetype;
+
+        const MAX_FILE_SIZE = 1000 * 1000 // 1 MB
+        const VALID_EXTENSIONS = ['png', 'jpeg', 'jpg'];
+
+        req.validFile = true;
+
+        if (FILE_SIZE > MAX_FILE_SIZE) {
+            req.validFile = false;
+            req.fileErrorMessage = "File size cannot exceed 1 MB";
+        }
+        else if (VALID_EXTENSIONS.includes(EXTENSION.replace('.', '')) === false) {
+            req.validFile = false;
+            req.fileErrorMessage = "Only png and jpeg images are allowed";
+        }
+        else if (MIME_TYPE !== 'image/png' && MIME_TYPE !== 'image/jpg' && MIME_TYPE !== 'image/jpeg') {
+            req.validFile = false;
+            req.fileErrorMessage = "Only png and jpeg images are allowed";
+        }
+
+        callback(null, req.validFile);
+    }
+});
 
 const USER_POSTS_MEDIA_FOLDER = './public/users/posts';
 const userPostsMedia = multer({dest: USER_POSTS_MEDIA_FOLDER});
@@ -240,6 +268,12 @@ app.get('/account/info/:username?', async (req, res) => {
 app.put('/account/update', userProfileUploads.fields([{name: 'cover', maxCount: 1}, {name: 'pfp', maxCount: 1}]), async (req, res) => {
     try {
         const RESPONSE = {};
+
+        if (req.validFile === false && typeof req.fileErrorMessage === 'string') {
+            RESPONSE.errorMessage = req.fileErrorMessage;
+            return res.json(RESPONSE);
+        }
+
         const AUTHENTICATION_RESULT = authenticateUser(req);
 
         if (AUTHENTICATION_RESULT.isAuthenticated) {
