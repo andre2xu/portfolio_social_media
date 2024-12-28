@@ -44,7 +44,9 @@ const CORS = cors({
         'http://localhost:80',
         'https://localhost:443',
         'http://andrewsportfolio.site',
-        'https://andrewsportfolio.site'
+        'https://andrewsportfolio.site',
+        'http://socialmedia.andrewsportfolio.site',
+        'https://socialmedia.andrewsportfolio.site'
     ],
     optionsSuccessStatus: 200, // for legacy browsers
     credentials: true // allow HTTP-only cookies
