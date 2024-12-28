@@ -2369,14 +2369,14 @@ backend.listen(process.env.PORTFOLIO_SOCIAL_MEDIA_PORT, async () => {
         }
 
         // empty database
-        USERS_COLLECTION.deleteMany(FILTER);
-        POSTS_COLLECTION.deleteMany(FILTER);
-        COMMENTS_COLLECTION.deleteMany(FILTER);
-        FOLLOWERS_COLLECTION.deleteMany(FILTER);
-        CHATS_COLLECTION.deleteMany(FILTER);
-        MESSAGES_COLLECTION.deleteMany(FILTER);
-        NOTIFICATIONS_SETTINGS_COLLECTION.deleteMany(FILTER);
-        NOTIFICATIONS_COLLECTION.deleteMany(FILTER);
+        await USERS_COLLECTION.deleteMany(FILTER);
+        await POSTS_COLLECTION.deleteMany(FILTER);
+        await COMMENTS_COLLECTION.deleteMany(FILTER);
+        await FOLLOWERS_COLLECTION.deleteMany(FILTER);
+        await CHATS_COLLECTION.deleteMany(FILTER);
+        await MESSAGES_COLLECTION.deleteMany(FILTER);
+        await NOTIFICATIONS_SETTINGS_COLLECTION.deleteMany(FILTER);
+        await NOTIFICATIONS_COLLECTION.deleteMany(FILTER);
 
         // empty file system
         fs.readdir(USER_PROFILE_UPLOADS_FOLDER, (err, files) => {
