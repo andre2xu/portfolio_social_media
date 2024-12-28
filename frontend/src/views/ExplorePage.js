@@ -165,6 +165,8 @@ function ExplorePage({isLoggedIn}) {
                                         LIST_ITEM.setAttribute('data-pid', result.pid);
                                         LIST_ITEM.innerHTML = `<b>@${result.username}:</b> ${result.body}`;
 
+                                        $(LIST_ITEM).addClass('content');
+
                                         SEARCH_RESULTS_LIST.append(LIST_ITEM);
                                     });
 
