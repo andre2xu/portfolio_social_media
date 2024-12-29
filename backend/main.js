@@ -68,14 +68,15 @@ const userProfileUploads = multer({
         const EXTENSION = path.extname(file.originalname);
         const MIME_TYPE = file.mimetype;
 
-        const MAX_FILE_SIZE = 1000 * 1000 // 1 MB
+        const MAX_MB = 10;
+        const MAX_FILE_SIZE = 1000 * 1000 * MAX_MB;
         const VALID_EXTENSIONS = ['png', 'jpeg', 'jpg'];
 
         req.validFile = true;
 
         if (FILE_SIZE > MAX_FILE_SIZE) {
             req.validFile = false;
-            req.fileErrorMessage = "File size cannot exceed 1 MB";
+            req.fileErrorMessage = `File size cannot exceed ${MAX_MB} MB`;
         }
         else if (VALID_EXTENSIONS.includes(EXTENSION.replace('.', '')) === false) {
             req.validFile = false;
@@ -98,8 +99,10 @@ const userPostsMedia = multer({
         const EXTENSION = path.extname(file.originalname).replace('.', '');
         const MIME_TYPE = file.mimetype;
 
-        const MAX_IMAGE_FILE_SIZE = 1000 * 1000 // 1 MB
-        const MAX_VIDEO_FILE_SIZE = 1000 * 1000 * 10 // 10 MB
+        const MAX_IMAGE_MB = 10;
+        const MAX_VIDEO_MB = 200;
+        const MAX_IMAGE_FILE_SIZE = 1000 * 1000 * MAX_IMAGE_MB;
+        const MAX_VIDEO_FILE_SIZE = 1000 * 1000 * MAX_VIDEO_MB;
         const VALID_IMAGE_EXTENSIONS = ['png', 'jpeg', 'jpg'];
         const VALID_VIDEO_EXTENSIONS = ['mp4'];
 
@@ -110,7 +113,7 @@ const userPostsMedia = multer({
 
             if (FILE_SIZE > MAX_IMAGE_FILE_SIZE) {
                 req.validFile = false;
-                req.fileErrorMessage = "Image file size cannot exceed 1 MB";
+                req.fileErrorMessage = `Image file size cannot exceed ${MAX_IMAGE_MB} MB`;
             }
             else if (MIME_TYPE !== 'image/png' && MIME_TYPE !== 'image/jpg' && MIME_TYPE !== 'image/jpeg') {
                 req.validFile = false;
@@ -122,7 +125,7 @@ const userPostsMedia = multer({
 
             if (FILE_SIZE > MAX_VIDEO_FILE_SIZE) {
                 req.validFile = false;
-                req.fileErrorMessage = "Video file size cannot exceed 10 MB";
+                req.fileErrorMessage = `Video file size cannot exceed ${MAX_VIDEO_MB} MB`;
             }
             else if (MIME_TYPE !== 'video/mp4') {
                 req.validFile = false;
